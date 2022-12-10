@@ -79,16 +79,16 @@ export class PostsController {
     }
   }
 
-  @Get(':id/comments')
+  @Get(':postId/comments')
   async getCommentsForPost(
-    @Param('id') postId: string,
+    @Param('postId') blogId: string,
     @Query() dataQuery,
     @Res() res,
   ) {
     const query = this.queryCount.queryCheckHelper(dataQuery);
     const comments = await this.queryRepository.getQueryCommentsByPostId(
       query,
-      postId,
+      blogId,
     );
     if (comments) {
       res.send(comments);

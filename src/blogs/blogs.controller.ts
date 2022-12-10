@@ -77,7 +77,7 @@ export class BlogsController {
 
   @Get('/:blogId/posts')
   async getPostsForBlog(
-    @Param() blogId: string,
+    @Param('blogId') blogId: string,
     @Query() dataQuery,
     @Res() res,
   ) {
@@ -94,7 +94,11 @@ export class BlogsController {
   }
 
   @Post('/:blogId/posts')
-  async createPostsForBlog(@Param() blogId: string, @Body() body, @Res() res) {
+  async createPostsForBlog(
+    @Param(':blogId') blogId: string,
+    @Body() body,
+    @Res() res,
+  ) {
     const newPostForBlogId = await this.postsService.createPost(
       body.title,
       body.shortDescription,
