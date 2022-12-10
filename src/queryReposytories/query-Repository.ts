@@ -4,6 +4,8 @@ import {
   BlogsModel,
   PostQueryType,
   PostsModel,
+  UsersModel,
+  UserQueryType,
 } from '../helper/allTypes';
 import { QueryCount } from '../helper/query.count';
 import { InjectModel } from '@nestjs/mongoose';
@@ -14,6 +16,7 @@ export class QueryRepository {
   constructor(
     @InjectModel('blogs') protected blogsCollection: Model<BlogsModel>,
     @InjectModel('posts') protected postsCollection: Model<PostsModel>,
+    @InjectModel('users') protected usersCollection: Model<UsersModel>,
     @Inject(QueryCount) protected queryCount: QueryCount, // @Inject(CommentsRepository) protected commentsRepository: CommentsRepository, // @Inject(PostsRepository) protected postsRepository: PostsRepository,
   ) {}
 
@@ -167,48 +170,48 @@ export class QueryRepository {
   //   };
   // }
 
-  // async getQueryUsers(query: any): Promise<UsersType> {
-  //   const totalCount = await usersCollection.countDocuments({
-  //     $or: [
-  //       { login: { $regex: query.searchLoginTerm, $options: 'i' } },
-  //       {
-  //         email: {
-  //           $regex: query.searchEmailTerm,
-  //           $options: 'i',
-  //         },
-  //       },
-  //     ],
-  //   });
-  //   const sortArrayUsers = await usersCollection
-  //     .find({
-  //       $or: [
-  //         { login: { $regex: query.searchLoginTerm, $options: 'i' } },
-  //         {
-  //           email: {
-  //             $regex: query.searchEmailTerm,
-  //             $options: 'i',
-  //           },
-  //         },
-  //       ],
-  //     })
-  //     .sort({ [query.sortBy]: query.sortDirection })
-  //     .skip(skipHelper(query.pageNumber, query.pageSize))
-  //     .limit(query.pageSize);
-  //   return {
-  //     pagesCount: pagesCountHelper(totalCount, query.pageSize),
-  //     page: query.pageNumber,
-  //     pageSize: query.pageSize,
-  //     totalCount: totalCount,
-  //     items: sortArrayUsers.map((a) => {
-  //       return {
-  //         id: a.id,
-  //         login: a.login,
-  //         email: a.email,
-  //         createdAt: a.createdAt,
-  //       };
-  //     }),
-  //   };
-  // }
+  async getQueryUsers(query: any): Promise<UserQueryType> {
+    const totalCount = await this.usersCollection.countDocuments({
+      $or: [
+        { login: { $regex: query.searchLoginTerm, $options: 'i' } },
+        {
+          email: {
+            $regex: query.searchEmailTerm,
+            $options: 'i',
+          },
+        },
+      ],
+    });
+    const sortArrayUsers = await this.usersCollection
+      .find({
+        $or: [
+          { login: { $regex: query.searchLoginTerm, $options: 'i' } },
+          {
+            email: {
+              $regex: query.searchEmailTerm,
+              $options: 'i',
+            },
+          },
+        ],
+      })
+      .sort({ [query.sortBy]: query.sortDirection })
+      .skip(this.queryCount.skipHelper(query.pageNumber, query.pageSize))
+      .limit(query.pageSize);
+    return {
+      pagesCount: this.queryCount.pagesCountHelper(totalCount, query.pageSize),
+      page: query.pageNumber,
+      pageSize: query.pageSize,
+      totalCount: totalCount,
+      items: sortArrayUsers.map((a) => {
+        return {
+          id: a.id,
+          login: a.login,
+          email: a.email,
+          createdAt: a.createdAt,
+        };
+      }),
+    };
+  }
   //
   // async getQueryCommentsByPostId(
   //   query: any,
