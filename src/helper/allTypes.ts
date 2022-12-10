@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
 
-export class ItemsBlogs {
+export class BlogsModel {
   constructor(
     public id: string,
     public name: string,
@@ -10,7 +10,7 @@ export class ItemsBlogs {
   ) {}
 }
 
-export const BlogsTypeSchema = new mongoose.Schema<ItemsBlogs>({
+export const BlogsTypeSchema = new mongoose.Schema<BlogsModel>({
   id: { type: String, required: true },
   name: { type: String, required: true },
   description: { type: String, required: true },
@@ -18,7 +18,7 @@ export const BlogsTypeSchema = new mongoose.Schema<ItemsBlogs>({
   createdAt: { type: String, required: true },
 });
 
-export class ItemsPosts {
+export class PostsModel {
   constructor(
     public id: string,
     public title: string,
@@ -29,6 +29,16 @@ export class ItemsPosts {
     public createdAt: string,
   ) {}
 }
+
+export const PostsTypeSchema = new mongoose.Schema<PostsModel>({
+  id: { type: String, required: true },
+  title: { type: String, required: true },
+  shortDescription: { type: String, required: true },
+  content: { type: String, required: true },
+  blogId: { type: String, required: true },
+  blogName: { type: String, required: true },
+  createdAt: { type: String, required: true },
+});
 
 export class CommentsTypeForDB {
   constructor(
@@ -96,7 +106,7 @@ export type BlogsQueryType = {
   pageSize: number;
   page: number;
   totalCount: number;
-  items: ItemsBlogs[];
+  items: BlogsModel[];
 };
 
 export type PostQueryType = {
@@ -104,7 +114,7 @@ export type PostQueryType = {
   page: number;
   pageSize: number;
   totalCount: number;
-  items: ItemsPosts[];
+  items: PostsModel[];
 };
 
 export type ItemsUsers = {

@@ -1,5 +1,5 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { ItemsBlogs } from '../helper/allTypes';
+import { BlogsModel } from '../helper/allTypes';
 import { BlogsRepository } from './blogs.repository';
 
 @Injectable()
@@ -8,8 +8,16 @@ export class BlogsService {
     @Inject(BlogsRepository) protected blogsRepository: BlogsRepository,
   ) {}
 
-  async getBlogsId(id: string): Promise<ItemsBlogs | boolean> {
-    return this.blogsRepository.getBlogsId(id);
+  async getBlogsId(id: string): Promise<BlogsModel | false> {
+    const blog = await this.blogsRepository.getBlogsId(id);
+    if (!blog) return false;
+    return {
+      id: blog.id,
+      websiteUrl: blog.websiteUrl,
+      description: blog.description,
+      name: blog.name,
+      createdAt: blog.createdAt,
+    };
   }
 
   async deleteBlogsId(id: string): Promise<boolean> {
@@ -20,16 +28,17 @@ export class BlogsService {
     name: string,
     description: string,
     url: string,
-  ): Promise<ItemsBlogs> {
+  ): Promise<BlogsModel> {
     const dateNow = +new Date() + '';
-    const newBlog: ItemsBlogs = {
+    const newBlog: BlogsModel = {
       id: dateNow,
       name: name,
       websiteUrl: url,
       description: description,
       createdAt: new Date().toISOString(),
     };
-    return await this.blogsRepository.createBlog(newBlog);
+    return;
+    // return await this.blogsRepository.createBlog(newBlog);
   }
 
   async updateBlog(

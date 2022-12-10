@@ -1,34 +1,32 @@
 import { Injectable } from '@nestjs/common';
-import { ItemsBlogs } from '../helper/allTypes';
+import { BlogsModel } from '../helper/allTypes';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 
 @Injectable()
 export class BlogsRepository {
-  constructor(@InjectModel('blogs') protected blogsModel: Model<ItemsBlogs>) {}
-  async getBlogsId(id: string): Promise<ItemsBlogs | boolean> {
-    const blog = await this.blogsModel.findOne({ id: id });
+  constructor(
+    @InjectModel('blogs') protected blogsCollection: Model<BlogsModel>,
+  ) {}
+  async getBlogsId(id: string): Promise<BlogsModel | false> {
+    const blog = await this.blogsCollection.findOne({ id: id });
     if (blog) {
-      return {
-        id: blog.id,
-        websiteUrl: blog.websiteUrl,
-        description: blog.description,
-        name: blog.name,
-        createdAt: blog.createdAt,
-      };
+      return blog;
     } else {
       return false;
     }
   }
 
   async deleteBlogsId(id: string): Promise<boolean> {
-    const result = await this.blogsModel.deleteOne({ id: id });
+    const result = await this.blogsCollection.deleteOne({ id: id });
     return result.deletedCount === 1;
   }
 
-  async createBlog(newBlog: ItemsBlogs): Promise<ItemsBlogs> {
-    await this.blogsModel.create(newBlog);
-    return newBlog;
+  async createBlog(newBlog: BlogsModel): Promise<BlogsModel> {
+    // await this.blogsModel.create(newBlog);
+    // return newBlog;
+    const a = new this.blogsCollection(newBlog);
+    return a.save();
   }
 
   async updateBlog(
@@ -37,7 +35,7 @@ export class BlogsRepository {
     url: string,
     description: string,
   ): Promise<boolean> {
-    const updateBlog = await this.blogsModel.updateOne(
+    const updateBlog = await this.blogsCollection.updateOne(
       { id: id },
       {
         $set: {
