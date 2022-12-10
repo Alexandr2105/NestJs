@@ -37,8 +37,7 @@ export class BlogsService {
       description: description,
       createdAt: new Date().toISOString(),
     };
-    return;
-    // return await this.blogsRepository.createBlog(newBlog);
+    return await this.blogsRepository.createBlog(newBlog);
   }
 
   async updateBlog(

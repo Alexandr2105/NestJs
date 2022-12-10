@@ -23,10 +23,10 @@ export class BlogsRepository {
   }
 
   async createBlog(newBlog: BlogsModel): Promise<BlogsModel> {
-    // await this.blogsModel.create(newBlog);
-    // return newBlog;
-    const a = new this.blogsCollection(newBlog);
-    return a.save();
+    await this.blogsCollection.create(newBlog);
+    return newBlog;
+    // const a = new this.blogsCollection(newBlog);
+    // return a.save();
   }
 
   async updateBlog(

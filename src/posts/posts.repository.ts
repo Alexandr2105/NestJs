@@ -1,14 +1,20 @@
 import { Injectable } from '@nestjs/common';
 import { PostsModel } from '../helper/allTypes';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
 
 @Injectable()
 export class PostsRepository {
+  constructor(
+    @InjectModel('posts') protected postsCollection: Model<PostsModel>,
+  ) {}
+
   async getPostId(id: string): Promise<PostsModel | null> {
-    return postsCollection.findOne({ id: id });
+    return this.postsCollection.findOne({ id: id });
   }
 
   async deletePostId(id: string): Promise<boolean> {
-    const result = await postsCollection.deleteOne({ id: id });
+    const result = await this.postsCollection.deleteOne({ id: id });
     return result.deletedCount === 1;
   }
 
@@ -19,7 +25,7 @@ export class PostsRepository {
     content: string,
     blogId: string,
   ): Promise<boolean> {
-    const updatePost = await postsCollection.updateOne(
+    const updatePost = await this.postsCollection.updateOne(
       { id: id },
       {
         $set: {
@@ -33,8 +39,8 @@ export class PostsRepository {
     return updatePost.matchedCount === 1;
   }
 
-  async createPost(newPost: PostsModel): Promise<ItemsPosts> {
-    await postsCollection.create(newPost);
+  async createPost(newPost: PostsModel): Promise<PostsModel> {
+    await this.postsCollection.create(newPost);
     return newPost;
   }
 

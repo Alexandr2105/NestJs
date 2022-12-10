@@ -30,9 +30,9 @@ export class BlogsController {
 
   @Get(':id')
   async getBlog(@Param('id') blogId: string, @Res() res) {
-    const blogsId = await this.blogsService.getBlogsId(blogId);
-    if (blogsId) {
-      return blogsId;
+    const blog = await this.blogsService.getBlogsId(blogId);
+    if (blog) {
+      res.send(blog);
     } else {
       res.sendStatus(404);
     }

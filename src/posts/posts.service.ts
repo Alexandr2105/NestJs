@@ -12,10 +12,10 @@ export class PostsService {
 
   async getPostId(id: string) {
     const post = await this.postsRepository.getPostId(id);
-    const likesCount = await this.postsRepository.getLikesInfo(id);
-    const dislikeCount: any = await this.postsRepository.getDislikeInfo(id);
-    const myStatus: any = await this.postsRepository.getMyStatus(userId, id);
-    const infoLikes = await this.postsRepository.getAllInfoLike(id);
+    // const likesCount = await this.postsRepository.getLikesInfo(id);
+    // const dislikeCount: any = await this.postsRepository.getDislikeInfo(id);
+    // const myStatus: any = await this.postsRepository.getMyStatus(userId, id);
+    // const infoLikes = await this.postsRepository.getAllInfoLike(id);
     if (post) {
       return {
         id: post.id,
@@ -26,16 +26,23 @@ export class PostsService {
         blogName: post.blogName,
         createdAt: post.createdAt,
         extendedLikesInfo: {
-          likesCount: likesCount,
-          dislikesCount: dislikeCount,
-          myStatus: myStatus,
-          newestLikes: infoLikes.map((a) => {
-            return {
-              addedAt: a.createDate,
-              userId: a.userId,
-              login: a.login,
-            };
-          }),
+          likesCount: 0,
+          dislikesCount: 0,
+          myStatus: 'None',
+          newestLikes: [
+            {
+              addedAt: '2022-12-10T12:08:15.317Z',
+              userId: 'string',
+              login: 'string',
+            },
+          ],
+          // newestLikes: infoLikes.map((a) => {
+          //   return {
+          //     addedAt: "a.createDate",
+          //     userId: "a.userId",
+          //     login: 'a.login',
+          //   };
+          // }),
         },
       };
     } else {
@@ -82,53 +89,53 @@ export class PostsService {
     return this.postsRepository.createPost(newPost);
   }
 
-  async creatNewCommentByPostId(
-    postId: string,
-    content: string,
-    userId: string,
-    userLogin: string,
-  ): Promise<CommentsTypeForDB | boolean> {
-    const idPost = await this.postsRepository.getPostId(postId);
-    if (idPost) {
-      const newComment = new CommentsTypeForDB(
-        +new Date() + '',
-        postId,
-        content,
-        userId,
-        userLogin,
-        new Date().toISOString(),
-      );
-      return await this.commentsRepository.createComment(newComment);
-    } else {
-      return false;
-    }
-  }
+  // async creatNewCommentByPostId(
+  //   postId: string,
+  //   content: string,
+  //   userId: string,
+  //   userLogin: string,
+  // ): Promise<CommentsTypeForDB | boolean> {
+  //   const idPost = await this.postsRepository.getPostId(postId);
+  //   if (idPost) {
+  //     const newComment = new CommentsTypeForDB(
+  //       +new Date() + '',
+  //       postId,
+  //       content,
+  //       userId,
+  //       userLogin,
+  //       new Date().toISOString(),
+  //     );
+  //     return await this.commentsRepository.createComment(newComment);
+  //   } else {
+  //     return false;
+  //   }
+  // }
 
-  async createLikeStatus(
-    postId: string,
-    userId: string,
-    likeStatus: string,
-    login: string,
-  ): Promise<boolean> {
-    const checkPost = await this.postsRepository.getInfoStatusByPost(
-      postId,
-      userId,
-    );
-    if (checkPost) {
-      return await this.postsRepository.updateStatusPost(
-        postId,
-        userId,
-        likeStatus,
-      );
-    } else {
-      const newLikeStatusForPost = new LikeInfoTypeForDB(
-        postId,
-        userId,
-        login,
-        likeStatus,
-        new Date().toISOString(),
-      );
-      return await this.postsRepository.createLikeStatus(newLikeStatusForPost);
-    }
-  }
+  // async createLikeStatus(
+  //   postId: string,
+  //   userId: string,
+  //   likeStatus: string,
+  //   login: string,
+  // ): Promise<boolean> {
+  //   const checkPost = await this.postsRepository.getInfoStatusByPost(
+  //     postId,
+  //     userId,
+  //   );
+  //   if (checkPost) {
+  //     return await this.postsRepository.updateStatusPost(
+  //       postId,
+  //       userId,
+  //       likeStatus,
+  //     );
+  //   } else {
+  //     const newLikeStatusForPost = new LikeInfoTypeForDB(
+  //       postId,
+  //       userId,
+  //       login,
+  //       likeStatus,
+  //       new Date().toISOString(),
+  //     );
+  //     return await this.postsRepository.createLikeStatus(newLikeStatusForPost);
+  //   }
+  // }
 }

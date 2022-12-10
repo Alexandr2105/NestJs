@@ -1,10 +1,10 @@
 import { PostsService } from './posts.service';
 import {
   Body,
+  Controller,
   Delete,
   Get,
   Inject,
-  Injectable,
   Param,
   Post,
   Put,
@@ -15,7 +15,7 @@ import { PostsRepository } from './posts.repository';
 import { QueryRepository } from '../queryReposytories/query-Repository';
 import { QueryCount } from '../helper/query.count';
 
-@Injectable()
+@Controller('posts')
 export class PostsController {
   constructor(
     @Inject(PostsService) protected postsService: PostsService,
@@ -32,11 +32,11 @@ export class PostsController {
     return await this.queryRepository.getQueryPosts(query);
   }
 
-  @Get()
-  async getPost(@Param(':id') postId: string, @Res() res) {
+  @Get(':id')
+  async getPost(@Param('id') postId: string, @Res() res) {
     const post = await this.postsService.getPostId(postId);
     if (post) {
-      return post;
+      res.send(post);
     } else {
       res.sendStatus(404);
     }
