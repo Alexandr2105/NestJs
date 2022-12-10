@@ -79,18 +79,23 @@ export class PostsController {
     }
   }
 
-  // async getCommentsForPost(req: Request, res: Response) {
-  //   const query = queryCheckHelper(req.query);
-  //   const comments = await this.queryRepository.getQueryCommentsByPostId(
-  //     query,
-  //     req.params.postId,
-  //   );
-  //   if (comments) {
-  //     res.send(comments);
-  //   } else {
-  //     res.sendStatus(404);
-  //   }
-  // }
+  @Get(':id/comments')
+  async getCommentsForPost(
+    @Param('id') postId: string,
+    @Query() dataQuery,
+    @Res() res,
+  ) {
+    const query = this.queryCount.queryCheckHelper(dataQuery);
+    const comments = await this.queryRepository.getQueryCommentsByPostId(
+      query,
+      postId,
+    );
+    if (comments) {
+      res.send(comments);
+    } else {
+      res.sendStatus(404);
+    }
+  }
   //
   // async createCommentsForPost(req: Request, res: Response) {
   //   const post: any = await this.postsService.creatNewCommentByPostId(

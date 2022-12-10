@@ -6,6 +6,8 @@ import {
   PostsModel,
   UsersModel,
   UserQueryType,
+  CommentsModel,
+  CommentsType,
 } from '../helper/allTypes';
 import { QueryCount } from '../helper/query.count';
 import { InjectModel } from '@nestjs/mongoose';
@@ -17,6 +19,7 @@ export class QueryRepository {
     @InjectModel('blogs') protected blogsCollection: Model<BlogsModel>,
     @InjectModel('posts') protected postsCollection: Model<PostsModel>,
     @InjectModel('users') protected usersCollection: Model<UsersModel>,
+    @InjectModel('comments') protected commentsCollection: Model<CommentsModel>,
     @Inject(QueryCount) protected queryCount: QueryCount, // @Inject(CommentsRepository) protected commentsRepository: CommentsRepository, // @Inject(PostsRepository) protected postsRepository: PostsRepository,
   ) {}
 
@@ -111,64 +114,73 @@ export class QueryRepository {
     };
   }
 
-  // async getQueryPostsBlogsId(
-  //   query: any,
-  //   blogId: string,
-  //   userId: string,
-  // ): Promise<PostQueryType> {
-  //   const totalCount = await postsCollection.countDocuments({ blogId: blogId });
-  //   const sortPostsId = await postsCollection
-  //     .find({ blogId: blogId })
-  //     .sort({ [query.sortBy]: query.sortDirection })
-  //     .skip(skipHelper(query.pageNumber, query.pageSize))
-  //     .limit(query.pageSize);
-  //   return {
-  //     pagesCount: pagesCountHelper(totalCount, query.pageSize),
-  //     page: query.pageNumber,
-  //     pageSize: query.pageSize,
-  //     totalCount: totalCount,
-  //     items: await Promise.all(
-  //       sortPostsId.map(async (a) => {
-  //         const likeInfo = await this.commentsRepository.getLikesInfo(a.id);
-  //         const dislikeInfo = await this.commentsRepository.getDislikeInfo(
-  //           a.id,
-  //         );
-  //         const myStatus = await this.commentsRepository.getMyStatus(
-  //           userId,
-  //           a.id,
-  //         );
-  //         const sortLikesArray = await likeInfoCollection
-  //           .find({
-  //             id: a.id,
-  //             status: 'Like',
-  //           })
-  //           .sort({ ['createDate']: 'desc' })
-  //           .limit(3);
-  //         return {
-  //           id: a.id,
-  //           title: a.title,
-  //           shortDescription: a.shortDescription,
-  //           content: a.content,
-  //           blogId: a.blogId,
-  //           blogName: a.blogName,
-  //           createdAt: a.createdAt,
-  //           extendedLikesInfo: {
-  //             likesCount: likeInfo,
-  //             dislikesCount: dislikeInfo,
-  //             myStatus: myStatus,
-  //             newestLikes: sortLikesArray.map((a) => {
-  //               return {
-  //                 addedAt: a.createDate.toString(),
-  //                 userId: a.userId,
-  //                 login: a.login,
-  //               };
-  //             }),
-  //           },
-  //         };
-  //       }),
-  //     ),
-  //   };
-  // }
+  async getQueryPostsBlogsId(
+    query: any,
+    blogId: string,
+    // userId: string,
+  ): Promise<PostQueryType> {
+    const totalCount = await this.postsCollection.countDocuments({
+      blogId: blogId,
+    });
+    const sortPostsId = await this.postsCollection
+      .find({ blogId: blogId })
+      .sort({ [query.sortBy]: query.sortDirection })
+      .skip(this.queryCount.skipHelper(query.pageNumber, query.pageSize))
+      .limit(query.pageSize);
+    return {
+      pagesCount: this.queryCount.pagesCountHelper(totalCount, query.pageSize),
+      page: query.pageNumber,
+      pageSize: query.pageSize,
+      totalCount: totalCount,
+      items: await Promise.all(
+        sortPostsId.map(async (a) => {
+          // const likeInfo = await this.commentsRepository.getLikesInfo(a.id);
+          // const dislikeInfo = await this.commentsRepository.getDislikeInfo(
+          //   a.id,
+          // );
+          // const myStatus = await this.commentsRepository.getMyStatus(
+          //   userId,
+          //   a.id,
+          // );
+          // const sortLikesArray = await likeInfoCollection
+          //   .find({
+          //     id: a.id,
+          //     status: 'Like',
+          //   })
+          //   .sort({ ['createDate']: 'desc' })
+          //   .limit(3);
+          return {
+            id: a.id,
+            title: a.title,
+            shortDescription: a.shortDescription,
+            content: a.content,
+            blogId: a.blogId,
+            blogName: a.blogName,
+            createdAt: a.createdAt,
+            extendedLikesInfo: {
+              likesCount: 0,
+              dislikesCount: 0,
+              myStatus: 'None',
+              newestLikes: [
+                {
+                  addedAt: '2022-12-10T20:13:04.965Z',
+                  userId: 'string',
+                  login: 'string',
+                },
+              ],
+              // newestLikes: sortLikesArray.map((a) => {
+              //   return {
+              //     addedAt: a.createDate.toString(),
+              //     userId: a.userId,
+              //     login: a.login,
+              //   };
+              // }),
+            },
+          };
+        }),
+      ),
+    };
+  }
 
   async getQueryUsers(query: any): Promise<UserQueryType> {
     const totalCount = await this.usersCollection.countDocuments({
@@ -212,51 +224,51 @@ export class QueryRepository {
       }),
     };
   }
-  //
-  // async getQueryCommentsByPostId(
-  //   query: any,
-  //   postId: string,
-  // ): Promise<CommentsType | boolean> {
-  //   const totalCount = await commentsCollection.countDocuments({
-  //     idPost: postId,
-  //   });
-  //   if (totalCount === 0) {
-  //     return false;
-  //   }
-  //   const sortCommentsByPostId = await commentsCollection
-  //     .find({ idPost: postId })
-  //     .sort({ [query.sortBy]: query.sortDirection })
-  //     .skip(skipHelper(query.pageNumber, query.pageSize))
-  //     .limit(query.pageSize);
-  //   return {
-  //     pagesCount: pagesCountHelper(totalCount, query.pageSize),
-  //     page: query.pageNumber,
-  //     pageSize: query.pageSize,
-  //     totalCount: totalCount,
-  //     items: await Promise.all(
-  //       sortCommentsByPostId.map(async (a) => {
-  //         const likeInfo = await this.commentsRepository.getLikesInfo(a.id);
-  //         const dislikeInfo = await this.commentsRepository.getDislikeInfo(
-  //           a.id,
-  //         );
-  //         const myStatus = await this.commentsRepository.getMyStatus(
-  //           a.userId,
-  //           a.id,
-  //         );
-  //         return {
-  //           id: a.id,
-  //           content: a.content,
-  //           userId: a.userId,
-  //           userLogin: a.userLogin,
-  //           createdAt: a.createdAt,
-  //           likesInfo: {
-  //             likesCount: likeInfo,
-  //             dislikesCount: dislikeInfo,
-  //             myStatus: myStatus,
-  //           },
-  //         };
-  //       }),
-  //     ),
-  //   };
-  // }
+
+  async getQueryCommentsByPostId(
+    query: any,
+    postId: string,
+  ): Promise<CommentsType | boolean> {
+    const totalCount = await this.commentsCollection.countDocuments({
+      idPost: postId,
+    });
+    if (totalCount === 0) {
+      return false;
+    }
+    const sortCommentsByPostId = await this.commentsCollection
+      .find({ idPost: postId })
+      .sort({ [query.sortBy]: query.sortDirection })
+      .skip(this.queryCount.skipHelper(query.pageNumber, query.pageSize))
+      .limit(query.pageSize);
+    return {
+      pagesCount: this.queryCount.pagesCountHelper(totalCount, query.pageSize),
+      page: query.pageNumber,
+      pageSize: query.pageSize,
+      totalCount: totalCount,
+      items: await Promise.all(
+        sortCommentsByPostId.map(async (a) => {
+          // const likeInfo = await this.commentsRepository.getLikesInfo(a.id);
+          // const dislikeInfo = await this.commentsRepository.getDislikeInfo(
+          //   a.id,
+          // );
+          // const myStatus = await this.commentsRepository.getMyStatus(
+          //   a.userId,
+          //   a.id,
+          // );
+          return {
+            id: a.id,
+            content: a.content,
+            userId: a.userId,
+            userLogin: a.userLogin,
+            createdAt: a.createdAt,
+            likesInfo: {
+              likesCount: 0,
+              dislikesCount: 0,
+              myStatus: 'None',
+            },
+          };
+        }),
+      ),
+    };
+  }
 }

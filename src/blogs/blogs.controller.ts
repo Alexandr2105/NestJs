@@ -13,6 +13,7 @@ import {
 import { QueryCount } from '../helper/query.count';
 import { BlogsService } from './blogs.service';
 import { QueryRepository } from '../queryReposytories/query-Repository';
+import { PostsService } from '../posts/posts.service';
 
 @Controller('blogs')
 export class BlogsController {
@@ -20,6 +21,7 @@ export class BlogsController {
     @Inject(QueryCount) protected queryCount: QueryCount,
     @Inject(BlogsService) protected blogsService: BlogsService,
     @Inject(QueryRepository) protected queryRepository: QueryRepository,
+    @Inject(PostsService) protected postsService: PostsService,
   ) {}
 
   @Get()
@@ -73,36 +75,40 @@ export class BlogsController {
     }
   }
 
-  // @Get('/:blogId/posts')
-  // async getPostsForBlog(@Param() blogId: string, @Query() dataQuery) {
-  //   const query = this.queryCount.queryCheckHelper(dataQuery);
-  //   const postsBlogId = await this.queryRepository.getQueryPostsBlogsId(
-  //     query,
-  //     blogId,
-  //   );
-  //   if (postsBlogId.items.length !== 0) {
-  //     return postsBlogId;
-  //   } else {
-  //     return 404;
-  //   }
-  // }
-  //
-  // @Post('/:blogId/posts')
-  // async createPostsForBlog(@Param() blogId: string, @Body() body) {
-  //   const newPostForBlogId = await this.postsService.createPost(
-  //     body.title,
-  //     body.shortDescription,
-  //     body.content,
-  //     blogId,
-  //   );
-  //   if (newPostForBlogId) {
-  //     const newPost = await this.postsService.getPostId(
-  //       newPostForBlogId.id,
-  //       'null',
-  //     );
-  //     return newPost;
-  //   } else {
-  //     return 404;
-  //   }
-  // }
+  @Get('/:blogId/posts')
+  async getPostsForBlog(
+    @Param() blogId: string,
+    @Query() dataQuery,
+    @Res() res,
+  ) {
+    const query = this.queryCount.queryCheckHelper(dataQuery);
+    const postsBlogId = await this.queryRepository.getQueryPostsBlogsId(
+      query,
+      blogId,
+    );
+    if (postsBlogId.items.length !== 0) {
+      res.send(postsBlogId);
+    } else {
+      res.sendStatus(404);
+    }
+  }
+
+  @Post('/:blogId/posts')
+  async createPostsForBlog(@Param() blogId: string, @Body() body, @Res() res) {
+    const newPostForBlogId = await this.postsService.createPost(
+      body.title,
+      body.shortDescription,
+      body.content,
+      blogId,
+    );
+    if (newPostForBlogId) {
+      const newPost = await this.postsService.getPostId(
+        newPostForBlogId.id,
+        // 'null',
+      );
+      res.send(newPost);
+    } else {
+      res.sendStatus(404);
+    }
+  }
 }
