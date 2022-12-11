@@ -95,7 +95,7 @@ export class BlogsController {
 
   @Post('/:blogId/posts')
   async createPostsForBlog(
-    @Param(':blogId') blogId: string,
+    @Param('blogId') blogId: string,
     @Body() body,
     @Res() res,
   ) {
