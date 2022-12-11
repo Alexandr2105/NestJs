@@ -31,7 +31,7 @@ export class PostsService {
           myStatus: 'None',
           newestLikes: [
             {
-              addedAt: '2022-12-10T12:08:15.317Z',
+              addedAt: 'string',
               userId: 'string',
               login: 'string',
             },
