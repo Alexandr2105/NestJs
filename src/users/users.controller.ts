@@ -28,8 +28,8 @@ export class UsersController {
     return await this.queryRepository.getQueryUsers(query);
   }
 
-  @Post(':id')
-  async createUser(@Param('id') userId: string, @Body() body) {
+  @Post()
+  async createUser(@Body() body) {
     const newUser = await this.usersService.creatNewUsers(
       body.login,
       body.email,

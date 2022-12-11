@@ -75,8 +75,10 @@ export class PostsService {
     shortDescription: string,
     content: string,
     blogId: string,
-  ): Promise<PostsModel> {
-    const post: any = await this.blogsService.getBlogsId(blogId);
+  ): Promise<PostsModel | false> {
+    //TODO:тут исправить
+    const post = await this.blogsService.getBlogsId(blogId);
+    if (!post) return false; //TODO:тут лишшяя проверка
     const newPost = new PostsModel(
       +new Date() + '',
       title,

@@ -60,6 +60,7 @@ export class PostsController {
       body.content,
       body.blogId,
     );
+    if (!createPost) return false; //TODO:Это тоже потом удалить
     return await this.postsService.getPostId(createPost.id);
   }
 

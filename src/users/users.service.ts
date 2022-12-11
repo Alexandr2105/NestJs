@@ -1,4 +1,4 @@
-import bcrypt from 'bcrypt';
+import * as bcrypt from 'bcrypt';
 import { Inject, Injectable } from '@nestjs/common';
 import { UsersRepository } from './users.repository';
 import { ItemsUsers, UsersModel } from '../helper/allTypes';
