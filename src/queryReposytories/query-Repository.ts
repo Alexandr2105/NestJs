@@ -95,7 +95,7 @@ export class QueryRepository {
               myStatus: 'None',
               newestLikes: [
                 {
-                  addedAt: '2022-12-10T12:19:45.701Z',
+                  addedAt: '2022-12-10T20:13:04.965Z',
                   userId: 'string',
                   login: 'string',
                 },
