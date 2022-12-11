@@ -31,7 +31,7 @@ export class PostsService {
           myStatus: 'None',
           newestLikes: [
             {
-              addedAt: '2022-12-10T12:08:15.317Z',
+              addedAt: new Date().toISOString(),
               userId: 'string',
               login: 'string',
             },
@@ -79,15 +79,15 @@ export class PostsService {
     //TODO:тут исправить
     const post = await this.blogsService.getBlogsId(blogId);
     if (!post) return false; //TODO:тут лишшяя проверка
-    const newPost = new PostsModel(
-      +new Date() + '',
-      title,
-      shortDescription,
-      content,
-      blogId,
-      post.name,
-      new Date().toISOString(),
-    );
+    const newPost: PostsModel = {
+      id: +new Date() + '',
+      title: title,
+      shortDescription: shortDescription,
+      content: content,
+      blogId: blogId,
+      blogName: post.name,
+      createdAt: new Date().toISOString(),
+    };
     return this.postsRepository.createPost(newPost);
   }
 
