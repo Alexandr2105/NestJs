@@ -53,9 +53,9 @@ export class UsersService {
     return this.usersRepository.deleteUser(id);
   }
 
-  // async createNewPassword(newPassword: string, userId: string) {
-  //   const passwordSalt = await bcrypt.genSalt(10);
-  //   const passwordHash = await this.generateHash(newPassword, passwordSalt);
-  //   return await this.usersRepository.updatePasswordUser(passwordHash, userId);
-  // }
+  async createNewPassword(newPassword: string, userId: string) {
+    const passwordSalt = await bcrypt.genSalt(10);
+    const passwordHash = await this.generateHash(newPassword, passwordSalt);
+    return await this.usersRepository.updatePasswordUser(passwordHash, userId);
+  }
 }

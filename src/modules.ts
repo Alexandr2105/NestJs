@@ -3,7 +3,10 @@ import { MongooseModule } from '@nestjs/mongoose';
 import {
   BlogsTypeSchema,
   CommentsTypeSchema,
+  EmailConfirmationSchema,
+  LikesTypeSchema,
   PostsTypeSchema,
+  RefreshTokenDataSchema,
   UsersTypeSchema,
 } from './helper/allTypes';
 import { BlogsController } from './blogs/blogs.controller';
@@ -22,6 +25,13 @@ import { CommentsService } from './comments/comments.service';
 import { CommentsRepository } from './comments/comments.repostitory';
 import { TestingController } from './testing/testing.controller';
 import { TestingRepository } from './testing/testing.repository';
+import { AuthController } from './auth/auth.controller';
+import { JwtService } from './application/jwt-service';
+import { AuthService } from './auth/auth.service';
+import { EmailManager } from './manager/email-manager';
+import { EmailAdapter } from './adapters/email-adapter';
+import { DevicesService } from './helper/devices-service';
+import { SecurityDevicesRepository } from './auth/auth.repository';
 
 @Module({
   imports: [
@@ -31,6 +41,15 @@ import { TestingRepository } from './testing/testing.repository';
     MongooseModule.forFeature([
       { name: 'comments', schema: CommentsTypeSchema },
     ]),
+    MongooseModule.forFeature([
+      { name: 'likeStatuses', schema: LikesTypeSchema },
+    ]),
+    MongooseModule.forFeature([
+      { name: 'emailConfirmation', schema: EmailConfirmationSchema },
+    ]),
+    MongooseModule.forFeature([
+      { name: 'refreshTokenData', schema: RefreshTokenDataSchema },
+    ]),
   ],
   controllers: [
     BlogsController,
@@ -38,6 +57,7 @@ import { TestingRepository } from './testing/testing.repository';
     UsersController,
     CommentsController,
     TestingController,
+    AuthController,
   ],
   providers: [
     QueryCount,
@@ -51,6 +71,12 @@ import { TestingRepository } from './testing/testing.repository';
     CommentsService,
     CommentsRepository,
     TestingRepository,
+    JwtService,
+    AuthService,
+    EmailManager,
+    EmailAdapter,
+    DevicesService,
+    SecurityDevicesRepository,
   ],
 })
 export class Modules {}

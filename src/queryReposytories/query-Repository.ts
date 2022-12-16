@@ -8,10 +8,13 @@ import {
   UserQueryType,
   CommentsModel,
   CommentsType,
+  LikesModel,
 } from '../helper/allTypes';
 import { QueryCount } from '../helper/query.count';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
+import { CommentsRepository } from '../comments/comments.repostitory';
+import { PostsRepository } from '../posts/posts.repository';
 
 @Injectable()
 export class QueryRepository {
@@ -20,7 +23,12 @@ export class QueryRepository {
     @InjectModel('posts') protected postsCollection: Model<PostsModel>,
     @InjectModel('users') protected usersCollection: Model<UsersModel>,
     @InjectModel('comments') protected commentsCollection: Model<CommentsModel>,
-    @Inject(QueryCount) protected queryCount: QueryCount, // @Inject(CommentsRepository) protected commentsRepository: CommentsRepository, // @Inject(PostsRepository) protected postsRepository: PostsRepository,
+    @InjectModel('likeStatuses')
+    protected likeInfoCollection: Model<LikesModel>,
+    @Inject(QueryCount) protected queryCount: QueryCount,
+    @Inject(CommentsRepository)
+    protected commentsRepository: CommentsRepository,
+    @Inject(PostsRepository) protected postsRepository: PostsRepository,
   ) {}
 
   async getQueryBlogs(query: any): Promise<BlogsQueryType> {
@@ -57,7 +65,7 @@ export class QueryRepository {
     };
   }
 
-  async getQueryPosts(query: any): Promise<PostQueryType> {
+  async getQueryPosts(query: any, userId: string): Promise<PostQueryType> {
     const sortPostsArray = await this.postsCollection
       .find({})
       .sort({ [query.sortBy]: query.sortDirection })
@@ -71,16 +79,16 @@ export class QueryRepository {
       totalCount: totalCount,
       items: await Promise.all(
         sortPostsArray.map(async (a) => {
-          // const likeStatus = await this.postsRepository.getLikesInfo(a.id);
-          // const dislikeStatus = await this.postsRepository.getDislikeInfo(a.id);
-          // const myStatus = await this.postsRepository.getMyStatus(userId, a.id);
-          // const sortLikesArray = await likeInfoCollection
-          //   .find({
-          //     id: a.id,
-          //     status: 'Like',
-          //   })
-          //   .sort({ ['createDate']: 'desc' })
-          //   .limit(3);
+          const likeStatus = await this.postsRepository.getLikesInfo(a.id);
+          const dislikeStatus = await this.postsRepository.getDislikeInfo(a.id);
+          const myStatus = await this.postsRepository.getMyStatus(userId, a.id);
+          const sortLikesArray = await this.likeInfoCollection
+            .find({
+              id: a.id,
+              status: 'Like',
+            })
+            .sort({ ['createDate']: 'desc' })
+            .limit(3);
           return {
             id: a.id,
             title: a.title,
@@ -90,23 +98,23 @@ export class QueryRepository {
             blogName: a.blogName,
             createdAt: a.createdAt,
             extendedLikesInfo: {
-              likesCount: 0,
-              dislikesCount: 0,
-              myStatus: 'None',
-              newestLikes: [
-                {
-                  addedAt: '2022-12-10T20:13:04.965Z',
-                  userId: 'string',
-                  login: 'string',
-                },
-              ],
-              // newestLikes: sortLikesArray.map((b) => {
-              //   return {
-              //     addedAt: b.createDate.toString(),
-              //     userId: b.userId,
-              //     login: b.login,
-              //   };
-              // }),
+              likesCount: likeStatus,
+              dislikesCount: dislikeStatus,
+              myStatus: myStatus,
+              // newestLikes: [
+              //   {
+              //     addedAt: '2022-12-10T20:13:04.965Z',
+              //     userId: 'string',
+              //     login: 'string',
+              //   },
+              // ],
+              newestLikes: sortLikesArray.map((b) => {
+                return {
+                  addedAt: b.createDate.toString(),
+                  userId: b.userId,
+                  login: b.login,
+                };
+              }),
             },
           };
         }),
@@ -117,7 +125,7 @@ export class QueryRepository {
   async getQueryPostsBlogsId(
     query: any,
     blogId: string,
-    // userId: string,
+    userId: string,
   ): Promise<PostQueryType> {
     const totalCount = await this.postsCollection.countDocuments({
       blogId: blogId,
@@ -134,21 +142,21 @@ export class QueryRepository {
       totalCount: totalCount,
       items: await Promise.all(
         sortPostsId.map(async (a) => {
-          // const likeInfo = await this.commentsRepository.getLikesInfo(a.id);
-          // const dislikeInfo = await this.commentsRepository.getDislikeInfo(
-          //   a.id,
-          // );
-          // const myStatus = await this.commentsRepository.getMyStatus(
-          //   userId,
-          //   a.id,
-          // );
-          // const sortLikesArray = await likeInfoCollection
-          //   .find({
-          //     id: a.id,
-          //     status: 'Like',
-          //   })
-          //   .sort({ ['createDate']: 'desc' })
-          //   .limit(3);
+          const likeInfo = await this.commentsRepository.getLikesInfo(a.id);
+          const dislikeInfo = await this.commentsRepository.getDislikeInfo(
+            a.id,
+          );
+          const myStatus = await this.commentsRepository.getMyStatus(
+            userId,
+            a.id,
+          );
+          const sortLikesArray = await this.likeInfoCollection
+            .find({
+              id: a.id,
+              status: 'Like',
+            })
+            .sort({ ['createDate']: 'desc' })
+            .limit(3);
           return {
             id: a.id,
             title: a.title,
@@ -158,23 +166,23 @@ export class QueryRepository {
             blogName: a.blogName,
             createdAt: a.createdAt,
             extendedLikesInfo: {
-              likesCount: 0,
-              dislikesCount: 0,
-              myStatus: 'None',
-              newestLikes: [
-                {
-                  addedAt: '2022-12-10T20:13:04.965Z',
-                  userId: 'string',
-                  login: 'string',
-                },
-              ],
-              // newestLikes: sortLikesArray.map((a) => {
-              //   return {
-              //     addedAt: a.createDate.toString(),
-              //     userId: a.userId,
-              //     login: a.login,
-              //   };
-              // }),
+              likesCount: likeInfo,
+              dislikesCount: dislikeInfo,
+              myStatus: myStatus,
+              // newestLikes: [
+              //   {
+              //     addedAt: '2022-12-10T20:13:04.965Z',
+              //     userId: 'string',
+              //     login: 'string',
+              //   },
+              // ],
+              newestLikes: sortLikesArray.map((a) => {
+                return {
+                  addedAt: a.createDate.toString(),
+                  userId: a.userId,
+                  login: a.login,
+                };
+              }),
             },
           };
         }),
@@ -247,14 +255,14 @@ export class QueryRepository {
       totalCount: totalCount,
       items: await Promise.all(
         sortCommentsByPostId.map(async (a) => {
-          // const likeInfo = await this.commentsRepository.getLikesInfo(a.id);
-          // const dislikeInfo = await this.commentsRepository.getDislikeInfo(
-          //   a.id,
-          // );
-          // const myStatus = await this.commentsRepository.getMyStatus(
-          //   a.userId,
-          //   a.id,
-          // );
+          const likeInfo = await this.commentsRepository.getLikesInfo(a.id);
+          const dislikeInfo = await this.commentsRepository.getDislikeInfo(
+            a.id,
+          );
+          const myStatus = await this.commentsRepository.getMyStatus(
+            a.userId,
+            a.id,
+          );
           return {
             id: a.id,
             content: a.content,
@@ -262,9 +270,9 @@ export class QueryRepository {
             userLogin: a.userLogin,
             createdAt: a.createdAt,
             likesInfo: {
-              likesCount: 0,
-              dislikesCount: 0,
-              myStatus: 'None',
+              likesCount: likeInfo,
+              dislikesCount: dislikeInfo,
+              myStatus: myStatus,
             },
           };
         }),

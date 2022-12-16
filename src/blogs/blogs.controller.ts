@@ -8,12 +8,14 @@ import {
   Post,
   Put,
   Query,
+  Req,
   Res,
 } from '@nestjs/common';
 import { QueryCount } from '../helper/query.count';
 import { BlogsService } from './blogs.service';
 import { QueryRepository } from '../queryReposytories/query-Repository';
 import { PostsService } from '../posts/posts.service';
+import { JwtService } from '../application/jwt-service';
 
 @Controller('blogs')
 export class BlogsController {
@@ -22,6 +24,7 @@ export class BlogsController {
     @Inject(BlogsService) protected blogsService: BlogsService,
     @Inject(QueryRepository) protected queryRepository: QueryRepository,
     @Inject(PostsService) protected postsService: PostsService,
+    @Inject(JwtService) protected jwtService: JwtService,
   ) {}
 
   @Get()
@@ -80,12 +83,26 @@ export class BlogsController {
     @Param('blogId') blogId: string,
     @Query() dataQuery,
     @Res() res,
+    @Req() req,
   ) {
+    let postsBlogId;
     const query = this.queryCount.queryCheckHelper(dataQuery);
-    const postsBlogId = await this.queryRepository.getQueryPostsBlogsId(
-      query,
-      blogId,
-    );
+    if (req.headers.authorization) {
+      const userId: any = this.jwtService.getUserIdByToken(
+        req.headers.authorization!.split(' ')[1],
+      );
+      postsBlogId = await this.queryRepository.getQueryPostsBlogsId(
+        query,
+        req.params.blogId,
+        userId,
+      );
+    } else {
+      postsBlogId = await this.queryRepository.getQueryPostsBlogsId(
+        query,
+        req.params.blogId,
+        'null',
+      );
+    }
     if (postsBlogId.items.length !== 0) {
       res.send(postsBlogId);
     } else {
@@ -108,7 +125,7 @@ export class BlogsController {
     if (newPostForBlogId) {
       const newPost = await this.postsService.getPostId(
         newPostForBlogId.id,
-        // 'null',
+        'null',
       );
       res.send(newPost);
     } else {

@@ -4,37 +4,65 @@ import {
   Controller,
   Delete,
   Get,
+  Headers,
   Inject,
   Param,
   Post,
   Put,
   Query,
+  Req,
   Res,
 } from '@nestjs/common';
 import { PostsRepository } from './posts.repository';
 import { QueryRepository } from '../queryReposytories/query-Repository';
 import { QueryCount } from '../helper/query.count';
+import { JwtService } from '../application/jwt-service';
+import { UsersRepository } from '../users/users.repository';
+import { CommentsService } from '../comments/comments.service';
+
+//TODO:исправить авторизацию и цдалить @Res;
 
 @Controller('posts')
 export class PostsController {
   constructor(
     @Inject(PostsService) protected postsService: PostsService,
     @Inject(QueryCount) protected queryCount: QueryCount,
-    // @inject(UsersRepository) protected usersRepository: UsersRepository,
+    @Inject(UsersRepository) protected usersRepository: UsersRepository,
     @Inject(PostsRepository) protected postsRepository: PostsRepository,
-    // @inject(CommentsService) protected commentsService: CommentsService,
-    @Inject(QueryRepository) protected queryRepository: QueryRepository, // @inject(JwtService) protected jwtService: JwtService,
+    @Inject(CommentsService) protected commentsService: CommentsService,
+    @Inject(QueryRepository) protected queryRepository: QueryRepository,
+    @Inject(JwtService) protected jwtService: JwtService,
   ) {}
 
   @Get()
-  async getPosts(@Query() dataQuery) {
+  async getPosts(@Query() dataQuery, @Req() req, @Res() res) {
+    let post;
     const query = this.queryCount.queryCheckHelper(dataQuery);
-    return await this.queryRepository.getQueryPosts(query);
+    if (req.headers.authorization) {
+      const userId: any = this.jwtService.getUserIdByToken(
+        req.headers.authorization!.split(' ')[1],
+      );
+      post = await this.queryRepository.getQueryPosts(query, userId.toString());
+    } else {
+      post = await this.queryRepository.getQueryPosts(query, 'null');
+    }
+    res.send(post);
   }
 
   @Get(':id')
-  async getPost(@Param('id') postId: string, @Res() res) {
-    const post = await this.postsService.getPostId(postId);
+  async getPost(@Param('id') postId: string, @Res() res, @Req() req) {
+    let post;
+    if (req.headers.authorization) {
+      const userId: any = this.jwtService.getUserIdByToken(
+        req.headers.authorization!.split(' ')[1],
+      );
+      post = await this.postsService.getPostId(
+        req.params.id,
+        userId.toString(),
+      );
+    } else {
+      post = await this.postsService.getPostId(req.params.id, 'null');
+    }
     if (post) {
       res.send(post);
     } else {
@@ -61,7 +89,7 @@ export class PostsController {
       body.blogId,
     );
     if (!createPost) return false; //TODO:Это тоже потом удалить
-    return await this.postsService.getPostId(createPost.id);
+    return await this.postsService.getPostId(createPost.id, 'null');
   }
 
   @Put(':id')
@@ -97,46 +125,59 @@ export class PostsController {
       res.sendStatus(404);
     }
   }
-  //
-  // async createCommentsForPost(req: Request, res: Response) {
-  //   const post: any = await this.postsService.creatNewCommentByPostId(
-  //     req.params.postId,
-  //     req.body.content,
-  //     req.user!.id,
-  //     req.user!.login,
-  //   );
-  //   const userId: any = await this.jwtService.getUserIdByToken(
-  //     req.headers.authorization!.split(' ')[1],
-  //   );
-  //   if (post) {
-  //     const newPost = await this.commentsService.getLikesInfo(
-  //       post.id,
-  //       userId.toString(),
-  //     );
-  //     res.status(201).send(newPost);
-  //   } else {
-  //     res.sendStatus(404);
-  //   }
-  // }
 
-  // async createLikeStatusForPost(req: Request, res: Response) {
-  //   const postId = await this.postsRepository.getPostId(req.params.postId);
-  //   if (!postId) {
-  //     res.sendStatus(404);
-  //     return;
-  //   }
-  //   const userId = await this.jwtService.getUserIdByToken(
-  //     req.headers.authorization!.split(' ')[1],
-  //   );
-  //   const user: any = await this.usersRepository.getUserId(userId!.toString());
-  //   const likeStatus = await this.postsService.createLikeStatus(
-  //     req.params.postId,
-  //     userId!.toString(),
-  //     req.body.likeStatus,
-  //     user.login,
-  //   );
-  //   if (likeStatus) {
-  //     res.sendStatus(204);
-  //   }
-  // }
+  @Post(':postId/comments')
+  async createCommentsForPost(
+    @Param(':postId') postId: string,
+    @Body() body,
+    @Headers() h,
+    @Res() res,
+    @Req() req,
+  ) {
+    const post: any = await this.postsService.creatNewCommentByPostId(
+      postId,
+      body.content,
+      req.user!.id,
+      req.user!.login,
+    );
+    const userId: any = await this.jwtService.getUserIdByToken(
+      h.authorization!.split(' ')[1],
+    );
+    if (post) {
+      const newPost = await this.commentsService.getLikesInfo(
+        post.id,
+        userId.toString(),
+      );
+      res.status(201).send(newPost);
+    } else {
+      res.sendStatus(404);
+    }
+  }
+
+  @Put(':postId/like-status')
+  async createLikeStatusForPost(
+    @Param('postId') postId: string,
+    @Res() res,
+    @Headers() d,
+    @Body() body,
+  ) {
+    const post = await this.postsRepository.getPostId(postId);
+    if (!post) {
+      res.sendStatus(404);
+      return;
+    }
+    const userId = await this.jwtService.getUserIdByToken(
+      d.authorization!.split(' ')[1],
+    );
+    const user: any = await this.usersRepository.getUserId(userId!.toString());
+    const likeStatus = await this.postsService.createLikeStatus(
+      postId,
+      userId!.toString(),
+      body.likeStatus,
+      user.login,
+    );
+    if (likeStatus) {
+      res.sendStatus(204);
+    }
+  }
 }

@@ -78,7 +78,7 @@ export const UsersTypeSchema = new mongoose.Schema<UsersModel>({
   createdAt: { type: String, required: true },
 });
 
-export class EmailConfirmationTypeForDB {
+export class EmailConfirmationModel {
   constructor(
     public userId: string,
     public confirmationCode: string,
@@ -87,7 +87,15 @@ export class EmailConfirmationTypeForDB {
   ) {}
 }
 
-export class RefreshTokenDataTypeForDB {
+export const EmailConfirmationSchema =
+  new mongoose.Schema<EmailConfirmationModel>({
+    userId: { type: String, required: true },
+    confirmationCode: { type: String, required: true },
+    expirationDate: { type: Date, required: true },
+    isConfirmed: { type: Boolean, required: true },
+  });
+
+export class RefreshTokenDataModel {
   constructor(
     public iat: number,
     public exp: number,
@@ -98,7 +106,17 @@ export class RefreshTokenDataTypeForDB {
   ) {}
 }
 
-export class CountAttemptTypeForDB {
+export const RefreshTokenDataSchema =
+  new mongoose.Schema<RefreshTokenDataModel>({
+    iat: { type: Number, required: true },
+    exp: { type: Number, required: true },
+    deviceId: { type: String, required: true },
+    ip: { type: String, required: true },
+    deviceName: { type: String, required: true },
+    userId: { type: String, required: true },
+  });
+
+export class CountAttemptModel {
   constructor(
     public ip: string,
     public iat: number,
@@ -108,7 +126,7 @@ export class CountAttemptTypeForDB {
   ) {}
 }
 
-export class LikeInfoTypeForDB {
+export class LikesModel {
   constructor(
     public id: string,
     public userId: string,
@@ -117,6 +135,13 @@ export class LikeInfoTypeForDB {
     public createDate: string,
   ) {}
 }
+export const LikesTypeSchema = new mongoose.Schema<LikesModel>({
+  id: { type: 'string', required: true },
+  userId: { type: 'string', required: true },
+  login: { type: 'string', required: true },
+  status: { type: 'string', required: true },
+  createDate: { type: 'string', required: true },
+});
 
 export type BlogsQueryType = {
   pagesCount: number;
