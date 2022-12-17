@@ -35,19 +35,13 @@ import { SecurityDevicesRepository } from './auth/auth.repository';
 
 @Module({
   imports: [
-    MongooseModule.forFeature([{ name: 'blogs', schema: BlogsTypeSchema }]),
-    MongooseModule.forFeature([{ name: 'posts', schema: PostsTypeSchema }]),
-    MongooseModule.forFeature([{ name: 'users', schema: UsersTypeSchema }]),
     MongooseModule.forFeature([
+      { name: 'blogs', schema: BlogsTypeSchema },
+      { name: 'posts', schema: PostsTypeSchema },
+      { name: 'users', schema: UsersTypeSchema },
       { name: 'comments', schema: CommentsTypeSchema },
-    ]),
-    MongooseModule.forFeature([
       { name: 'likeStatuses', schema: LikesTypeSchema },
-    ]),
-    MongooseModule.forFeature([
       { name: 'emailConfirmation', schema: EmailConfirmationSchema },
-    ]),
-    MongooseModule.forFeature([
       { name: 'refreshTokenData', schema: RefreshTokenDataSchema },
     ]),
   ],
