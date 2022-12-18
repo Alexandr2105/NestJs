@@ -2,28 +2,40 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import {
-  BlogsModel,
   CommentsModel,
+  CountAttemptModel,
+  EmailConfirmationModel,
+  LikesModel,
   PostsModel,
+  RefreshTokenDataModel,
   UsersModel,
 } from '../helper/allTypes';
+import { BlogDocument } from '../blogs/schema/blogs.schema';
 
 @Injectable()
 export class TestingRepository {
   constructor(
-    @InjectModel('blogs') protected blogsCollection: Model<BlogsModel>,
-    @InjectModel('posts') protected postsCollection: Model<PostsModel>,
-    @InjectModel('users') protected usersCollection: Model<UsersModel>,
     @InjectModel('comments') protected commentsCollection: Model<CommentsModel>,
+    @InjectModel('emailConfirmations')
+    protected registrationUsersCollection: Model<EmailConfirmationModel>,
+    @InjectModel('refreshTokenData')
+    protected refreshTokenDataCollection: Model<RefreshTokenDataModel>,
+    @InjectModel('countAttempts')
+    protected countAttemptCollection: Model<CountAttemptModel>,
+    @InjectModel('likeStatuses')
+    protected likeInfoCollection: Model<LikesModel>,
+    @InjectModel('users') protected usersCollection: Model<UsersModel>,
+    @InjectModel('posts') protected postsCollection: Model<PostsModel>,
+    @InjectModel('blogs') protected blogsCollection: Model<BlogDocument>,
   ) {}
   async deleteAllCollection() {
     await this.blogsCollection.deleteMany({});
     await this.postsCollection.deleteMany({});
     await this.usersCollection.deleteMany({});
     await this.commentsCollection.deleteMany({});
-    // await registrationUsersCollection.deleteMany({});
-    // await refreshTokenDataCollection.deleteMany({});
-    // await countAttemptCollection.deleteMany({});
-    // await likeInfoCollection.deleteMany({});
+    await this.registrationUsersCollection.deleteMany({});
+    await this.refreshTokenDataCollection.deleteMany({});
+    await this.countAttemptCollection.deleteMany({});
+    await this.likeInfoCollection.deleteMany({});
   }
 }

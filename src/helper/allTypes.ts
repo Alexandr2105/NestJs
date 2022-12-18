@@ -1,22 +1,23 @@
 import mongoose from 'mongoose';
+import { Blog } from '../blogs/schema/blogs.schema';
 
-export class BlogsModel {
-  constructor(
-    public id: string,
-    public name: string,
-    public websiteUrl: string,
-    public description: string,
-    public createdAt: string,
-  ) {}
-}
-
-export const BlogsTypeSchema = new mongoose.Schema<BlogsModel>({
-  id: { type: String, required: true },
-  name: { type: String, required: true },
-  description: { type: String, required: true },
-  websiteUrl: { type: String, required: true },
-  createdAt: { type: String, required: true },
-});
+// export class BlogsModel {
+//   constructor(
+//     public id: string,
+//     public name: string,
+//     public websiteUrl: string,
+//     public description: string,
+//     public createdAt: string,
+//   ) {}
+// }
+//
+// export const BlogsTypeSchema = new mongoose.Schema<BlogsModel>({
+//   id: { type: String, required: true },
+//   name: { type: String, required: true },
+//   description: { type: String, required: true },
+//   websiteUrl: { type: String, required: true },
+//   createdAt: { type: String, required: true },
+// });
 
 export class PostsModel {
   constructor(
@@ -148,7 +149,8 @@ export type BlogsQueryType = {
   pageSize: number;
   page: number;
   totalCount: number;
-  items: BlogsModel[];
+  // items: BlogsModel[];
+  items: Blog[];
 };
 
 export type PostQueryType = {

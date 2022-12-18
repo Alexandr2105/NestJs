@@ -1,14 +1,14 @@
 import { Injectable } from '@nestjs/common';
-import { BlogsModel } from '../helper/allTypes';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
+import { Blog, BlogDocument } from './schema/blogs.schema';
 
 @Injectable()
 export class BlogsRepository {
   constructor(
-    @InjectModel('blogs') protected blogsCollection: Model<BlogsModel>,
+    @InjectModel('blogs') protected blogsCollection: Model<BlogDocument>,
   ) {}
-  async getBlogsId(id: string): Promise<BlogsModel | false> {
+  async getBlogsId(id: string): Promise<BlogDocument | false> {
     const blog = await this.blogsCollection.findOne({ id: id });
     if (blog) {
       return blog;
@@ -22,7 +22,7 @@ export class BlogsRepository {
     return result.deletedCount === 1;
   }
 
-  async createBlog(newBlog: BlogsModel): Promise<BlogsModel> {
+  async createBlog(newBlog: Blog): Promise<Blog> {
     await this.blogsCollection.create(newBlog);
     return newBlog;
     // const a = new this.blogsCollection(newBlog);

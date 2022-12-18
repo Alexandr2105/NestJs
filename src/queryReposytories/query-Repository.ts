@@ -1,7 +1,6 @@
 import { Inject, Injectable } from '@nestjs/common';
 import {
   BlogsQueryType,
-  BlogsModel,
   PostQueryType,
   PostsModel,
   UsersModel,
@@ -15,11 +14,12 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { CommentsRepository } from '../comments/comments.repostitory';
 import { PostsRepository } from '../posts/posts.repository';
+import { BlogDocument } from '../blogs/schema/blogs.schema';
 
 @Injectable()
 export class QueryRepository {
   constructor(
-    @InjectModel('blogs') protected blogsCollection: Model<BlogsModel>,
+    @InjectModel('blogs') protected blogsCollection: Model<BlogDocument>,
     @InjectModel('posts') protected postsCollection: Model<PostsModel>,
     @InjectModel('users') protected usersCollection: Model<UsersModel>,
     @InjectModel('comments') protected commentsCollection: Model<CommentsModel>,

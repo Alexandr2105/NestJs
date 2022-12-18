@@ -12,7 +12,7 @@ import { add } from 'date-fns';
 export class UsersRepository {
   constructor(
     @InjectModel('users') protected usersCollection: Model<UsersModel>,
-    @InjectModel('emailConfirmation')
+    @InjectModel('emailConfirmations')
     protected registrationUsersCollection: Model<EmailConfirmationModel>,
   ) {}
 

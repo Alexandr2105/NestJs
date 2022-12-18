@@ -1,6 +1,6 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { BlogsModel } from '../helper/allTypes';
 import { BlogsRepository } from './blogs.repository';
+import { Blog } from './schema/blogs.schema';
 
 @Injectable()
 export class BlogsService {
@@ -8,7 +8,7 @@ export class BlogsService {
     @Inject(BlogsRepository) protected blogsRepository: BlogsRepository,
   ) {}
 
-  async getBlogsId(id: string): Promise<BlogsModel | false> {
+  async getBlogsId(id: string): Promise<Blog | false> {
     const blog = await this.blogsRepository.getBlogsId(id);
     if (!blog) return false;
     return {
@@ -28,9 +28,9 @@ export class BlogsService {
     name: string,
     description: string,
     url: string,
-  ): Promise<BlogsModel> {
+  ): Promise<Blog> {
     const dateNow = +new Date() + '';
-    const newBlog: BlogsModel = {
+    const newBlog: Blog = {
       id: dateNow,
       name: name,
       websiteUrl: url,
