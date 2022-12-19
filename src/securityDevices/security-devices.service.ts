@@ -1,6 +1,5 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { SecurityDevicesRepository } from './security.devices.repository';
-import { RefreshTokenDataModel } from '../helper/allTypes';
 
 @Injectable()
 export class SecurityDevicesService {

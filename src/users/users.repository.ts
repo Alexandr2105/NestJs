@@ -1,16 +1,17 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { EmailConfirmationModel, ItemsUsers } from '../helper/allTypes';
+import { ItemsUsers } from '../helper/allTypes';
 import { add } from 'date-fns';
 import { User, UserDocument } from './schema/user';
+import { EmailConfirmationDocument } from '../schemas/email.confirmation.schema';
 
 @Injectable()
 export class UsersRepository {
   constructor(
     @InjectModel('users') protected usersCollection: Model<User>,
     @InjectModel('emailConfirmations')
-    protected registrationUsersCollection: Model<EmailConfirmationModel>,
+    protected registrationUsersCollection: Model<EmailConfirmationDocument>,
   ) {}
 
   async deleteUser(id: string): Promise<boolean> {
@@ -32,7 +33,7 @@ export class UsersRepository {
     return user;
   }
 
-  async createEmailConfirmation(emailConf: EmailConfirmationModel) {
+  async createEmailConfirmation(emailConf: EmailConfirmationDocument) {
     await this.registrationUsersCollection.create(emailConf);
   }
 
@@ -44,7 +45,7 @@ export class UsersRepository {
     return result.matchedCount === 1;
   }
 
-  async getUserByCode(code: string): Promise<EmailConfirmationModel> {
+  async getUserByCode(code: string): Promise<EmailConfirmationDocument> {
     const idUser = await this.registrationUsersCollection.findOne({
       confirmationCode: code,
     });

@@ -11,7 +11,7 @@ import { SecurityDevicesService } from './security-devices.service';
 import { SecurityDevicesRepository } from './security.devices.repository';
 import { JwtService } from '../application/jwt-service';
 
-@Controller()
+@Controller('security/devices')
 export class SecurityDevicesController {
   constructor(
     @Inject(SecurityDevicesService)

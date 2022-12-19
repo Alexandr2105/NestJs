@@ -4,7 +4,6 @@ import {
   PostQueryType,
   UserQueryType,
   CommentsType,
-  LikesModel,
 } from '../helper/allTypes';
 import { QueryCount } from '../helper/query.count';
 import { InjectModel } from '@nestjs/mongoose';
@@ -15,6 +14,7 @@ import { BlogDocument } from '../blogs/schema/blogs.schema';
 import { PostDocument } from '../posts/schema/posts.schema';
 import { CommentDocument } from '../comments/schema/comment.schema';
 import { User } from '../users/schema/user';
+import { LikesModelDocument } from '../schemas/like.type.schema';
 
 @Injectable()
 export class QueryRepository {
@@ -25,7 +25,7 @@ export class QueryRepository {
     @InjectModel('comments')
     protected commentsCollection: Model<CommentDocument>,
     @InjectModel('likeStatuses')
-    protected likeInfoCollection: Model<LikesModel>,
+    protected likeInfoCollection: Model<LikesModelDocument>,
     @Inject(QueryCount) protected queryCount: QueryCount,
     @Inject(CommentsRepository)
     protected commentsRepository: CommentsRepository,

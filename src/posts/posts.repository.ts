@@ -1,15 +1,15 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { LikesModel } from '../helper/allTypes';
 import { PostDocument } from './schema/posts.schema';
+import { LikesModelDocument } from '../schemas/like.type.schema';
 
 @Injectable()
 export class PostsRepository {
   constructor(
     @InjectModel('posts') protected postsCollection: Model<PostDocument>,
     @InjectModel('likeStatuses')
-    protected likeInfoCollection: Model<LikesModel>,
+    protected likeInfoCollection: Model<LikesModelDocument>,
   ) {}
 
   async getPostId(id: string): Promise<PostDocument | null> {
@@ -21,7 +21,7 @@ export class PostsRepository {
     return result.deletedCount === 1;
   }
 
-  async createLikeStatus(likeStatus: LikesModel): Promise<boolean> {
+  async createLikeStatus(likeStatus: LikesModelDocument): Promise<boolean> {
     const status = await this.likeInfoCollection.create(likeStatus);
     return !!status;
   }
@@ -63,7 +63,7 @@ export class PostsRepository {
     }
   }
 
-  async getAllInfoLike(postId: string): Promise<LikesModel[]> {
+  async getAllInfoLike(postId: string): Promise<LikesModelDocument[]> {
     return this.likeInfoCollection
       .find({ id: postId, status: 'Like' })
       .sort({ ['createDate']: 'desc' })

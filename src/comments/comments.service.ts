@@ -1,7 +1,8 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { CommentsRepository } from './comments.repostitory';
-import { ItemsComments, LikesModel } from '../helper/allTypes';
+import { ItemsComments } from '../helper/allTypes';
 import { UpdateCommentDto } from './dto/comment.dto';
+import { LikesModel } from '../schemas/like.type.schema';
 
 @Injectable()
 export class CommentsService {

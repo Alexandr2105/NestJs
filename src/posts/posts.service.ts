@@ -1,4 +1,3 @@
-import { LikesModel } from '../helper/allTypes';
 import { PostsRepository } from './posts.repository';
 import { Inject, Injectable } from '@nestjs/common';
 import { CommentsRepository } from '../comments/comments.repostitory';

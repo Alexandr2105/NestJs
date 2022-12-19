@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
-import { LikesModel } from '../helper/allTypes';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { CommentDocument } from './schema/comment.schema';
+import { LikesModel, LikesModelDocument } from '../schemas/like.type.schema';
 
 @Injectable()
 export class CommentsRepository {
@@ -10,7 +10,7 @@ export class CommentsRepository {
     @InjectModel('comments')
     protected commentsCollection: Model<CommentDocument>,
     @InjectModel('likeStatuses')
-    protected likeInfoCollection: Model<LikesModel>,
+    protected likeInfoCollection: Model<LikesModelDocument>,
   ) {}
 
   async getCommentById(id: string): Promise<CommentDocument | null> {

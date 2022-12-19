@@ -3,7 +3,7 @@ import { UsersRepository } from '../users/users.repository';
 import { Inject, Injectable } from '@nestjs/common';
 import { v4 as uuid4 } from 'uuid';
 import { EmailManager } from '../manager/email-manager';
-import { EmailConfirmationModel } from '../helper/allTypes';
+import { EmailConfirmationDocument } from '../schemas/email.confirmation.schema';
 
 @Injectable()
 export class AuthService {
@@ -13,7 +13,7 @@ export class AuthService {
   ) {}
 
   async confirmation(id: string, login: string, email: string) {
-    const emailConfirmation = new EmailConfirmationModel(
+    const emailConfirmation = new EmailConfirmationDocument(
       id,
       uuid4(),
       add(new Date(), {
@@ -35,7 +35,7 @@ export class AuthService {
   }
 
   async confirmEmail(code: string): Promise<boolean> {
-    const user: EmailConfirmationModel =
+    const user: EmailConfirmationDocument =
       await this.usersRepository.getUserByCode(code);
     if (!user) return false;
     if (user.isConfirmed) return false;

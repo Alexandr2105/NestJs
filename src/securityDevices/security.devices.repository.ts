@@ -1,16 +1,16 @@
 import { Injectable } from '@nestjs/common';
-import { RefreshTokenDataModel } from '../helper/allTypes';
 import { Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
+import { RefreshTokenDocument } from '../schemas/refresh.token.data.schema';
 
 @Injectable()
 export class SecurityDevicesRepository {
   constructor(
     @InjectModel('refreshTokenData')
-    protected refreshTokenDataCollection: Model<RefreshTokenDataModel>,
+    protected refreshTokenDataCollection: Model<RefreshTokenDocument>,
   ) {}
 
-  async saveInfoAboutRefreshToken(infoRefreshToken: RefreshTokenDataModel) {
+  async saveInfoAboutRefreshToken(infoRefreshToken: RefreshTokenDocument) {
     await this.refreshTokenDataCollection.create(infoRefreshToken);
   }
 

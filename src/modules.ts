@@ -1,11 +1,5 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
-import {
-  CountAttemptSchema,
-  EmailConfirmationSchema,
-  LikesTypeSchema,
-  RefreshTokenDataSchema,
-} from './helper/allTypes';
 import { BlogsController } from './blogs/blogs.controller';
 import { QueryRepository } from './queryReposytories/query-Repository';
 import { BlogsRepository } from './blogs/blogs.repository';
@@ -34,6 +28,10 @@ import { PostSchema } from './posts/schema/posts.schema';
 import { CommentSchema } from './comments/schema/comment.schema';
 import { UserSchema } from './users/schema/user';
 import { SecurityDevicesController } from './securityDevices/security.devices.controller';
+import { RefreshTokenSchema } from './schemas/refresh.token.data.schema';
+import { EmailConfirmationSchema } from './schemas/email.confirmation.schema';
+import { CountAttemptSchema } from './schemas/count.attempt.schema';
+import { LikesTypeSchema } from './schemas/like.type.schema';
 
 @Module({
   imports: [
@@ -44,7 +42,7 @@ import { SecurityDevicesController } from './securityDevices/security.devices.co
       { name: 'comments', schema: CommentSchema },
       { name: 'likeStatuses', schema: LikesTypeSchema },
       { name: 'emailConfirmations', schema: EmailConfirmationSchema },
-      { name: 'refreshTokenData', schema: RefreshTokenDataSchema },
+      { name: 'refreshTokenData', schema: RefreshTokenSchema },
       { name: 'countAttempts', schema: CountAttemptSchema },
     ]),
   ],

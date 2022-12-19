@@ -5,7 +5,7 @@ import { JwtService } from '../application/jwt-service';
 import { AuthService } from './auth.service';
 import { EmailManager } from '../manager/email-manager';
 import { SecurityDevicesService } from '../securityDevices/security-devices.service';
-import { EmailConfirmationModel } from '../helper/allTypes';
+import { EmailConfirmationDocument } from '../schemas/email.confirmation.schema';
 
 @Controller('auth')
 export class AuthController {
@@ -67,7 +67,7 @@ export class AuthController {
 
   @Post('registration-conformation')
   async registrationConfirmation(@Body() body, @Res() res) {
-    const userByCode: EmailConfirmationModel =
+    const userByCode: EmailConfirmationDocument =
       await this.usersRepository.getUserByCode(body.code);
     await this.usersRepository.updateEmailConfirmation(userByCode?.userId);
     res.sendStatus(204);
@@ -140,10 +140,10 @@ export class AuthController {
 
   @Post('new-password')
   async createNewPassword(@Body() body, @Res() res) {
-    const userByCode: EmailConfirmationModel =
+    const userByCode: EmailConfirmationDocument =
       await this.usersRepository.getUserByCode(body.recoveryCode);
     await this.usersRepository.updateEmailConfirmation(userByCode!.userId);
-    const user: EmailConfirmationModel =
+    const user: EmailConfirmationDocument =
       await this.usersRepository.getUserByCode(body.recoveryCode);
     const newPass = await this.usersService.createNewPassword(
       body.newPassword,
