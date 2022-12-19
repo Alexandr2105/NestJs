@@ -1,16 +1,21 @@
-import { CommentsModel, LikesModel, PostsModel } from '../helper/allTypes';
+import { CommentsModel, LikesModel } from '../helper/allTypes';
 import { PostsRepository } from './posts.repository';
 import { Inject, Injectable } from '@nestjs/common';
-import { BlogsService } from '../blogs/blogs.service';
 import { CommentsRepository } from '../comments/comments.repostitory';
+import { Post, PostDocument } from './schema/posts.schema';
+import { CreatePostDto, UpdatePostDto } from './dto/postDto';
+import { BlogsRepository } from '../blogs/blogs.repository';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
 
 @Injectable()
 export class PostsService {
   constructor(
     @Inject(PostsRepository) protected postsRepository: PostsRepository,
-    @Inject(BlogsService) protected blogsService: BlogsService,
+    @Inject(BlogsRepository) protected blogsRepository: BlogsRepository,
     @Inject(CommentsRepository)
     protected commentsRepository: CommentsRepository,
+    @InjectModel('posts') protected postsCollection: Model<PostDocument>,
   ) {}
 
   async getPostId(id: string, userId: string) {
@@ -32,13 +37,6 @@ export class PostsService {
           likesCount: likesCount,
           dislikesCount: dislikeCount,
           myStatus: myStatus,
-          // newestLikes: [
-          //   {
-          //     addedAt: '2022-12-10T20:13:04.965Z',
-          //     userId: 'string',
-          //     login: 'string',
-          //   },
-          // ],
           newestLikes: infoLikes.map((a) => {
             return {
               addedAt: a.createDate,
@@ -57,41 +55,27 @@ export class PostsService {
     return await this.postsRepository.deletePostId(id);
   }
 
-  async updatePostId(
-    id: string,
-    title: string,
-    shortDescription: string,
-    content: string,
-    blogId: string,
-  ): Promise<boolean> {
-    return await this.postsRepository.updatePostId(
-      id,
-      title,
-      shortDescription,
-      content,
-      blogId,
-    );
+  async updatePostId(id: string, body: UpdatePostDto): Promise<boolean> {
+    const post = await this.postsRepository.getPostId(id);
+    if (!post) return false;
+    post.content = body.content;
+    post.title = body.title;
+    post.shortDescription = body.shortDescription;
+    post.blogId = body.blogId;
+    await this.postsRepository.save(post);
+    return true;
   }
 
-  async createPost(
-    title: string,
-    shortDescription: string,
-    content: string,
-    blogId: string,
-  ): Promise<PostsModel | false> {
+  async createPost(body: CreatePostDto): Promise<Post | false> {
     //TODO:тут исправить
-    const post = await this.blogsService.getBlogsId(blogId);
-    if (!post) return false; //TODO:тут лишшяя проверка
-    const newPost: PostsModel = {
-      id: +new Date() + '',
-      title: title,
-      shortDescription: shortDescription,
-      content: content,
-      blogId: blogId,
-      blogName: post.name,
-      createdAt: new Date().toISOString(),
-    };
-    return this.postsRepository.createPost(newPost);
+    const infoBlog = await this.blogsRepository.getBlogId(body.blogId);
+    if (!infoBlog) return false; //TODO:тут лишшяя проверка
+    const newPost = new this.postsCollection(body);
+    newPost.createdAt = new Date().toISOString();
+    newPost.id = +new Date() + '';
+    newPost.blogName = infoBlog.name;
+    await this.postsRepository.save(newPost);
+    return newPost;
   }
 
   async creatNewCommentByPostId(

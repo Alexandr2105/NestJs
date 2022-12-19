@@ -19,6 +19,7 @@ import { QueryCount } from '../helper/query.count';
 import { JwtService } from '../application/jwt-service';
 import { UsersRepository } from '../users/users.repository';
 import { CommentsService } from '../comments/comments.service';
+import { CreatePostDto, UpdatePostDto } from './dto/postDto';
 
 //TODO:исправить авторизацию и цдалить @Res;
 
@@ -81,26 +82,19 @@ export class PostsController {
   }
 
   @Post()
-  async createPost(@Body() body) {
-    const createPost = await this.postsService.createPost(
-      body.title,
-      body.shortDescription,
-      body.content,
-      body.blogId,
-    );
+  async createPost(@Body() body: CreatePostDto) {
+    const createPost = await this.postsService.createPost(body);
     if (!createPost) return false; //TODO:Это тоже потом удалить
     return await this.postsService.getPostId(createPost.id, 'null');
   }
 
   @Put(':id')
-  async updatePost(@Param('id') postId: string, @Body() body, @Res() res) {
-    const postUpdate = await this.postsService.updatePostId(
-      postId,
-      body.title,
-      body.shortDescription,
-      body.content,
-      body.blogId,
-    );
+  async updatePost(
+    @Param('id') postId: string,
+    @Body() body: UpdatePostDto,
+    @Res() res,
+  ) {
+    const postUpdate = await this.postsService.updatePostId(postId, body);
     if (postUpdate) {
       res.sendStatus(204);
     } else {

@@ -1,49 +1,24 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { LikesModel, PostsModel } from '../helper/allTypes';
+import { LikesModel } from '../helper/allTypes';
+import { PostDocument } from './schema/posts.schema';
 
 @Injectable()
 export class PostsRepository {
   constructor(
-    @InjectModel('posts') protected postsCollection: Model<PostsModel>,
+    @InjectModel('posts') protected postsCollection: Model<PostDocument>,
     @InjectModel('likeStatuses')
     protected likeInfoCollection: Model<LikesModel>,
   ) {}
 
-  async getPostId(id: string): Promise<PostsModel | null> {
+  async getPostId(id: string): Promise<PostDocument | null> {
     return this.postsCollection.findOne({ id: id });
   }
 
   async deletePostId(id: string): Promise<boolean> {
     const result = await this.postsCollection.deleteOne({ id: id });
     return result.deletedCount === 1;
-  }
-
-  async updatePostId(
-    id: string,
-    title: string,
-    shortDescription: string,
-    content: string,
-    blogId: string,
-  ): Promise<boolean> {
-    const updatePost = await this.postsCollection.updateOne(
-      { id: id },
-      {
-        $set: {
-          title: title,
-          shortDescription: shortDescription,
-          content: content,
-          blogId: blogId,
-        },
-      },
-    );
-    return updatePost.matchedCount === 1;
-  }
-
-  async createPost(newPost: PostsModel): Promise<PostsModel> {
-    await this.postsCollection.create(newPost);
-    return newPost;
   }
 
   async createLikeStatus(likeStatus: LikesModel): Promise<boolean> {
@@ -112,5 +87,9 @@ export class PostsRepository {
       { $set: { status: status } },
     );
     return newStatusComment.matchedCount === 1;
+  }
+
+  async save(post: PostDocument) {
+    await post.save();
   }
 }

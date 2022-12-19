@@ -16,6 +16,8 @@ import { BlogsService } from './blogs.service';
 import { QueryRepository } from '../queryReposytories/query-Repository';
 import { PostsService } from '../posts/posts.service';
 import { JwtService } from '../application/jwt-service';
+import { CreateBlogDto, UpdateBlogDto } from './dto/blogDto';
+import { CreatePostDto } from '../posts/dto/postDto';
 
 @Controller('blogs')
 export class BlogsController {
@@ -54,23 +56,18 @@ export class BlogsController {
   }
 
   @Post()
-  async createBlog(@Body() body) {
-    const createBlog = await this.blogsService.createBlog(
-      body.name,
-      body.description,
-      body.websiteUrl,
-    );
+  async createBlog(@Body() body: CreateBlogDto) {
+    const createBlog = await this.blogsService.createBlog(body);
     return await this.blogsService.getBlogsId(createBlog.id);
   }
 
   @Put(':id')
-  async updateBlog(@Param('id') blogId: string, @Body() body, @Res() res) {
-    const updateBlog = await this.blogsService.updateBlog(
-      blogId,
-      body.name,
-      body.websiteUrl,
-      body.description,
-    );
+  async updateBlog(
+    @Param('id') blogId: string,
+    @Body() body: UpdateBlogDto,
+    @Res() res,
+  ) {
+    const updateBlog = await this.blogsService.updateBlog(blogId, body);
     if (updateBlog) {
       res.sendStatus(204);
     } else {
@@ -113,15 +110,10 @@ export class BlogsController {
   @Post('/:blogId/posts')
   async createPostsForBlog(
     @Param('blogId') blogId: string,
-    @Body() body,
+    @Body() body: CreatePostDto,
     @Res() res,
   ) {
-    const newPostForBlogId = await this.postsService.createPost(
-      body.title,
-      body.shortDescription,
-      body.content,
-      blogId,
-    );
+    const newPostForBlogId = await this.postsService.createPost(body);
     if (newPostForBlogId) {
       const newPost = await this.postsService.getPostId(
         newPostForBlogId.id,

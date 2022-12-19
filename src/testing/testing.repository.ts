@@ -6,11 +6,11 @@ import {
   CountAttemptModel,
   EmailConfirmationModel,
   LikesModel,
-  PostsModel,
   RefreshTokenDataModel,
   UsersModel,
 } from '../helper/allTypes';
 import { BlogDocument } from '../blogs/schema/blogs.schema';
+import { PostDocument } from '../posts/schema/posts.schema';
 
 @Injectable()
 export class TestingRepository {
@@ -25,7 +25,7 @@ export class TestingRepository {
     @InjectModel('likeStatuses')
     protected likeInfoCollection: Model<LikesModel>,
     @InjectModel('users') protected usersCollection: Model<UsersModel>,
-    @InjectModel('posts') protected postsCollection: Model<PostsModel>,
+    @InjectModel('posts') protected postsCollection: Model<PostDocument>,
     @InjectModel('blogs') protected blogsCollection: Model<BlogDocument>,
   ) {}
   async deleteAllCollection() {

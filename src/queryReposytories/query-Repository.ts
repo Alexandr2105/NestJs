@@ -2,7 +2,6 @@ import { Inject, Injectable } from '@nestjs/common';
 import {
   BlogsQueryType,
   PostQueryType,
-  PostsModel,
   UsersModel,
   UserQueryType,
   CommentsModel,
@@ -15,12 +14,13 @@ import { Model } from 'mongoose';
 import { CommentsRepository } from '../comments/comments.repostitory';
 import { PostsRepository } from '../posts/posts.repository';
 import { BlogDocument } from '../blogs/schema/blogs.schema';
+import { PostDocument } from '../posts/schema/posts.schema';
 
 @Injectable()
 export class QueryRepository {
   constructor(
     @InjectModel('blogs') protected blogsCollection: Model<BlogDocument>,
-    @InjectModel('posts') protected postsCollection: Model<PostsModel>,
+    @InjectModel('posts') protected postsCollection: Model<PostDocument>,
     @InjectModel('users') protected usersCollection: Model<UsersModel>,
     @InjectModel('comments') protected commentsCollection: Model<CommentsModel>,
     @InjectModel('likeStatuses')
@@ -101,13 +101,6 @@ export class QueryRepository {
               likesCount: likeStatus,
               dislikesCount: dislikeStatus,
               myStatus: myStatus,
-              // newestLikes: [
-              //   {
-              //     addedAt: '2022-12-10T20:13:04.965Z',
-              //     userId: 'string',
-              //     login: 'string',
-              //   },
-              // ],
               newestLikes: sortLikesArray.map((b) => {
                 return {
                   addedAt: b.createDate.toString(),
@@ -169,13 +162,6 @@ export class QueryRepository {
               likesCount: likeInfo,
               dislikesCount: dislikeInfo,
               myStatus: myStatus,
-              // newestLikes: [
-              //   {
-              //     addedAt: '2022-12-10T20:13:04.965Z',
-              //     userId: 'string',
-              //     login: 'string',
-              //   },
-              // ],
               newestLikes: sortLikesArray.map((a) => {
                 return {
                   addedAt: a.createDate.toString(),
