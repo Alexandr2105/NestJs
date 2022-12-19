@@ -25,7 +25,7 @@ export class CommentsController {
     @Inject(JwtService) protected jwtService: JwtService,
   ) {}
 
-  //TODO: удалить @Req();
+  // TODO: удалить @Req();
 
   @Get(':id')
   async getComment(@Param('id') commentId: string, @Res() res, @Req() req) {

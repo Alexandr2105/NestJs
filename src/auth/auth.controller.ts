@@ -4,7 +4,7 @@ import { UsersRepository } from '../users/users.repository';
 import { JwtService } from '../application/jwt-service';
 import { AuthService } from './auth.service';
 import { EmailManager } from '../manager/email-manager';
-import { DevicesService } from '../helper/devices-service';
+import { SecurityDevicesService } from '../securityDevices/security-devices.service';
 import { EmailConfirmationModel } from '../helper/allTypes';
 
 @Controller('auth')
@@ -13,7 +13,8 @@ export class AuthController {
     @Inject(AuthService) protected authService: AuthService,
     @Inject(UsersService) protected usersService: UsersService,
     @Inject(UsersRepository) protected usersRepository: UsersRepository,
-    @Inject(DevicesService) protected devicesService: DevicesService,
+    @Inject(SecurityDevicesService)
+    protected devicesService: SecurityDevicesService,
     @Inject(EmailManager) protected emailManager: EmailManager,
     @Inject(JwtService) protected jwtService: JwtService,
   ) {}

@@ -1,9 +1,9 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { SecurityDevicesRepository } from '../auth/auth.repository';
-import { RefreshTokenDataModel } from './allTypes';
+import { SecurityDevicesRepository } from './security.devices.repository';
+import { RefreshTokenDataModel } from '../helper/allTypes';
 
 @Injectable()
-export class DevicesService {
+export class SecurityDevicesService {
   constructor(
     @Inject(SecurityDevicesRepository)
     protected securityDevicesRepository: SecurityDevicesRepository,

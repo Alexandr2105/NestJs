@@ -27,12 +27,13 @@ import { JwtService } from './application/jwt-service';
 import { AuthService } from './auth/auth.service';
 import { EmailManager } from './manager/email-manager';
 import { EmailAdapter } from './adapters/email-adapter';
-import { DevicesService } from './helper/devices-service';
-import { SecurityDevicesRepository } from './auth/auth.repository';
+import { SecurityDevicesService } from './securityDevices/security-devices.service';
+import { SecurityDevicesRepository } from './securityDevices/security.devices.repository';
 import { BlogSchema } from './blogs/schema/blogs.schema';
 import { PostSchema } from './posts/schema/posts.schema';
 import { CommentSchema } from './comments/schema/comment.schema';
 import { UserSchema } from './users/schema/user';
+import { SecurityDevicesController } from './securityDevices/security.devices.controller';
 
 @Module({
   imports: [
@@ -54,6 +55,7 @@ import { UserSchema } from './users/schema/user';
     CommentsController,
     TestingController,
     AuthController,
+    SecurityDevicesController,
   ],
   providers: [
     QueryCount,
@@ -71,7 +73,7 @@ import { UserSchema } from './users/schema/user';
     AuthService,
     EmailManager,
     EmailAdapter,
-    DevicesService,
+    SecurityDevicesService,
     SecurityDevicesRepository,
   ],
 })
