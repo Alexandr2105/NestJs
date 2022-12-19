@@ -74,11 +74,7 @@ export class AuthController {
 
   @Post('registration')
   async registration(@Body() body, @Res() res) {
-    const newUser = await this.usersService.creatNewUsers(
-      body.login,
-      body.email,
-      body.password,
-    );
+    const newUser = await this.usersService.creatNewUsers(body);
     if (newUser)
       await this.authService.confirmation(newUser.id, body.login, body.email);
     res.sendStatus(204);

@@ -2,44 +2,6 @@ import mongoose from 'mongoose';
 import { Blog } from '../blogs/schema/blogs.schema';
 import { Post } from '../posts/schema/posts.schema';
 
-// export class CommentsModel {
-//   constructor(
-//     public id: string,
-//     public idPost: string,
-//     public content: string,
-//     public userId: string,
-//     public userLogin: string,
-//     public createdAt: string,
-//   ) {}
-// }
-//
-// export const CommentsTypeSchema = new mongoose.Schema<CommentsModel>({
-//   id: { type: String, required: true },
-//   idPost: { type: String, required: true },
-//   content: { type: String, required: true },
-//   userId: { type: String, required: true },
-//   userLogin: { type: String, required: true },
-//   createdAt: { type: String, required: true },
-// });
-
-export class UsersModel {
-  constructor(
-    public id: string,
-    public login: string,
-    public password: string,
-    public email: string,
-    public createdAt: string,
-  ) {}
-}
-
-export const UsersTypeSchema = new mongoose.Schema<UsersModel>({
-  id: { type: String, required: true },
-  login: { type: String, required: true },
-  password: { type: String, required: true },
-  email: { type: String, required: true },
-  createdAt: { type: String, required: true },
-});
-
 export class EmailConfirmationModel {
   constructor(
     public userId: string,

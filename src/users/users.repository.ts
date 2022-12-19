@@ -1,25 +1,17 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import {
-  EmailConfirmationModel,
-  ItemsUsers,
-  UsersModel,
-} from '../helper/allTypes';
+import { EmailConfirmationModel, ItemsUsers } from '../helper/allTypes';
 import { add } from 'date-fns';
+import { User, UserDocument } from './schema/user';
 
 @Injectable()
 export class UsersRepository {
   constructor(
-    @InjectModel('users') protected usersCollection: Model<UsersModel>,
+    @InjectModel('users') protected usersCollection: Model<User>,
     @InjectModel('emailConfirmations')
     protected registrationUsersCollection: Model<EmailConfirmationModel>,
   ) {}
-
-  async creatNewUsers(newUser: ItemsUsers): Promise<ItemsUsers> {
-    await this.usersCollection.create(newUser);
-    return newUser;
-  }
 
   async deleteUser(id: string): Promise<boolean> {
     const result = await this.usersCollection.deleteOne({ id: id });
@@ -32,18 +24,12 @@ export class UsersRepository {
     });
   }
 
-  async getUserId(id: string): Promise<ItemsUsers | boolean> {
-    const user = await this.usersCollection.findOne({ id: id });
-    if (user) {
-      return {
-        id: user.id,
-        login: user.login,
-        email: user.email,
-        createdAt: user.createdAt,
-      };
-    } else {
-      return false;
-    }
+  async getUserId(id: string): Promise<UserDocument | false> {
+    const user = await this.usersCollection
+      .findOne({ id: id })
+      .select('id login email createdAt -_id');
+    if (!user) return false;
+    return user;
   }
 
   async createEmailConfirmation(emailConf: EmailConfirmationModel) {
@@ -90,11 +76,7 @@ export class UsersRepository {
     }
   }
 
-  async updatePasswordUser(password: string, userId: string): Promise<boolean> {
-    const newPass = await this.usersCollection.updateOne(
-      { id: userId },
-      { $set: { password: password } },
-    );
-    return newPass.matchedCount === 1;
+  async save(user: UserDocument) {
+    await user.save();
   }
 }

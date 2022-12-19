@@ -5,7 +5,6 @@ import {
   EmailConfirmationSchema,
   LikesTypeSchema,
   RefreshTokenDataSchema,
-  UsersTypeSchema,
 } from './helper/allTypes';
 import { BlogsController } from './blogs/blogs.controller';
 import { QueryRepository } from './queryReposytories/query-Repository';
@@ -33,13 +32,14 @@ import { SecurityDevicesRepository } from './auth/auth.repository';
 import { BlogSchema } from './blogs/schema/blogs.schema';
 import { PostSchema } from './posts/schema/posts.schema';
 import { CommentSchema } from './comments/schema/comment.schema';
+import { UserSchema } from './users/schema/user';
 
 @Module({
   imports: [
     MongooseModule.forFeature([
       { name: 'blogs', schema: BlogSchema },
       { name: 'posts', schema: PostSchema },
-      { name: 'users', schema: UsersTypeSchema },
+      { name: 'users', schema: UserSchema },
       { name: 'comments', schema: CommentSchema },
       { name: 'likeStatuses', schema: LikesTypeSchema },
       { name: 'emailConfirmations', schema: EmailConfirmationSchema },

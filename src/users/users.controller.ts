@@ -12,6 +12,7 @@ import {
 import { UsersService } from './users.service';
 import { QueryRepository } from '../queryReposytories/query-Repository';
 import { QueryCount } from '../helper/query.count';
+import { CreateUserDto } from './dto/user.dto';
 
 @Controller('users')
 export class UsersController {
@@ -29,12 +30,8 @@ export class UsersController {
   }
 
   @Post()
-  async createUser(@Body() body) {
-    const newUser = await this.usersService.creatNewUsers(
-      body.login,
-      body.email,
-      body.password,
-    );
+  async createUser(@Body() body: CreateUserDto) {
+    const newUser = await this.usersService.creatNewUsers(body);
     return await this.usersService.getUserById(newUser.id);
   }
 

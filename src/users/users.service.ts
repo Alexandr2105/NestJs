@@ -1,36 +1,33 @@
 import * as bcrypt from 'bcrypt';
 import { Inject, Injectable } from '@nestjs/common';
 import { UsersRepository } from './users.repository';
-import { ItemsUsers, UsersModel } from '../helper/allTypes';
+import { User } from './schema/user';
+import { CreateUserDto } from './dto/user.dto';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
 
 @Injectable()
 export class UsersService {
   constructor(
     @Inject(UsersRepository) protected usersRepository: UsersRepository,
+    @InjectModel('users') protected usersCollection: Model<User>,
   ) {}
 
-  async creatNewUsers(
-    login: string,
-    email: string,
-    password: string,
-  ): Promise<UsersModel> {
+  async creatNewUsers(body: CreateUserDto): Promise<User> {
     const passwordSalt = await bcrypt.genSalt(10);
-    const passwordHash = await this.generateHash(password, passwordSalt);
-    const newUser: UsersModel = {
-      id: +new Date() + '',
-      login: login,
-      password: passwordHash,
-      email: email,
-      createdAt: new Date().toISOString(),
-    };
-    await this.usersRepository.creatNewUsers(newUser);
+    const passwordHash = await this.generateHash(body.password, passwordSalt);
+    const newUser = new this.usersCollection(body);
+    newUser.id = +new Date() + '';
+    newUser.password = passwordHash;
+    newUser.createdAt = new Date().toISOString();
+    await this.usersRepository.save(newUser);
     return newUser;
   }
 
   async checkUserOrLogin(
     loginOrEmail: string,
     pass: string,
-  ): Promise<ItemsUsers | boolean> {
+  ): Promise<User | boolean> {
     const user: any = await this.usersRepository.findLoginOrEmail(loginOrEmail);
     if (!user) return false;
     const hashPassword = await this.generateHash(pass, user.password);
@@ -52,10 +49,16 @@ export class UsersService {
   async deleteUser(id: string): Promise<boolean> {
     return this.usersRepository.deleteUser(id);
   }
+  async updatePasswordUser(password: string, userId: string): Promise<boolean> {
+    const user = await this.usersRepository.getUserId(userId);
+    if (!user) return false;
+    user.password = password;
+    await this.usersRepository.save(user);
+  }
 
   async createNewPassword(newPassword: string, userId: string) {
     const passwordSalt = await bcrypt.genSalt(10);
     const passwordHash = await this.generateHash(newPassword, passwordSalt);
-    return await this.usersRepository.updatePasswordUser(passwordHash, userId);
+    return await this.updatePasswordUser(passwordHash, userId);
   }
 }
