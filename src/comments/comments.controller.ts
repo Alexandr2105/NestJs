@@ -13,6 +13,7 @@ import { CommentsService } from './comments.service';
 import { CommentsRepository } from './comments.repostitory';
 import { UsersRepository } from '../users/users.repository';
 import { JwtService } from '../application/jwt-service';
+import { UpdateCommentDto } from './dto/comment.dto';
 
 @Controller('comments')
 export class CommentsController {
@@ -60,12 +61,12 @@ export class CommentsController {
   @Put(':commentId')
   async updateComment(
     @Param('commentId') commentId: string,
-    @Body() body,
+    @Body() body: UpdateCommentDto,
     @Res() res,
   ) {
     const putComment = await this.commentsService.updateCommentById(
       commentId,
-      body.content,
+      body,
     );
     if (!putComment) {
       res.sendStatus(404);

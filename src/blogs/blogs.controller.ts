@@ -16,8 +16,8 @@ import { BlogsService } from './blogs.service';
 import { QueryRepository } from '../queryReposytories/query-Repository';
 import { PostsService } from '../posts/posts.service';
 import { JwtService } from '../application/jwt-service';
-import { CreateBlogDto, UpdateBlogDto } from './dto/blogDto';
-import { CreatePostDto } from '../posts/dto/postDto';
+import { CreateBlogDto, UpdateBlogDto } from './dto/blog.dto';
+import { CreatePostDto } from '../posts/dto/post.dto';
 
 @Controller('blogs')
 export class BlogsController {

@@ -4,7 +4,6 @@ import {
   PostQueryType,
   UsersModel,
   UserQueryType,
-  CommentsModel,
   CommentsType,
   LikesModel,
 } from '../helper/allTypes';
@@ -15,6 +14,7 @@ import { CommentsRepository } from '../comments/comments.repostitory';
 import { PostsRepository } from '../posts/posts.repository';
 import { BlogDocument } from '../blogs/schema/blogs.schema';
 import { PostDocument } from '../posts/schema/posts.schema';
+import { CommentDocument } from '../comments/schema/comment.schema';
 
 @Injectable()
 export class QueryRepository {
@@ -22,7 +22,8 @@ export class QueryRepository {
     @InjectModel('blogs') protected blogsCollection: Model<BlogDocument>,
     @InjectModel('posts') protected postsCollection: Model<PostDocument>,
     @InjectModel('users') protected usersCollection: Model<UsersModel>,
-    @InjectModel('comments') protected commentsCollection: Model<CommentsModel>,
+    @InjectModel('comments')
+    protected commentsCollection: Model<CommentDocument>,
     @InjectModel('likeStatuses')
     protected likeInfoCollection: Model<LikesModel>,
     @Inject(QueryCount) protected queryCount: QueryCount,

@@ -2,25 +2,25 @@ import mongoose from 'mongoose';
 import { Blog } from '../blogs/schema/blogs.schema';
 import { Post } from '../posts/schema/posts.schema';
 
-export class CommentsModel {
-  constructor(
-    public id: string,
-    public idPost: string,
-    public content: string,
-    public userId: string,
-    public userLogin: string,
-    public createdAt: string,
-  ) {}
-}
-
-export const CommentsTypeSchema = new mongoose.Schema<CommentsModel>({
-  id: { type: String, required: true },
-  idPost: { type: String, required: true },
-  content: { type: String, required: true },
-  userId: { type: String, required: true },
-  userLogin: { type: String, required: true },
-  createdAt: { type: String, required: true },
-});
+// export class CommentsModel {
+//   constructor(
+//     public id: string,
+//     public idPost: string,
+//     public content: string,
+//     public userId: string,
+//     public userLogin: string,
+//     public createdAt: string,
+//   ) {}
+// }
+//
+// export const CommentsTypeSchema = new mongoose.Schema<CommentsModel>({
+//   id: { type: String, required: true },
+//   idPost: { type: String, required: true },
+//   content: { type: String, required: true },
+//   userId: { type: String, required: true },
+//   userLogin: { type: String, required: true },
+//   createdAt: { type: String, required: true },
+// });
 
 export class UsersModel {
   constructor(
@@ -87,6 +87,14 @@ export class CountAttemptModel {
     public countAttempt: number,
   ) {}
 }
+
+export const CountAttemptSchema = new mongoose.Schema<CountAttemptModel>({
+  ip: { type: String, required: true },
+  iat: { type: Number, required: true },
+  method: { type: String, required: true },
+  originalUrl: { type: String, required: true },
+  countAttempt: { type: Number, required: true },
+});
 
 export class LikesModel {
   constructor(

@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import {
-  CommentsTypeSchema,
+  CountAttemptSchema,
   EmailConfirmationSchema,
   LikesTypeSchema,
   RefreshTokenDataSchema,
@@ -32,6 +32,7 @@ import { DevicesService } from './helper/devices-service';
 import { SecurityDevicesRepository } from './auth/auth.repository';
 import { BlogSchema } from './blogs/schema/blogs.schema';
 import { PostSchema } from './posts/schema/posts.schema';
+import { CommentSchema } from './comments/schema/comment.schema';
 
 @Module({
   imports: [
@@ -39,11 +40,11 @@ import { PostSchema } from './posts/schema/posts.schema';
       { name: 'blogs', schema: BlogSchema },
       { name: 'posts', schema: PostSchema },
       { name: 'users', schema: UsersTypeSchema },
-      { name: 'comments', schema: CommentsTypeSchema },
+      { name: 'comments', schema: CommentSchema },
       { name: 'likeStatuses', schema: LikesTypeSchema },
       { name: 'emailConfirmations', schema: EmailConfirmationSchema },
       { name: 'refreshTokenData', schema: RefreshTokenDataSchema },
-      { name: 'countAttempts', schema: CommentsTypeSchema },
+      { name: 'countAttempts', schema: CountAttemptSchema },
     ]),
   ],
   controllers: [

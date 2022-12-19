@@ -1,36 +1,25 @@
 import { Injectable } from '@nestjs/common';
-import { CommentsModel, ItemsComments, LikesModel } from '../helper/allTypes';
+import { LikesModel } from '../helper/allTypes';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
+import { CommentDocument } from './schema/comment.schema';
 
 @Injectable()
 export class CommentsRepository {
   constructor(
-    @InjectModel('comments') protected commentsCollection: Model<CommentsModel>,
+    @InjectModel('comments')
+    protected commentsCollection: Model<CommentDocument>,
     @InjectModel('likeStatuses')
     protected likeInfoCollection: Model<LikesModel>,
   ) {}
 
-  async getCommentById(id: string): Promise<ItemsComments | null> {
+  async getCommentById(id: string): Promise<CommentDocument | null> {
     return this.commentsCollection.findOne({ id: id });
   }
 
   async deleteCommentById(id: string): Promise<boolean> {
     const result = await this.commentsCollection.deleteOne({ id: id });
     return result.deletedCount === 1;
-  }
-
-  async updateCommentById(id: string, content: string): Promise<boolean> {
-    const result = await this.commentsCollection.updateOne(
-      { id: id },
-      { $set: { content: content } },
-    );
-    return result.matchedCount === 1;
-  }
-
-  async createComment(comment: CommentsModel): Promise<CommentsModel> {
-    await this.commentsCollection.create(comment);
-    return comment;
   }
 
   async getLikesInfo(idComment: string): Promise<number> {
@@ -92,5 +81,9 @@ export class CommentsRepository {
       { $set: { status: status } },
     );
     return newStatusComment.matchedCount === 1;
+  }
+
+  async save(comment: CommentDocument) {
+    await comment.save();
   }
 }

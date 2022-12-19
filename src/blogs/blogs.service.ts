@@ -1,7 +1,7 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { BlogsRepository } from './blogs.repository';
 import { Blog, BlogDocument } from './schema/blogs.schema';
-import { CreateBlogDto, UpdateBlogDto } from './dto/blogDto';
+import { CreateBlogDto, UpdateBlogDto } from './dto/blog.dto';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 

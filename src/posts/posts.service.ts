@@ -1,12 +1,13 @@
-import { CommentsModel, LikesModel } from '../helper/allTypes';
+import { LikesModel } from '../helper/allTypes';
 import { PostsRepository } from './posts.repository';
 import { Inject, Injectable } from '@nestjs/common';
 import { CommentsRepository } from '../comments/comments.repostitory';
 import { Post, PostDocument } from './schema/posts.schema';
-import { CreatePostDto, UpdatePostDto } from './dto/postDto';
+import { CreatePostDto, UpdatePostDto } from './dto/post.dto';
 import { BlogsRepository } from '../blogs/blogs.repository';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
+import { Comment, CommentDocument } from '../comments/schema/comment.schema';
 
 @Injectable()
 export class PostsService {
@@ -16,6 +17,8 @@ export class PostsService {
     @Inject(CommentsRepository)
     protected commentsRepository: CommentsRepository,
     @InjectModel('posts') protected postsCollection: Model<PostDocument>,
+    @InjectModel('comments')
+    protected commentsCollection: Model<CommentDocument>,
   ) {}
 
   async getPostId(id: string, userId: string) {
@@ -83,21 +86,17 @@ export class PostsService {
     content: string,
     userId: string,
     userLogin: string,
-  ): Promise<CommentsModel | boolean> {
-    const idPost = await this.postsRepository.getPostId(postId);
-    if (idPost) {
-      const newComment: CommentsModel = {
-        id: +new Date() + '',
-        idPost: postId,
-        content: content,
-        userId: userId,
-        userLogin: userLogin,
-        createdAt: new Date().toISOString(),
-      };
-      return await this.commentsRepository.createComment(newComment);
-    } else {
-      return false;
-    }
+  ): Promise<Comment | false> {
+    const post = await this.postsRepository.getPostId(postId);
+    if (!post) return false;
+    const newComment = new this.commentsCollection(content);
+    newComment.idPost = post.id;
+    newComment.userId = userId;
+    newComment.userLogin = userLogin;
+    newComment.id = +new Date() + '';
+    newComment.createdAt = new Date().toISOString();
+    await this.commentsRepository.save(newComment);
+    return newComment;
   }
 
   async createLikeStatus(

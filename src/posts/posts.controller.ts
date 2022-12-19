@@ -19,7 +19,8 @@ import { QueryCount } from '../helper/query.count';
 import { JwtService } from '../application/jwt-service';
 import { UsersRepository } from '../users/users.repository';
 import { CommentsService } from '../comments/comments.service';
-import { CreatePostDto, UpdatePostDto } from './dto/postDto';
+import { CreatePostDto, UpdatePostDto } from './dto/post.dto';
+import { CreateCommentDto } from '../comments/dto/comment.dto';
 
 //TODO:исправить авторизацию и цдалить @Res;
 
@@ -122,17 +123,17 @@ export class PostsController {
 
   @Post(':postId/comments')
   async createCommentsForPost(
-    @Param(':postId') postId: string,
-    @Body() body,
+    @Param('postId') postId: string,
+    @Body() body: CreateCommentDto,
     @Headers() h,
     @Res() res,
     @Req() req,
   ) {
-    const post: any = await this.postsService.creatNewCommentByPostId(
+    const post = await this.postsService.creatNewCommentByPostId(
       postId,
       body.content,
-      req.user!.id,
-      req.user!.login,
+      req.user?.id,
+      req.user?.login,
     );
     const userId: any = await this.jwtService.getUserIdByToken(
       h.authorization!.split(' ')[1],

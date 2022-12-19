@@ -2,7 +2,6 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import {
-  CommentsModel,
   CountAttemptModel,
   EmailConfirmationModel,
   LikesModel,
@@ -11,11 +10,13 @@ import {
 } from '../helper/allTypes';
 import { BlogDocument } from '../blogs/schema/blogs.schema';
 import { PostDocument } from '../posts/schema/posts.schema';
+import { CommentDocument } from '../comments/schema/comment.schema';
 
 @Injectable()
 export class TestingRepository {
   constructor(
-    @InjectModel('comments') protected commentsCollection: Model<CommentsModel>,
+    @InjectModel('comments')
+    protected commentsCollection: Model<CommentDocument>,
     @InjectModel('emailConfirmations')
     protected registrationUsersCollection: Model<EmailConfirmationModel>,
     @InjectModel('refreshTokenData')

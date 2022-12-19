@@ -1,6 +1,7 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { CommentsRepository } from './comments.repostitory';
 import { ItemsComments, LikesModel } from '../helper/allTypes';
+import { UpdateCommentDto } from './dto/comment.dto';
 
 @Injectable()
 export class CommentsService {
@@ -17,8 +18,12 @@ export class CommentsService {
     return await this.commentsRepository.deleteCommentById(id);
   }
 
-  async updateCommentById(id: string, content: string) {
-    return await this.commentsRepository.updateCommentById(id, content);
+  async updateCommentById(id: string, body: UpdateCommentDto) {
+    const comment = await this.commentsRepository.getCommentById(id);
+    if (!comment) return false;
+    comment.content = body.content;
+    await this.commentsRepository.save(comment);
+    return true;
   }
 
   async getLikesInfo(
