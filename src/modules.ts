@@ -32,6 +32,7 @@ import { RefreshTokenSchema } from './schemas/refresh.token.data.schema';
 import { EmailConfirmationSchema } from './schemas/email.confirmation.schema';
 import { CountAttemptSchema } from './schemas/count.attempt.schema';
 import { LikesTypeSchema } from './schemas/like.type.schema';
+import { AuthRepository } from './auth/auth.repository';
 
 @Module({
   imports: [
@@ -73,6 +74,7 @@ import { LikesTypeSchema } from './schemas/like.type.schema';
     EmailAdapter,
     SecurityDevicesService,
     SecurityDevicesRepository,
+    AuthRepository,
   ],
 })
 export class Modules {}

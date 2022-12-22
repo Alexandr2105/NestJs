@@ -6,6 +6,8 @@ import { AuthService } from './auth.service';
 import { EmailManager } from '../manager/email-manager';
 import { SecurityDevicesService } from '../securityDevices/security-devices.service';
 import { EmailConfirmationDocument } from '../schemas/email.confirmation.schema';
+import { LoginDto, EmailResending, NewPassword } from './dto/auth.dto';
+import { CreateUserDto } from '../users/dto/user.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -22,11 +24,8 @@ export class AuthController {
   //TODO: удалить @Req();
 
   @Post('login')
-  async loginUser(@Body() body, @Req() req, @Res() res) {
-    const checkResult: any = await this.usersService.checkUserOrLogin(
-      body.loginOrEmail,
-      body.password,
-    );
+  async loginUser(@Body() body: LoginDto, @Req() req, @Res() res) {
+    const checkResult: any = await this.usersService.checkUserOrLogin(body);
     const deviceId = this.devicesService.createDeviceId();
     if (checkResult) {
       const token = this.jwtService.creatJWT(checkResult);
@@ -66,30 +65,24 @@ export class AuthController {
   }
 
   @Post('registration-conformation')
-  async registrationConfirmation(@Body() body, @Res() res) {
+  async registrationConfirmation(@Body() code: string, @Res() res) {
     const userByCode: EmailConfirmationDocument =
-      await this.usersRepository.getUserByCode(body.code);
+      await this.usersRepository.getUserByCode(code);
     await this.usersRepository.updateEmailConfirmation(userByCode?.userId);
     res.sendStatus(204);
   }
 
   @Post('registration')
-  async registration(@Body() body, @Res() res) {
+  async registration(@Body() body: CreateUserDto, @Res() res) {
     const newUser = await this.usersService.creatNewUsers(body);
-    if (newUser)
-      await this.authService.confirmation(newUser.id, body.login, body.email);
+    if (newUser) await this.authService.confirmation(newUser.id, body);
     res.sendStatus(204);
   }
 
   @Post('registration-email-resending')
-  async registrationEmailResending(@Body() body, @Res() res) {
-    const newCode: any = await this.authService.getNewConfirmationCode(
-      body.email,
-    );
-    const result = await this.emailManager.sendEmailAndConfirm(
-      body.email,
-      newCode,
-    );
+  async registrationEmailResending(@Body() body: EmailResending, @Res() res) {
+    const newCode: any = await this.authService.getNewConfirmationCode(body);
+    const result = await this.emailManager.sendEmailAndConfirm(body, newCode);
     if (result) res.sendStatus(204);
   }
 
@@ -130,16 +123,16 @@ export class AuthController {
   }
 
   @Post('password-recovery')
-  async passwordRecovery(@Body() body, @Res() res) {
+  async passwordRecovery(@Body() body: EmailResending, @Res() res) {
     const recoveryCode: any = await this.authService.getNewConfirmationCode(
-      body.email,
+      body,
     );
-    await this.emailManager.sendEmailPasswordRecovery(body.email, recoveryCode);
+    await this.emailManager.sendEmailPasswordRecovery(body, recoveryCode);
     res.sendStatus(204);
   }
 
   @Post('new-password')
-  async createNewPassword(@Body() body, @Res() res) {
+  async createNewPassword(@Body() body: NewPassword, @Res() res) {
     const userByCode: EmailConfirmationDocument =
       await this.usersRepository.getUserByCode(body.recoveryCode);
     await this.usersRepository.updateEmailConfirmation(userByCode!.userId);

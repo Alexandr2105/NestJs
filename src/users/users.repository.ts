@@ -5,6 +5,7 @@ import { ItemsUsers } from '../helper/allTypes';
 import { add } from 'date-fns';
 import { User, UserDocument } from './schema/user';
 import { EmailConfirmationDocument } from '../schemas/email.confirmation.schema';
+import { EmailResending } from '../auth/dto/auth.dto';
 
 @Injectable()
 export class UsersRepository {
@@ -54,8 +55,8 @@ export class UsersRepository {
     }
   }
 
-  async setConfirm(email: string, newCode: string): Promise<boolean> {
-    const user: any = await this.usersCollection.findOne({ email: email });
+  async setConfirm(body: EmailResending, newCode: string): Promise<boolean> {
+    const user: any = await this.usersCollection.findOne({ email: body.email });
     const checkUserEmailConfirmation =
       await this.registrationUsersCollection.findOne({
         userId: user?.id,

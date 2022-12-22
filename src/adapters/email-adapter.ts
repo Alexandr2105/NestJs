@@ -1,9 +1,10 @@
 import nodemailer from 'nodemailer';
 import { Injectable } from '@nestjs/common';
+import { EmailResending } from '../auth/dto/auth.dto';
 
 @Injectable()
 export class EmailAdapter {
-  async sendEmailRegistration(email: string, confirm: string) {
+  async sendEmailRegistration(body: EmailResending, confirm: string) {
     const transporter = nodemailer.createTransport({
       service: 'gmail',
       auth: {
@@ -14,7 +15,7 @@ export class EmailAdapter {
 
     await transporter.sendMail({
       from: 'Alex <testnodemaileremail@gmail.com>',
-      to: email,
+      to: body.email,
       subject: 'Registration',
       html: `<h1>Thank for your registration</h1>
                        <p>To finish registration please follow the link below:
@@ -24,7 +25,7 @@ export class EmailAdapter {
     return true;
   }
 
-  async sendEmailPasswordRecovery(email: string, confirm: string) {
+  async sendEmailPasswordRecovery(body: EmailResending, confirm: string) {
     const transporter = nodemailer.createTransport({
       service: 'gmail',
       auth: {
@@ -35,7 +36,7 @@ export class EmailAdapter {
 
     await transporter.sendMail({
       from: 'Alex <testnodemaileremail@gmail.com>',
-      to: email,
+      to: body.email,
       subject: 'Password Recovery',
       html: `<h1>Password recovery</h1>
                 <p>To finish password recovery please follow the link below:

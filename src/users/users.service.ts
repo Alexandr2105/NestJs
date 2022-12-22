@@ -5,6 +5,7 @@ import { User } from './schema/user';
 import { CreateUserDto } from './dto/user.dto';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
+import { LoginDto } from '../auth/dto/auth.dto';
 
 @Injectable()
 export class UsersService {
@@ -24,13 +25,12 @@ export class UsersService {
     return newUser;
   }
 
-  async checkUserOrLogin(
-    loginOrEmail: string,
-    pass: string,
-  ): Promise<User | boolean> {
-    const user: any = await this.usersRepository.findLoginOrEmail(loginOrEmail);
+  async checkUserOrLogin(body: LoginDto): Promise<User | boolean> {
+    const user: any = await this.usersRepository.findLoginOrEmail(
+      body.loginOrEmail,
+    );
     if (!user) return false;
-    const hashPassword = await this.generateHash(pass, user.password);
+    const hashPassword = await this.generateHash(body.password, user.password);
     if (user.password === hashPassword) {
       return user;
     } else {

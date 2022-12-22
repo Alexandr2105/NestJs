@@ -1,15 +1,16 @@
 import { EmailAdapter } from '../adapters/email-adapter';
 import { Inject, Injectable } from '@nestjs/common';
+import { EmailResending } from '../auth/dto/auth.dto';
 
 @Injectable()
 export class EmailManager {
   constructor(@Inject(EmailAdapter) protected emailAdapter: EmailAdapter) {}
 
-  async sendEmailAndConfirm(email: string, confirm: string) {
-    return await this.emailAdapter.sendEmailRegistration(email, confirm);
+  async sendEmailAndConfirm(body: EmailResending, confirm: string) {
+    return await this.emailAdapter.sendEmailRegistration(body, confirm);
   }
 
-  async sendEmailPasswordRecovery(email: string, confirm: string) {
-    return await this.emailAdapter.sendEmailPasswordRecovery(email, confirm);
+  async sendEmailPasswordRecovery(body: EmailResending, confirm: string) {
+    return await this.emailAdapter.sendEmailPasswordRecovery(body, confirm);
   }
 }

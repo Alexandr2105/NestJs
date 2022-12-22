@@ -1,11 +1,16 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { SecurityDevicesRepository } from './security.devices.repository';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
+import { RefreshTokenDocument } from '../schemas/refresh.token.data.schema';
 
 @Injectable()
 export class SecurityDevicesService {
   constructor(
     @Inject(SecurityDevicesRepository)
     protected securityDevicesRepository: SecurityDevicesRepository,
+    @InjectModel('refreshTokenData')
+    protected refreshTokenDataCollection: Model<RefreshTokenDocument>,
   ) {}
 
   createDeviceId() {
@@ -18,16 +23,15 @@ export class SecurityDevicesService {
     deviceId: string,
     userId: string,
     userIp: string,
-    deviceName: string | undefined,
+    deviceName: string,
   ) {
-    const infoAboutRefreshToken = new RefreshTokenDataModel(
-      iat,
-      exp,
-      deviceId,
-      userIp,
-      deviceName,
-      userId,
-    );
+    const infoAboutRefreshToken = new this.refreshTokenDataCollection();
+    infoAboutRefreshToken.iat = iat;
+    infoAboutRefreshToken.exp = exp;
+    infoAboutRefreshToken.deviceId = deviceId;
+    infoAboutRefreshToken.userId = userIp;
+    infoAboutRefreshToken.deviceName = deviceName;
+    infoAboutRefreshToken.userId = userId;
     await this.securityDevicesRepository.saveInfoAboutRefreshToken(
       infoAboutRefreshToken,
     );

@@ -7,6 +7,7 @@ import { BlogsRepository } from '../blogs/blogs.repository';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Comment, CommentDocument } from '../comments/schema/comment.schema';
+import { LikesModelDocument } from '../schemas/like.type.schema';
 
 @Injectable()
 export class PostsService {
@@ -18,6 +19,8 @@ export class PostsService {
     @InjectModel('posts') protected postsCollection: Model<PostDocument>,
     @InjectModel('comments')
     protected commentsCollection: Model<CommentDocument>,
+    @InjectModel('likeStatuses')
+    protected likeInfoCollection: Model<LikesModelDocument>,
   ) {}
 
   async getPostId(id: string, userId: string) {
@@ -115,13 +118,12 @@ export class PostsService {
         likeStatus,
       );
     } else {
-      const newLikeStatusForPost = new LikesModel(
-        postId,
-        userId,
-        login,
-        likeStatus,
-        new Date().toISOString(),
-      );
+      const newLikeStatusForPost = new this.likeInfoCollection();
+      newLikeStatusForPost.id = postId;
+      newLikeStatusForPost.userId = userId;
+      newLikeStatusForPost.login = login;
+      newLikeStatusForPost.status = likeStatus;
+      newLikeStatusForPost.createDate = new Date().toISOString();
       return await this.postsRepository.createLikeStatus(newLikeStatusForPost);
     }
   }

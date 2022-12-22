@@ -11,7 +11,7 @@ export class SecurityDevicesRepository {
   ) {}
 
   async saveInfoAboutRefreshToken(infoRefreshToken: RefreshTokenDocument) {
-    await this.refreshTokenDataCollection.create(infoRefreshToken);
+    await infoRefreshToken.save();
   }
 
   async delAllDevicesExcludeCurrent(deviceId: string) {

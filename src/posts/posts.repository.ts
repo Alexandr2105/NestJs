@@ -22,8 +22,8 @@ export class PostsRepository {
   }
 
   async createLikeStatus(likeStatus: LikesModelDocument): Promise<boolean> {
-    const status = await this.likeInfoCollection.create(likeStatus);
-    return !!status;
+    await likeStatus.save();
+    return true;
   }
 
   async getLikesInfo(idPost: string): Promise<number> {
