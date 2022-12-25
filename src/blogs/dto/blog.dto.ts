@@ -1,12 +1,12 @@
 import { IsUrl, Length } from 'class-validator';
 
 export class CreateBlogDto {
-  @Length(1, 15, { message: 'Не верно заполнено поле' })
+  @Length(1, 15)
   name: string;
-  @Length(1, 500, { message: 'Не верно заполнено поле' })
+  @Length(1, 500)
   description: string;
-  @IsUrl({}, { message: 'Не верно заполнено поле' })
-  @Length(1, 100, { message: 'Не верно заполнено поле' })
+  @IsUrl()
+  @Length(1, 100)
   websiteUrl: string;
 }
 
