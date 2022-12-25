@@ -21,6 +21,7 @@ import { UsersRepository } from '../users/users.repository';
 import { CommentsService } from '../comments/comments.service';
 import { CreatePostDto, UpdatePostDto } from './dto/post.dto';
 import { CreateCommentDto } from '../comments/dto/comment.dto';
+import { LikeStatusDto } from '../helper/like.status.dto';
 
 //TODO:исправить авторизацию и цдалить @Res;
 
@@ -84,7 +85,12 @@ export class PostsController {
 
   @Post()
   async createPost(@Body() body: CreatePostDto) {
-    const createPost = await this.postsService.createPost(body);
+    const createPost = await this.postsService.createPost(
+      body.blogId,
+      body.content,
+      body.shortDescription,
+      body.title,
+    );
     if (!createPost) return false; //TODO:Это тоже потом удалить
     return await this.postsService.getPostId(createPost.id, 'null');
   }
@@ -154,7 +160,7 @@ export class PostsController {
     @Param('postId') postId: string,
     @Res() res,
     @Headers() d,
-    @Body() body,
+    @Body() body: LikeStatusDto,
   ) {
     const post = await this.postsRepository.getPostId(postId);
     if (!post) {

@@ -16,8 +16,11 @@ import { BlogsService } from './blogs.service';
 import { QueryRepository } from '../queryReposytories/query-Repository';
 import { PostsService } from '../posts/posts.service';
 import { JwtService } from '../application/jwt-service';
-import { CreateBlogDto, UpdateBlogDto } from './dto/blog.dto';
-import { CreatePostDto } from '../posts/dto/post.dto';
+import {
+  CreateBlogDto,
+  CreatePostForBlogDto,
+  UpdateBlogDto,
+} from './dto/blog.dto';
 
 @Controller('blogs')
 export class BlogsController {
@@ -110,10 +113,15 @@ export class BlogsController {
   @Post('/:blogId/posts')
   async createPostsForBlog(
     @Param('blogId') blogId: string,
-    @Body() body: CreatePostDto,
+    @Body() body: CreatePostForBlogDto,
     @Res() res,
   ) {
-    const newPostForBlogId = await this.postsService.createPost(body);
+    const newPostForBlogId = await this.postsService.createPost(
+      blogId,
+      body.content,
+      body.shortDescription,
+      body.title,
+    );
     if (newPostForBlogId) {
       const newPost = await this.postsService.getPostId(
         newPostForBlogId.id,

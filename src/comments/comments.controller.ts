@@ -14,6 +14,7 @@ import { CommentsRepository } from './comments.repostitory';
 import { UsersRepository } from '../users/users.repository';
 import { JwtService } from '../application/jwt-service';
 import { UpdateCommentDto } from './dto/comment.dto';
+import { LikeStatusDto } from '../helper/like.status.dto';
 
 @Controller('comments')
 export class CommentsController {
@@ -78,7 +79,7 @@ export class CommentsController {
   @Put(':commentId/like-status')
   async updateLikeStatusForComment(
     @Param('commentId') commentId: string,
-    @Body() body,
+    @Body() body: LikeStatusDto,
     @Res() res,
     @Req() req,
   ) {
