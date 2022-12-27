@@ -4,7 +4,6 @@ import { Transform } from 'class-transformer';
 export class CreateUserDto {
   @Length(3, 10, { message: 'Не верно заполнено поле' })
   @Transform(({ value }) => value.trim())
-  // @Matches({})
   login: string;
   @IsEmail()
   @Transform(({ value }) => value.trim())
