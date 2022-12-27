@@ -2,7 +2,7 @@ import { PostsRepository } from './posts.repository';
 import { Inject, Injectable } from '@nestjs/common';
 import { CommentsRepository } from '../comments/comments.repostitory';
 import { Post, PostDocument } from './schema/posts.schema';
-import { UpdatePostDto } from './dto/post.dto';
+import { CreatePostDto, UpdatePostDto } from './dto/post.dto';
 import { BlogsRepository } from '../blogs/blogs.repository';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
@@ -73,21 +73,11 @@ export class PostsService {
     return true;
   }
 
-  async createPost(
-    blogId: string,
-    content: string,
-    shortDescription: string,
-    title: string,
-  ): Promise<Post | false> {
+  async createPost(post: CreatePostDto): Promise<Post | false> {
     //TODO:тут исправить
-    const infoBlog = await this.blogsRepository.getBlogId(blogId);
-    if (!infoBlog) return false; //TODO:тут лишшяя проверка
-    const newPost = new this.postsCollection({
-      blogId,
-      content,
-      shortDescription,
-      title,
-    });
+    const infoBlog: any = await this.blogsRepository.getBlogId(post.blogId);
+    // if (!infoBlog) return false; //TODO:тут лишшяя проверка
+    const newPost = new this.postsCollection(post);
     newPost.createdAt = new Date().toISOString();
     newPost.id = +new Date() + '';
     newPost.blogName = infoBlog.name;

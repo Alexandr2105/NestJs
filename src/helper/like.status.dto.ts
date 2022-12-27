@@ -1,3 +1,7 @@
+import { Validate } from 'class-validator';
+import { CheckLikeStatus } from '../customValidator/check.like.status';
+
 export class LikeStatusDto {
-  likeStatus: 'None' | 'Dislike' | 'Like';
+  @Validate(CheckLikeStatus)
+  likeStatus: string;
 }

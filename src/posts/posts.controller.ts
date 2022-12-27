@@ -85,12 +85,7 @@ export class PostsController {
 
   @Post()
   async createPost(@Body() body: CreatePostDto) {
-    const createPost = await this.postsService.createPost(
-      body.blogId,
-      body.content,
-      body.shortDescription,
-      body.title,
-    );
+    const createPost = await this.postsService.createPost(body);
     if (!createPost) return false; //TODO:Это тоже потом удалить
     return await this.postsService.getPostId(createPost.id, 'null');
   }

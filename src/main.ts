@@ -3,6 +3,7 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { BadRequestException, ValidationPipe } from '@nestjs/common';
 import { HttpExceptionFilter } from './exception.filter';
+import { useContainer } from 'class-validator';
 
 const port = process.env.PORT || 3000;
 
@@ -27,6 +28,7 @@ async function bootstrap() {
       },
     }),
   );
+  useContainer(app.select(AppModule), { fallbackOnErrors: true });
   app.useGlobalFilters(new HttpExceptionFilter());
   await app.listen(port);
 }

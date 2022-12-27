@@ -33,6 +33,10 @@ import { EmailConfirmationSchema } from './schemas/email.confirmation.schema';
 import { CountAttemptSchema } from './schemas/count.attempt.schema';
 import { LikesTypeSchema } from './schemas/like.type.schema';
 import { AuthRepository } from './auth/auth.repository';
+import { CheckBlogIdForBlog } from './customValidator/check.blog.id.for.blog';
+import { CheckBlogIdForPost } from './customValidator/check.blog.id.for.post';
+import { CheckLikeStatus } from './customValidator/check.like.status';
+import { CheckIdComment } from './customValidator/check.id.comment';
 
 @Module({
   imports: [
@@ -75,6 +79,10 @@ import { AuthRepository } from './auth/auth.repository';
     SecurityDevicesService,
     SecurityDevicesRepository,
     AuthRepository,
+    CheckBlogIdForBlog,
+    CheckBlogIdForPost,
+    CheckLikeStatus,
+    CheckIdComment,
   ],
 })
 export class Modules {}

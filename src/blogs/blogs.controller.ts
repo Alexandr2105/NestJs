@@ -4,6 +4,7 @@ import {
   Delete,
   Get,
   Inject,
+  NotFoundException,
   Param,
   Post,
   Put,
@@ -17,6 +18,7 @@ import { QueryRepository } from '../queryReposytories/query-Repository';
 import { PostsService } from '../posts/posts.service';
 import { JwtService } from '../application/jwt-service';
 import {
+  CheckBlogId,
   CreateBlogDto,
   CreatePostForBlogDto,
   UpdateBlogDto,
@@ -39,12 +41,15 @@ export class BlogsController {
   }
 
   @Get(':id')
+  // @HttpCode(404)
   async getBlog(@Param('id') blogId: string, @Res() res) {
     const blog = await this.blogsService.getBlogsId(blogId);
     if (blog) {
-      res.send(blog);
+      return blog;
+      // res.send(blog);
     } else {
-      res.sendStatus(404);
+      throw new NotFoundException();
+      // res.sendStatus(404);
     }
   }
 
@@ -112,16 +117,16 @@ export class BlogsController {
 
   @Post('/:blogId/posts')
   async createPostsForBlog(
-    @Param('blogId') blogId: string,
+    @Param('blogId') blogId: CheckBlogId,
     @Body() body: CreatePostForBlogDto,
     @Res() res,
   ) {
-    const newPostForBlogId = await this.postsService.createPost(
-      blogId,
-      body.content,
-      body.shortDescription,
-      body.title,
-    );
+    const newPostForBlogId = await this.postsService.createPost({
+      blogId: blogId.id,
+      title: body.title,
+      content: body.content,
+      shortDescription: body.shortDescription,
+    });
     if (newPostForBlogId) {
       const newPost = await this.postsService.getPostId(
         newPostForBlogId.id,
@@ -129,7 +134,13 @@ export class BlogsController {
       );
       res.send(newPost);
     } else {
-      res.sendStatus(404);
+      throw new NotFoundException();
     }
   }
 }
+
+// @IsNotEmpty()
+// @Transform(({ value }) => value?.trim())
+// @Length(1)
+// @Validate(BlogIdValidation)
+// blogId: string;

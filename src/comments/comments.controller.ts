@@ -13,7 +13,7 @@ import { CommentsService } from './comments.service';
 import { CommentsRepository } from './comments.repostitory';
 import { UsersRepository } from '../users/users.repository';
 import { JwtService } from '../application/jwt-service';
-import { UpdateCommentDto } from './dto/comment.dto';
+import { CommentIdDto, UpdateCommentDto } from './dto/comment.dto';
 import { LikeStatusDto } from '../helper/like.status.dto';
 
 @Controller('comments')
@@ -61,12 +61,12 @@ export class CommentsController {
 
   @Put(':commentId')
   async updateComment(
-    @Param('commentId') commentId: string,
+    @Param('commentId') commentId: CommentIdDto,
     @Body() body: UpdateCommentDto,
     @Res() res,
   ) {
     const putComment = await this.commentsService.updateCommentById(
-      commentId,
+      commentId.commentId,
       body,
     );
     if (!putComment) {
@@ -78,22 +78,22 @@ export class CommentsController {
 
   @Put(':commentId/like-status')
   async updateLikeStatusForComment(
-    @Param('commentId') commentId: string,
+    @Param('commentId') commentId: CommentIdDto,
     @Body() body: LikeStatusDto,
     @Res() res,
     @Req() req,
   ) {
-    const comment = await this.commentsRepository.getCommentById(commentId);
-    if (!comment) {
-      res.sendStatus(404);
-      return;
-    }
+    // const comment = await this.commentsRepository.getCommentById(commentId);
+    // if (!comment) {
+    //   res.sendStatus(404);
+    //   return;
+    // }
     const userId: any = await this.jwtService.getUserIdByToken(
       req.headers.authorization!.split(' ')[1],
     );
     const user: any = await this.usersRepository.getUserId(userId!.toString());
     const lakeStatus = await this.commentsService.createLikeStatus(
-      commentId,
+      commentId.commentId,
       userId.toString(),
       body.likeStatus,
       user.login,
