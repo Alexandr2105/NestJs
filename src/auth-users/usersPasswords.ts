@@ -1,1 +1,4 @@
-export const usersPassword = ['Basic YWRtaW46cXdlcnR5'];
+export const adminPassword = {
+  username: 'admin',
+  password: 'qwerty',
+};

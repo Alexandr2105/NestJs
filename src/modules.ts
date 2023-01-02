@@ -37,9 +37,14 @@ import { CheckBlogIdForBlog } from './customValidator/check.blog.id.for.blog';
 import { CheckBlogIdForPost } from './customValidator/check.blog.id.for.post';
 import { CheckLikeStatus } from './customValidator/check.like.status';
 import { CheckIdComment } from './customValidator/check.id.comment';
+import { BasicStrategy } from './strategies/basic.strategy';
+import { PassportModule } from '@nestjs/passport';
+import { JwtModule } from '@nestjs/jwt';
+import { LocalStrategy } from './strategies/local.strategy';
 
 @Module({
   imports: [
+    PassportModule,
     MongooseModule.forFeature([
       { name: 'blogs', schema: BlogSchema },
       { name: 'posts', schema: PostSchema },
@@ -50,6 +55,10 @@ import { CheckIdComment } from './customValidator/check.id.comment';
       { name: 'refreshTokenData', schema: RefreshTokenSchema },
       { name: 'countAttempts', schema: CountAttemptSchema },
     ]),
+    JwtModule.register({
+      secret: process.env.JWT_SECRET,
+      signOptions: { expiresIn: '5m' },
+    }),
   ],
   controllers: [
     BlogsController,
@@ -83,6 +92,9 @@ import { CheckIdComment } from './customValidator/check.id.comment';
     CheckBlogIdForPost,
     CheckLikeStatus,
     CheckIdComment,
+    LocalStrategy,
+    // JwtStrategy,
+    BasicStrategy,
   ],
 })
 export class Modules {}

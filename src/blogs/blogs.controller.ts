@@ -11,6 +11,7 @@ import {
   Query,
   Req,
   Res,
+  UseGuards,
 } from '@nestjs/common';
 import { QueryCount } from '../helper/query.count';
 import { BlogsService } from './blogs.service';
@@ -23,6 +24,7 @@ import {
   CreatePostForBlogDto,
   UpdateBlogDto,
 } from './dto/blog.dto';
+import { BasicAuthGuard } from '../guard/basic.auth.guard';
 
 @Controller('blogs')
 export class BlogsController {
@@ -42,14 +44,12 @@ export class BlogsController {
 
   @Get(':id')
   // @HttpCode(404)
-  async getBlog(@Param('id') blogId: string, @Res() res) {
+  async getBlog(@Param('id') blogId: string) {
     const blog = await this.blogsService.getBlogsId(blogId);
     if (blog) {
       return blog;
-      // res.send(blog);
     } else {
       throw new NotFoundException();
-      // res.sendStatus(404);
     }
   }
 
@@ -63,6 +63,7 @@ export class BlogsController {
     }
   }
 
+  @UseGuards(BasicAuthGuard)
   @Post()
   async createBlog(@Body() body: CreateBlogDto) {
     const createBlog = await this.blogsService.createBlog(body);

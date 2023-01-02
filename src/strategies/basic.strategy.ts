@@ -1,15 +1,21 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
-import { usersPassword } from '../auth-users/usersPasswords';
-import { Strategy } from 'passport-jwt';
+import { adminPassword } from '../auth-users/usersPasswords';
+import { BasicStrategy as Strategy } from 'passport-http';
 
 @Injectable()
 export class BasicStrategy extends PassportStrategy(Strategy) {
   constructor() {
     super();
   }
-  public validate = async (base64): Promise<boolean> => {
-    if (base64 === usersPassword[0]) {
+  public validate = async (
+    username: string,
+    password: string,
+  ): Promise<boolean> => {
+    if (
+      username === adminPassword.username &&
+      password === adminPassword.password
+    ) {
       return true;
     }
     throw new UnauthorizedException();
