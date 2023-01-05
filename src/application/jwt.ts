@@ -1,30 +1,39 @@
-import jwt from 'jsonwebtoken';
 import { settings } from '../settings';
 import { ItemsUsers } from '../helper/allTypes';
 import { Injectable } from '@nestjs/common';
+import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
-export class JwtService {
+export class Jwt {
+  constructor(protected jwt: JwtService, protected refreshT: JwtService) {}
+
   creatJWT(user: ItemsUsers) {
-    return jwt.sign({ userId: user.id }, settings.JWT_SECRET, {
-      expiresIn: settings.TOKEN_LIFE,
-    });
+    return {
+      access_token: this.jwt.sign(
+        { userId: user.id },
+        { expiresIn: settings.TOKEN_LIFE, secret: settings.JWT_SECRET },
+      ),
+    };
   }
 
   creatRefreshJWT(user: ItemsUsers, deviceId: string) {
-    return jwt.sign(
+    return this.refreshT.sign(
       {
         userId: user.id,
         deviceId: deviceId,
       },
-      settings.REFRESH_TOKEN_SECRET,
-      { expiresIn: settings.REFRESH_TOKEN_LIFE },
+      {
+        expiresIn: settings.REFRESH_TOKEN_LIFE,
+        secret: settings.REFRESH_TOKEN_SECRET,
+      },
     );
   }
 
   getUserIdByToken(token: string) {
     try {
-      const result: any = jwt.verify(token, settings.JWT_SECRET);
+      const result: any = this.jwt.verify(token, {
+        secret: settings.JWT_SECRET,
+      });
       return new Object(result.userId);
     } catch (error) {
       return null;
@@ -33,7 +42,9 @@ export class JwtService {
 
   getUserByRefreshToken(token: string) /*:Object | null*/ {
     try {
-      const result = jwt.verify(token, settings.REFRESH_TOKEN_SECRET);
+      const result = this.jwt.verify(token, {
+        secret: settings.REFRESH_TOKEN_SECRET,
+      });
       return new Object(result);
     } catch (error) {
       return null;
@@ -42,7 +53,9 @@ export class JwtService {
 
   getDeviceIdRefreshToken(token: string) {
     try {
-      const result: any = jwt.verify(token, settings.REFRESH_TOKEN_SECRET);
+      const result: any = this.jwt.verify(token, {
+        secret: settings.REFRESH_TOKEN_SECRET,
+      });
       return new Object(result.deviceId);
     } catch (error) {
       return null;

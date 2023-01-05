@@ -17,7 +17,7 @@ import { CommentsRepository } from './comments/comments.repostitory';
 import { TestingController } from './testing/testing.controller';
 import { TestingRepository } from './testing/testing.repository';
 import { AuthController } from './auth/auth.controller';
-import { JwtService } from './application/jwt-service';
+import { Jwt } from './application/jwt';
 import { AuthService } from './auth/auth.service';
 import { EmailManager } from './manager/email-manager';
 import { EmailAdapter } from './adapters/email-adapter';
@@ -38,9 +38,11 @@ import { CheckBlogIdForPost } from './customValidator/check.blog.id.for.post';
 import { CheckLikeStatus } from './customValidator/check.like.status';
 import { CheckIdComment } from './customValidator/check.id.comment';
 import { BasicStrategy } from './strategies/basic.strategy';
-import { PassportModule } from '@nestjs/passport';
 import { JwtModule } from '@nestjs/jwt';
 import { LocalStrategy } from './strategies/local.strategy';
+import { PassportModule } from '@nestjs/passport';
+import { JwtStrategy } from './strategies/jwt.strategy';
+import { RefreshStrategy } from './strategies/refresh.strategy';
 
 @Module({
   imports: [
@@ -55,10 +57,7 @@ import { LocalStrategy } from './strategies/local.strategy';
       { name: 'refreshTokenData', schema: RefreshTokenSchema },
       { name: 'countAttempts', schema: CountAttemptSchema },
     ]),
-    JwtModule.register({
-      secret: process.env.JWT_SECRET,
-      signOptions: { expiresIn: '5m' },
-    }),
+    JwtModule.register({}),
   ],
   controllers: [
     BlogsController,
@@ -81,7 +80,7 @@ import { LocalStrategy } from './strategies/local.strategy';
     CommentsService,
     CommentsRepository,
     TestingRepository,
-    JwtService,
+    Jwt,
     AuthService,
     EmailManager,
     EmailAdapter,
@@ -93,8 +92,9 @@ import { LocalStrategy } from './strategies/local.strategy';
     CheckLikeStatus,
     CheckIdComment,
     LocalStrategy,
-    // JwtStrategy,
+    JwtStrategy,
     BasicStrategy,
+    RefreshStrategy,
   ],
 })
 export class Modules {}

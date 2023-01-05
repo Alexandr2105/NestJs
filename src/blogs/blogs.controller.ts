@@ -17,7 +17,7 @@ import { QueryCount } from '../helper/query.count';
 import { BlogsService } from './blogs.service';
 import { QueryRepository } from '../queryReposytories/query-Repository';
 import { PostsService } from '../posts/posts.service';
-import { JwtService } from '../application/jwt-service';
+import { Jwt } from '../application/jwt';
 import {
   CheckBlogId,
   CreateBlogDto,
@@ -33,7 +33,7 @@ export class BlogsController {
     @Inject(BlogsService) protected blogsService: BlogsService,
     @Inject(QueryRepository) protected queryRepository: QueryRepository,
     @Inject(PostsService) protected postsService: PostsService,
-    @Inject(JwtService) protected jwtService: JwtService,
+    @Inject(Jwt) protected jwtService: Jwt,
   ) {}
 
   @Get()

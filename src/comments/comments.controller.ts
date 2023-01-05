@@ -12,7 +12,7 @@ import {
 import { CommentsService } from './comments.service';
 import { CommentsRepository } from './comments.repostitory';
 import { UsersRepository } from '../users/users.repository';
-import { JwtService } from '../application/jwt-service';
+import { Jwt } from '../application/jwt';
 import { CommentIdDto, UpdateCommentDto } from './dto/comment.dto';
 import { LikeStatusDto } from '../helper/like.status.dto';
 
@@ -23,7 +23,7 @@ export class CommentsController {
     @Inject(CommentsRepository)
     protected commentsRepository: CommentsRepository,
     @Inject(UsersRepository) protected usersRepository: UsersRepository,
-    @Inject(JwtService) protected jwtService: JwtService,
+    @Inject(Jwt) protected jwtService: Jwt,
   ) {}
 
   // TODO: удалить @Req();

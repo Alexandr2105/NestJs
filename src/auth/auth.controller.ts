@@ -1,13 +1,25 @@
-import { Body, Controller, Get, Inject, Post, Req, Res } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Inject,
+  Post,
+  Request,
+  Res,
+  UseGuards,
+} from '@nestjs/common';
 import { UsersService } from '../users/users.service';
 import { UsersRepository } from '../users/users.repository';
-import { JwtService } from '../application/jwt-service';
+import { Jwt } from '../application/jwt';
 import { AuthService } from './auth.service';
 import { EmailManager } from '../manager/email-manager';
 import { SecurityDevicesService } from '../securityDevices/security-devices.service';
 import { EmailConfirmationDocument } from '../schemas/email.confirmation.schema';
-import { LoginDto, EmailResending, NewPassword } from './dto/auth.dto';
+import { EmailResending, LoginDto, NewPassword } from './dto/auth.dto';
 import { CreateUserDto } from '../users/dto/user.dto';
+import { LocalAuthGuard } from '../guard/local.auth.guard';
+import { JwtAuthGuard } from '../guard/jwt.auth.guard';
+import { RefreshAuthGuard } from '../guard/refresh.auth.guard';
 
 @Controller('auth')
 export class AuthController {
@@ -18,50 +30,60 @@ export class AuthController {
     @Inject(SecurityDevicesService)
     protected devicesService: SecurityDevicesService,
     @Inject(EmailManager) protected emailManager: EmailManager,
-    @Inject(JwtService) protected jwtService: JwtService,
+    @Inject(Jwt) protected jwtService: Jwt,
   ) {}
 
   //TODO: удалить @Req();
 
+  @UseGuards(LocalAuthGuard)
   @Post('login')
-  async loginUser(@Body() body: LoginDto, @Req() req, @Res() res) {
-    const checkResult: any = await this.usersService.checkUserOrLogin(body);
-    const deviceId = this.devicesService.createDeviceId();
-    if (checkResult) {
-      const token = this.jwtService.creatJWT(checkResult);
-      const refreshToken = this.jwtService.creatRefreshJWT(
-        checkResult,
-        deviceId,
-      );
-      const infoRefreshToken: any =
-        this.jwtService.getUserByRefreshToken(refreshToken);
-      await this.devicesService.saveInfoAboutDevicesUser(
-        infoRefreshToken.iat,
-        infoRefreshToken.exp,
-        deviceId,
-        infoRefreshToken.userId,
-        req.ip,
-        req.headers['user-agent'],
-      );
-      await this.devicesService.delOldRefreshTokenData(+new Date());
-      res.cookie('refreshToken', refreshToken, {
-        httpOnly: true,
-        secure: true,
-      });
-      res.send({ accessToken: token });
-    } else {
-      res.sendStatus(401);
-    }
+  async loginUser(@Request() req, @Body() body: LoginDto, @Res() res) {
+    const token = this.jwtService.creatJWT(req.user);
+    const devId = this.devicesService.createDeviceId();
+    const refresh = this.jwtService.creatRefreshJWT(req.user, devId);
+    res.cookie('refresh', refresh);
+    console.log(req.cookies);
+    // const checkResult: any = await this.usersService.checkUserOrLogin(body);
+    // const deviceId = this.devicesService.createDeviceId();
+    // if (checkResult) {
+    //   const token = this.jwtService.creatJWT(checkResult);
+    //   const refreshToken = this.jwtService.creatRefreshJWT(
+    //     checkResult,
+    //     deviceId,
+    //   );
+    //   const infoRefreshToken: any =
+    //     this.jwtService.getUserByRefreshToken(refreshToken);
+    //   await this.devicesService.saveInfoAboutDevicesUser(
+    //     infoRefreshToken.iat,
+    //     infoRefreshToken.exp,
+    //     deviceId,
+    //     infoRefreshToken.userId,
+    //     req.ip,
+    //     req.headers['user-agent'],
+    //   );
+    //   await this.devicesService.delOldRefreshTokenData(+new Date());
+    //   res.cookie('refreshToken', refreshToken, {
+    //     httpOnly: true,
+    //     secure: true,
+    //   });
+    //   res.send({ accessToken: token });
+    // } else {
+    //   res.sendStatus(401);
+    // }
+    res.send(token);
+    // return token;
   }
 
+  @UseGuards(JwtAuthGuard)
   @Get('me')
-  async getInfoAboutMe(@Req() req, @Res() res) {
-    const information = {
-      email: req.user?.email,
-      login: req.user?.login,
-      userId: req.user?.id,
-    };
-    res.send(information);
+  async getInfoAboutMe(@Request() req) {
+    const user = await this.usersService.getUserById(req.user.id);
+    if (user)
+      return {
+        email: user.email,
+        login: user.login,
+        userId: user.id,
+      };
   }
 
   @Post('registration-conformation')
@@ -86,35 +108,39 @@ export class AuthController {
     if (result) res.sendStatus(204);
   }
 
+  @UseGuards(RefreshAuthGuard)
   @Post('refresh-token')
-  async createRefreshToken(@Req() req, @Res() res) {
-    const userId: any = await this.jwtService.getUserByRefreshToken(
-      req.cookies.refreshToken,
-    );
-    const user: any = await this.usersRepository.getUserId(
-      userId.userId.toString(),
-    );
-    const deviceId: any = await this.jwtService.getDeviceIdRefreshToken(
-      req.cookies.refreshToken,
-    );
-    const token = this.jwtService.creatJWT(user);
-    const refreshToken = this.jwtService.creatRefreshJWT(user, deviceId);
-    const infoRefreshToken: any =
-      this.jwtService.getUserByRefreshToken(refreshToken);
-    await this.devicesService.updateInfoAboutDeviceUser(
-      infoRefreshToken.iat,
-      infoRefreshToken.exp,
-      deviceId.toString(),
-      req.ip,
-      req.headers['user-agent'],
-      userId.userId,
-    );
-    res.cookie('refreshToken', refreshToken, { httpOnly: true, secure: true });
-    res.send({ accessToken: token });
+  async createRefreshToken(@Request() req) {
+    // const s = this.jwtService.creatRefreshJWT(req.user);
+    console.log(req.user);
+
+    // const userId: any = await this.jwtService.getUserByRefreshToken(
+    //   req.cookies.refreshToken,
+    // );
+    // const user: any = await this.usersRepository.getUserId(
+    //   userId.userId.toString(),
+    // );
+    // const deviceId: any = await this.jwtService.getDeviceIdRefreshToken(
+    //   req.cookies.refreshToken,
+    // );
+    // const token = this.jwtService.creatJWT(user);
+    // const refreshToken = this.jwtService.creatRefreshJWT(user, deviceId);
+    // const infoRefreshToken: any =
+    //   this.jwtService.getUserByRefreshToken(refreshToken);
+    // await this.devicesService.updateInfoAboutDeviceUser(
+    //   infoRefreshToken.iat,
+    //   infoRefreshToken.exp,
+    //   deviceId.toString(),
+    //   req.ip,
+    //   req.headers['user-agent'],
+    //   userId.userId,
+    // );
+    // res.cookie('refreshToken', refreshToken, { httpOnly: true, secure: true });
+    // res.send({ accessToken: token });
   }
 
   @Post('logout')
-  async logout(@Req() req, @Res() res) {
+  async logout(@Request() req, @Res() res) {
     const user: any = await this.jwtService.getUserByRefreshToken(
       req.cookies.refreshToken,
     );

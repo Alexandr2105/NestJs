@@ -4,14 +4,17 @@ import { AppModule } from './app.module';
 import { BadRequestException, ValidationPipe } from '@nestjs/common';
 import { HttpExceptionFilter } from './exception.filter';
 import { useContainer } from 'class-validator';
+import * as cookieParser from 'cookie-parser';
 
 const port = process.env.PORT || 3000;
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.enableCors();
+  app.use(cookieParser());
   app.useGlobalPipes(
     new ValidationPipe({
+      forbidUnknownValues: false,
       stopAtFirstError: true,
       exceptionFactory: (errors) => {
         const errorsForResponse = [];

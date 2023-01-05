@@ -16,7 +16,7 @@ import {
 import { PostsRepository } from './posts.repository';
 import { QueryRepository } from '../queryReposytories/query-Repository';
 import { QueryCount } from '../helper/query.count';
-import { JwtService } from '../application/jwt-service';
+import { Jwt } from '../application/jwt';
 import { UsersRepository } from '../users/users.repository';
 import { CommentsService } from '../comments/comments.service';
 import { CreatePostDto, UpdatePostDto } from './dto/post.dto';
@@ -34,7 +34,7 @@ export class PostsController {
     @Inject(PostsRepository) protected postsRepository: PostsRepository,
     @Inject(CommentsService) protected commentsService: CommentsService,
     @Inject(QueryRepository) protected queryRepository: QueryRepository,
-    @Inject(JwtService) protected jwtService: JwtService,
+    @Inject(Jwt) protected jwtService: Jwt,
   ) {}
 
   @Get()

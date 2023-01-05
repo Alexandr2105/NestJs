@@ -1,7 +1,7 @@
 import * as bcrypt from 'bcrypt';
 import { Inject, Injectable } from '@nestjs/common';
 import { UsersRepository } from './users.repository';
-import { User } from './schema/user';
+import { User, UserDocument } from './schema/user';
 import { CreateUserDto } from './dto/user.dto';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
@@ -25,7 +25,7 @@ export class UsersService {
     return newUser;
   }
 
-  async checkUserOrLogin(body: LoginDto): Promise<User | boolean> {
+  async checkUserOrLogin(body: LoginDto): Promise<User | false> {
     const user: any = await this.usersRepository.findLoginOrEmail(
       body.loginOrEmail,
     );
@@ -42,7 +42,7 @@ export class UsersService {
     return bcrypt.hash(pass, salt);
   }
 
-  async getUserById(id: string) {
+  async getUserById(id: string): Promise<UserDocument | false> {
     return this.usersRepository.getUserId(id);
   }
 

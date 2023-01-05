@@ -9,7 +9,7 @@ import {
 } from '@nestjs/common';
 import { SecurityDevicesService } from './security-devices.service';
 import { SecurityDevicesRepository } from './security.devices.repository';
-import { JwtService } from '../application/jwt-service';
+import { Jwt } from '../application/jwt';
 
 @Controller('security/devices')
 export class SecurityDevicesController {
@@ -18,7 +18,7 @@ export class SecurityDevicesController {
     protected devicesService: SecurityDevicesService,
     @Inject(SecurityDevicesRepository)
     protected securityDevicesRepository: SecurityDevicesRepository,
-    @Inject(JwtService) protected jwtService: JwtService,
+    @Inject(Jwt) protected jwtService: Jwt,
   ) {}
 
   @Get()
