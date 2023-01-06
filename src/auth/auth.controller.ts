@@ -2,6 +2,7 @@ import {
   Body,
   Controller,
   Get,
+  HttpCode,
   Inject,
   Post,
   Request,
@@ -33,45 +34,30 @@ export class AuthController {
     @Inject(Jwt) protected jwtService: Jwt,
   ) {}
 
-  //TODO: удалить @Req();
+  // TODO: удалить @Req();
 
   @UseGuards(LocalAuthGuard)
   @Post('login')
   async loginUser(@Request() req, @Body() body: LoginDto, @Res() res) {
-    const token = this.jwtService.creatJWT(req.user);
-    const devId = this.devicesService.createDeviceId();
-    const refresh = this.jwtService.creatRefreshJWT(req.user, devId);
-    res.cookie('refresh', refresh);
-    console.log(req.cookies);
-    // const checkResult: any = await this.usersService.checkUserOrLogin(body);
-    // const deviceId = this.devicesService.createDeviceId();
-    // if (checkResult) {
-    //   const token = this.jwtService.creatJWT(checkResult);
-    //   const refreshToken = this.jwtService.creatRefreshJWT(
-    //     checkResult,
-    //     deviceId,
-    //   );
-    //   const infoRefreshToken: any =
-    //     this.jwtService.getUserByRefreshToken(refreshToken);
-    //   await this.devicesService.saveInfoAboutDevicesUser(
-    //     infoRefreshToken.iat,
-    //     infoRefreshToken.exp,
-    //     deviceId,
-    //     infoRefreshToken.userId,
-    //     req.ip,
-    //     req.headers['user-agent'],
-    //   );
-    //   await this.devicesService.delOldRefreshTokenData(+new Date());
-    //   res.cookie('refreshToken', refreshToken, {
-    //     httpOnly: true,
-    //     secure: true,
-    //   });
-    //   res.send({ accessToken: token });
-    // } else {
-    //   res.sendStatus(401);
-    // }
-    res.send(token);
-    // return token;
+    const accessToken = this.jwtService.creatJWT(req.user);
+    const deviceId = this.devicesService.createDeviceId();
+    const refreshToken = this.jwtService.creatRefreshJWT(req.user, deviceId);
+    const infoRefreshToken: any =
+      this.jwtService.getUserByRefreshToken(refreshToken);
+    await this.devicesService.saveInfoAboutDevicesUser({
+      iat: infoRefreshToken.iat,
+      exp: infoRefreshToken.exp,
+      deviceId: deviceId,
+      userId: infoRefreshToken.userId,
+      ip: req.ip,
+      deviceName: req.headers['user-agent'],
+    });
+    await this.devicesService.delOldRefreshTokenData(+new Date());
+    res.cookie('refreshToken', refreshToken, {
+      // httpOnly: true,
+      // secure: true,
+    });
+    res.send(accessToken);
   }
 
   @UseGuards(JwtAuthGuard)
@@ -85,58 +71,48 @@ export class AuthController {
         userId: user.id,
       };
   }
-
-  @Post('registration-conformation')
-  async registrationConfirmation(@Body() code: string, @Res() res) {
+  @HttpCode(204)
+  @Post('registration-confirmation')
+  async registrationConfirmation(@Body() body) {
     const userByCode: EmailConfirmationDocument =
-      await this.usersRepository.getUserByCode(code);
+      await this.usersRepository.getUserByCode(body.code);
     await this.usersRepository.updateEmailConfirmation(userByCode?.userId);
-    res.sendStatus(204);
   }
 
+  @HttpCode(204)
   @Post('registration')
-  async registration(@Body() body: CreateUserDto, @Res() res) {
+  async registration(@Body() body: CreateUserDto) {
     const newUser = await this.usersService.creatNewUsers(body);
     if (newUser) await this.authService.confirmation(newUser.id, body);
-    res.sendStatus(204);
   }
 
+  @HttpCode(204)
   @Post('registration-email-resending')
-  async registrationEmailResending(@Body() body: EmailResending, @Res() res) {
+  async registrationEmailResending(@Body() body: EmailResending) {
     const newCode: any = await this.authService.getNewConfirmationCode(body);
-    const result = await this.emailManager.sendEmailAndConfirm(body, newCode);
-    if (result) res.sendStatus(204);
+    await this.emailManager.sendEmailAndConfirm(body, newCode);
   }
 
   @UseGuards(RefreshAuthGuard)
   @Post('refresh-token')
-  async createRefreshToken(@Request() req) {
-    // const s = this.jwtService.creatRefreshJWT(req.user);
-    console.log(req.user);
-
-    // const userId: any = await this.jwtService.getUserByRefreshToken(
-    //   req.cookies.refreshToken,
-    // );
-    // const user: any = await this.usersRepository.getUserId(
-    //   userId.userId.toString(),
-    // );
-    // const deviceId: any = await this.jwtService.getDeviceIdRefreshToken(
-    //   req.cookies.refreshToken,
-    // );
-    // const token = this.jwtService.creatJWT(user);
-    // const refreshToken = this.jwtService.creatRefreshJWT(user, deviceId);
-    // const infoRefreshToken: any =
-    //   this.jwtService.getUserByRefreshToken(refreshToken);
-    // await this.devicesService.updateInfoAboutDeviceUser(
-    //   infoRefreshToken.iat,
-    //   infoRefreshToken.exp,
-    //   deviceId.toString(),
-    //   req.ip,
-    //   req.headers['user-agent'],
-    //   userId.userId,
-    // );
-    // res.cookie('refreshToken', refreshToken, { httpOnly: true, secure: true });
-    // res.send({ accessToken: token });
+  async createRefreshToken(@Request() req, @Res() res) {
+    const token = this.jwtService.creatJWT(req.user);
+    const refreshToken = this.jwtService.creatRefreshJWT(
+      req.user,
+      req.user.deviceId,
+    );
+    const infoRefreshToken: any =
+      this.jwtService.getUserByRefreshToken(refreshToken);
+    await this.devicesService.updateInfoAboutDeviceUser({
+      iat: infoRefreshToken.iat,
+      exp: infoRefreshToken.exp,
+      deviceId: req.user.deviceId,
+      ip: req.ip,
+      deviceName: req.headers['user-agent'],
+      userId: req.user.userId,
+    });
+    res.cookie('refreshToken', refreshToken, { httpOnly: false, secure: true });
+    res.send({ accessToken: token });
   }
 
   @Post('logout')
@@ -148,26 +124,23 @@ export class AuthController {
     if (result) res.sendStatus(204);
   }
 
+  @HttpCode(204)
   @Post('password-recovery')
-  async passwordRecovery(@Body() body: EmailResending, @Res() res) {
+  async passwordRecovery(@Body() body: EmailResending) {
     const recoveryCode: any = await this.authService.getNewConfirmationCode(
       body,
     );
     await this.emailManager.sendEmailPasswordRecovery(body, recoveryCode);
-    res.sendStatus(204);
   }
 
+  @HttpCode(204)
   @Post('new-password')
-  async createNewPassword(@Body() body: NewPassword, @Res() res) {
+  async createNewPassword(@Body() body: NewPassword) {
     const userByCode: EmailConfirmationDocument =
       await this.usersRepository.getUserByCode(body.recoveryCode);
-    await this.usersRepository.updateEmailConfirmation(userByCode!.userId);
+    await this.usersRepository.updateEmailConfirmation(userByCode?.userId);
     const user: EmailConfirmationDocument =
       await this.usersRepository.getUserByCode(body.recoveryCode);
-    const newPass = await this.usersService.createNewPassword(
-      body.newPassword,
-      user!.userId,
-    );
-    if (newPass) res.sendStatus(204);
+    await this.usersService.createNewPassword(body.newPassword, user?.userId);
   }
 }

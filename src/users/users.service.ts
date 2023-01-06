@@ -50,7 +50,7 @@ export class UsersService {
     return this.usersRepository.deleteUser(id);
   }
   async updatePasswordUser(password: string, userId: string): Promise<boolean> {
-    const user = await this.usersRepository.getUserId(userId);
+    const user = await this.usersRepository.getUserByIdAll(userId);
     if (!user) return false;
     user.password = password;
     await this.usersRepository.save(user);

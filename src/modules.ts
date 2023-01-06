@@ -43,6 +43,7 @@ import { LocalStrategy } from './strategies/local.strategy';
 import { PassportModule } from '@nestjs/passport';
 import { JwtStrategy } from './strategies/jwt.strategy';
 import { RefreshStrategy } from './strategies/refresh.strategy';
+import { MailerModule } from '@nestjs-modules/mailer';
 
 @Module({
   imports: [
@@ -58,6 +59,15 @@ import { RefreshStrategy } from './strategies/refresh.strategy';
       { name: 'countAttempts', schema: CountAttemptSchema },
     ]),
     JwtModule.register({}),
+    MailerModule.forRoot({
+      transport: {
+        host: 'smtp.gmail.com',
+        auth: {
+          user: 'testnodemaileremail@gmail.com',
+          pass: 'nfzdgxtapolqzxvo',
+        },
+      },
+    }),
   ],
   controllers: [
     BlogsController,

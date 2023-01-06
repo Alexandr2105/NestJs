@@ -78,6 +78,10 @@ export class UsersRepository {
     }
   }
 
+  async getUserByIdAll(id: string) {
+    return this.usersCollection.findOne({ id: id });
+  }
+
   async save(user: UserDocument) {
     await user.save();
   }

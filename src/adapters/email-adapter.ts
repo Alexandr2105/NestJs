@@ -1,19 +1,13 @@
-import nodemailer from 'nodemailer';
 import { Injectable } from '@nestjs/common';
 import { EmailResending } from '../auth/dto/auth.dto';
+import { MailerService } from '@nestjs-modules/mailer';
 
 @Injectable()
 export class EmailAdapter {
-  async sendEmailRegistration(body: EmailResending, confirm: string) {
-    const transporter = nodemailer.createTransport({
-      service: 'gmail',
-      auth: {
-        user: 'testnodemaileremail@gmail.com',
-        pass: 'nfzdgxtapolqzxvo',
-      },
-    });
+  constructor(protected mailService: MailerService) {}
 
-    await transporter.sendMail({
+  async sendEmailRegistration(body: EmailResending, confirm: string) {
+    await this.mailService.sendMail({
       from: 'Alex <testnodemaileremail@gmail.com>',
       to: body.email,
       subject: 'Registration',
@@ -26,15 +20,7 @@ export class EmailAdapter {
   }
 
   async sendEmailPasswordRecovery(body: EmailResending, confirm: string) {
-    const transporter = nodemailer.createTransport({
-      service: 'gmail',
-      auth: {
-        user: 'testnodemaileremail@gmail.com',
-        pass: 'nfzdgxtapolqzxvo',
-      },
-    });
-
-    await transporter.sendMail({
+    await this.mailService.sendMail({
       from: 'Alex <testnodemaileremail@gmail.com>',
       to: body.email,
       subject: 'Password Recovery',

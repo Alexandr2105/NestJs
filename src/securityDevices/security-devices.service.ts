@@ -2,7 +2,10 @@ import { Inject, Injectable } from '@nestjs/common';
 import { SecurityDevicesRepository } from './security.devices.repository';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { RefreshTokenDocument } from '../schemas/refresh.token.data.schema';
+import {
+  RefreshTokenData,
+  RefreshTokenDocument,
+} from '../schemas/refresh.token.data.schema';
 
 @Injectable()
 export class SecurityDevicesService {
@@ -17,24 +20,11 @@ export class SecurityDevicesService {
     return +new Date() + '';
   }
 
-  async saveInfoAboutDevicesUser(
-    iat: number,
-    exp: number,
-    deviceId: string,
-    userId: string,
-    userIp: string,
-    deviceName: string,
-  ) {
-    const infoAboutRefreshToken = new this.refreshTokenDataCollection();
-    infoAboutRefreshToken.iat = iat;
-    infoAboutRefreshToken.exp = exp;
-    infoAboutRefreshToken.deviceId = deviceId;
-    infoAboutRefreshToken.userId = userIp;
-    infoAboutRefreshToken.deviceName = deviceName;
-    infoAboutRefreshToken.userId = userId;
-    await this.securityDevicesRepository.saveInfoAboutRefreshToken(
-      infoAboutRefreshToken,
+  async saveInfoAboutDevicesUser(infoDevice: RefreshTokenData) {
+    const infoAboutRefreshToken = new this.refreshTokenDataCollection(
+      infoDevice,
     );
+    await this.securityDevicesRepository.save(infoAboutRefreshToken);
   }
 
   async delOldRefreshTokenData(date: number) {
@@ -49,21 +39,17 @@ export class SecurityDevicesService {
     return await this.securityDevicesRepository.delDevice(deviceId);
   }
 
-  async updateInfoAboutDeviceUser(
-    iat: number,
-    exp: number,
-    deviceId: string,
-    ip: string,
-    deviceName: string | undefined,
-    userId: string,
-  ) {
-    await this.securityDevicesRepository.updateInfoAboutDeviceUser(
-      iat,
-      exp,
-      deviceId,
-      ip,
-      deviceName,
-      userId,
-    );
+  async updateInfoAboutDeviceUser(infoDevice: RefreshTokenData) {
+    const deviceInfo =
+      await this.securityDevicesRepository.getInfoAboutDeviceUser(
+        infoDevice.userId,
+        infoDevice.deviceId,
+      );
+    deviceInfo.iat = infoDevice.iat;
+    deviceInfo.exp = infoDevice.exp;
+    deviceInfo.ip = infoDevice.ip;
+    deviceInfo.deviceName = infoDevice.deviceName;
+    await this.securityDevicesRepository.save(deviceInfo);
+    return true;
   }
 }

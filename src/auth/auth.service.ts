@@ -21,8 +21,9 @@ export class AuthService {
   ) {}
 
   async confirmation(id: string, body: CreateUserDto) {
-    const emailConfirmation = new this.registrationUsersCollection();
-    emailConfirmation.id = id;
+    const emailConfirmation: EmailConfirmationDocument =
+      new this.registrationUsersCollection();
+    emailConfirmation.userId = id;
     emailConfirmation.confirmationCode = uuid4();
     emailConfirmation.expirationDate = add(new Date(), {
       hours: 1,

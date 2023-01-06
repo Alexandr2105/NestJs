@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
 import { RefreshTokenDocument } from '../schemas/refresh.token.data.schema';
+import { DeviceInfoDto } from './dto/device.info.dto';
 
 @Injectable()
 export class SecurityDevicesRepository {
@@ -10,7 +11,7 @@ export class SecurityDevicesRepository {
     protected refreshTokenDataCollection: Model<RefreshTokenDocument>,
   ) {}
 
-  async saveInfoAboutRefreshToken(infoRefreshToken: RefreshTokenDocument) {
+  async save(infoRefreshToken: RefreshTokenDocument) {
     await infoRefreshToken.save();
   }
 
@@ -27,7 +28,7 @@ export class SecurityDevicesRepository {
     return result.deletedCount === 1;
   }
 
-  async getAllDevicesUser(userId: string) {
+  async getAllDevicesUser(userId: string): Promise<DeviceInfoDto[]> {
     const deviceInfo = await this.refreshTokenDataCollection.find({
       userId: userId,
     });
@@ -48,24 +49,12 @@ export class SecurityDevicesRepository {
     });
   }
 
-  async updateInfoAboutDeviceUser(
-    iat: number,
-    exp: number,
-    deviceId: string,
-    ip: string,
-    deviceName: string | undefined,
+  async getInfoAboutDeviceUser(
     userId: string,
-  ) {
-    await this.refreshTokenDataCollection.updateOne(
-      { $and: [{ userId: userId }, { deviceId: deviceId }] },
-      {
-        $set: {
-          iat: iat,
-          exp: exp,
-          ip: ip,
-          deviceName: deviceName,
-        },
-      },
-    );
+    deviceId: string,
+  ): Promise<RefreshTokenDocument> {
+    return this.refreshTokenDataCollection.findOne({
+      $and: [{ userId: userId }, { deviceId: deviceId }],
+    });
   }
 }

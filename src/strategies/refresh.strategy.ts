@@ -5,12 +5,15 @@ import { settings } from '../settings';
 import { Request } from 'express';
 
 @Injectable()
-export class RefreshStrategy extends PassportStrategy(Strategy, 'refresh') {
+export class RefreshStrategy extends PassportStrategy(
+  Strategy,
+  'refreshToken',
+) {
   constructor() {
     super({
       jwtFromRequest: ExtractJwt.fromExtractors([
         (req: Request) => {
-          return req.cookies.refresh;
+          return req.cookies.refreshToken;
         },
       ]),
       ignoreExpiration: false,
@@ -19,7 +22,6 @@ export class RefreshStrategy extends PassportStrategy(Strategy, 'refresh') {
   }
 
   validate(payload) {
-    // const refreshToken = req.cookies.refresh;
-    return { payload };
+    return { userId: payload.userId, deviceId: payload.deviceId };
   }
 }
