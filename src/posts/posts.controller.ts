@@ -5,13 +5,15 @@ import {
   Delete,
   Get,
   Headers,
+  HttpCode,
   Inject,
+  NotFoundException,
   Param,
   Post,
   Put,
   Query,
   Req,
-  Res,
+  UseGuards,
 } from '@nestjs/common';
 import { PostsRepository } from './posts.repository';
 import { QueryRepository } from '../queryReposytories/query-Repository';
@@ -22,8 +24,8 @@ import { CommentsService } from '../comments/comments.service';
 import { CreatePostDto, UpdatePostDto } from './dto/post.dto';
 import { CreateCommentDto } from '../comments/dto/comment.dto';
 import { LikeStatusDto } from '../helper/like.status.dto';
-
-//TODO:исправить авторизацию и цдалить @Res;
+import { JwtAuthGuard } from '../guard/jwt.auth.guard';
+import { BasicAuthGuard } from '../guard/basic.auth.guard';
 
 @Controller('posts')
 export class PostsController {
@@ -38,69 +40,67 @@ export class PostsController {
   ) {}
 
   @Get()
-  async getPosts(@Query() dataQuery, @Req() req, @Res() res) {
+  async getPosts(@Query() dataQuery, @Headers() headers) {
     let post;
     const query = this.queryCount.queryCheckHelper(dataQuery);
-    if (req.headers.authorization) {
+    if (headers.authorization) {
       const userId: any = this.jwtService.getUserIdByToken(
-        req.headers.authorization!.split(' ')[1],
+        headers.authorization.split(' ')[1],
       );
       post = await this.queryRepository.getQueryPosts(query, userId.toString());
     } else {
       post = await this.queryRepository.getQueryPosts(query, 'null');
     }
-    res.send(post);
+    return post;
   }
 
   @Get(':id')
-  async getPost(@Param('id') postId: string, @Res() res, @Req() req) {
+  async getPost(@Param('id') postId: string, @Headers() headers) {
     let post;
-    if (req.headers.authorization) {
+    if (headers.authorization) {
       const userId: any = this.jwtService.getUserIdByToken(
-        req.headers.authorization!.split(' ')[1],
+        headers.authorization.split(' ')[1],
       );
-      post = await this.postsService.getPostId(
-        req.params.id,
-        userId.toString(),
-      );
+      post = await this.postsService.getPostId(postId, userId.toString());
     } else {
-      post = await this.postsService.getPostId(req.params.id, 'null');
+      post = await this.postsService.getPostId(postId, 'null');
     }
     if (post) {
-      res.send(post);
+      return post;
     } else {
-      res.sendStatus(404);
+      throw new NotFoundException();
     }
   }
 
+  @UseGuards(BasicAuthGuard)
+  @HttpCode(204)
   @Delete(':id')
-  async deletePost(@Param('id') postId: string, @Res() res) {
+  async deletePost(@Param('id') postId: string) {
     const post = await this.postsService.deletePostId(postId);
-    if (post) {
-      res.sendStatus(204);
+    if (!post) {
+      return;
     } else {
-      res.sendStatus(404);
+      throw new NotFoundException();
     }
   }
 
+  @UseGuards(BasicAuthGuard)
   @Post()
   async createPost(@Body() body: CreatePostDto) {
     const createPost = await this.postsService.createPost(body);
-    if (!createPost) return false; //TODO:Это тоже потом удалить
+    if (!createPost) return false;
     return await this.postsService.getPostId(createPost.id, 'null');
   }
 
+  @UseGuards(BasicAuthGuard)
+  @HttpCode(204)
   @Put(':id')
-  async updatePost(
-    @Param('id') postId: string,
-    @Body() body: UpdatePostDto,
-    @Res() res,
-  ) {
+  async updatePost(@Param('id') postId: string, @Body() body: UpdatePostDto) {
     const postUpdate = await this.postsService.updatePostId(postId, body);
     if (postUpdate) {
-      res.sendStatus(204);
+      return;
     } else {
-      res.sendStatus(404);
+      throw new NotFoundException();
     }
   }
 
@@ -108,7 +108,6 @@ export class PostsController {
   async getCommentsForPost(
     @Param('postId') blogId: string,
     @Query() dataQuery,
-    @Res() res,
   ) {
     const query = this.queryCount.queryCheckHelper(dataQuery);
     const comments = await this.queryRepository.getQueryCommentsByPostId(
@@ -116,18 +115,19 @@ export class PostsController {
       blogId,
     );
     if (comments) {
-      res.send(comments);
+      return comments;
     } else {
-      res.sendStatus(404);
+      throw new NotFoundException();
     }
   }
 
+  @UseGuards(JwtAuthGuard)
+  @HttpCode(201)
   @Post(':postId/comments')
   async createCommentsForPost(
     @Param('postId') postId: string,
     @Body() body: CreateCommentDto,
-    @Headers() h,
-    @Res() res,
+    @Headers() headers,
     @Req() req,
   ) {
     const post = await this.postsService.creatNewCommentByPostId(
@@ -137,43 +137,42 @@ export class PostsController {
       req.user?.login,
     );
     const userId: any = await this.jwtService.getUserIdByToken(
-      h.authorization!.split(' ')[1],
+      headers.authorization.split(' ')[1],
     );
     if (post) {
-      const newPost = await this.commentsService.getLikesInfo(
+      return await this.commentsService.getLikesInfo(
         post.id,
         userId.toString(),
       );
-      res.status(201).send(newPost);
     } else {
-      res.sendStatus(404);
+      throw new NotFoundException();
     }
   }
 
+  @UseGuards(JwtAuthGuard)
+  @HttpCode(204)
   @Put(':postId/like-status')
   async createLikeStatusForPost(
     @Param('postId') postId: string,
-    @Res() res,
-    @Headers() d,
+    @Headers() headers,
     @Body() body: LikeStatusDto,
   ) {
     const post = await this.postsRepository.getPostId(postId);
     if (!post) {
-      res.sendStatus(404);
-      return;
+      throw new NotFoundException();
     }
     const userId = await this.jwtService.getUserIdByToken(
-      d.authorization!.split(' ')[1],
+      headers.authorization.split(' ')[1],
     );
-    const user: any = await this.usersRepository.getUserId(userId!.toString());
+    const user: any = await this.usersRepository.getUserId(userId.toString());
     const likeStatus = await this.postsService.createLikeStatus(
       postId,
-      userId!.toString(),
+      userId.toString(),
       body.likeStatus,
       user.login,
     );
     if (likeStatus) {
-      res.sendStatus(204);
+      return;
     }
   }
 }

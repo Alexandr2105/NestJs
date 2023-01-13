@@ -74,9 +74,7 @@ export class PostsService {
   }
 
   async createPost(post: CreatePostDto): Promise<Post | false> {
-    //TODO:тут исправить
     const infoBlog: any = await this.blogsRepository.getBlogId(post.blogId);
-    // if (!infoBlog) return false; //TODO:тут лишшяя проверка
     const newPost = new this.postsCollection(post);
     newPost.createdAt = new Date().toISOString();
     newPost.id = +new Date() + '';

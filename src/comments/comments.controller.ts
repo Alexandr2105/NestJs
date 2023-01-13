@@ -6,15 +6,18 @@ import {
   Inject,
   Param,
   Put,
-  Req,
-  Res,
+  UseGuards,
+  Headers,
+  NotFoundException,
+  HttpCode,
 } from '@nestjs/common';
 import { CommentsService } from './comments.service';
 import { CommentsRepository } from './comments.repostitory';
 import { UsersRepository } from '../users/users.repository';
 import { Jwt } from '../application/jwt';
-import { CommentIdDto, UpdateCommentDto } from './dto/comment.dto';
+import { UpdateCommentDto } from './dto/comment.dto';
 import { LikeStatusDto } from '../helper/like.status.dto';
+import { JwtAuthGuard } from '../guard/jwt.auth.guard';
 
 @Controller('comments')
 export class CommentsController {
@@ -26,14 +29,12 @@ export class CommentsController {
     @Inject(Jwt) protected jwtService: Jwt,
   ) {}
 
-  // TODO: удалить @Req();
-
   @Get(':id')
-  async getComment(@Param('id') commentId: string, @Res() res, @Req() req) {
+  async getComment(@Param('id') commentId: string, @Headers() headers) {
     let comment;
-    if (req.headers.authorization) {
+    if (headers.authorization) {
       const userId: any = this.jwtService.getUserIdByToken(
-        req.headers.authorization!.split(' ')[1],
+        headers.authorization.split(' ')[1],
       );
       comment = await this.commentsService.getLikesInfo(
         commentId,
@@ -43,61 +44,62 @@ export class CommentsController {
       comment = await this.commentsService.getLikesInfo(commentId, 'null');
     }
     if (comment) {
-      res.send(comment);
+      return comment;
     } else {
-      res.sendStatus(404);
+      throw new NotFoundException();
     }
   }
 
+  @UseGuards(JwtAuthGuard)
+  @HttpCode(204)
   @Delete(':commentId')
-  async deleteComment(@Param('commentId') commentId: string, @Res() res) {
+  async deleteComment(@Param('commentId') commentId: string) {
     const delComment = await this.commentsService.deleteCommentById(commentId);
     if (!delComment) {
-      res.sendStatus(404);
+      throw new NotFoundException();
     } else {
-      res.sendStatus(204);
+      return;
     }
   }
 
+  @UseGuards(JwtAuthGuard)
+  @HttpCode(204)
   @Put(':commentId')
   async updateComment(
-    @Param('commentId') commentId: CommentIdDto,
+    @Param('commentId') commentId: string,
     @Body() body: UpdateCommentDto,
-    @Res() res,
   ) {
     const putComment = await this.commentsService.updateCommentById(
-      commentId.commentId,
+      commentId,
       body,
     );
     if (!putComment) {
-      res.sendStatus(404);
+      throw new NotFoundException();
     } else {
-      res.sendStatus(204);
+      return;
     }
   }
 
+  @UseGuards(JwtAuthGuard)
+  @HttpCode(204)
   @Put(':commentId/like-status')
   async updateLikeStatusForComment(
-    @Param('commentId') commentId: CommentIdDto,
+    @Param('commentId') commentId: string,
     @Body() body: LikeStatusDto,
-    @Res() res,
-    @Req() req,
+    @Headers() headers,
   ) {
-    // const comment = await this.commentsRepository.getCommentById(commentId);
-    // if (!comment) {
-    //   res.sendStatus(404);
-    //   return;
-    // }
+    const comment = await this.commentsRepository.getCommentById(commentId);
+    if (!comment) throw new NotFoundException();
     const userId: any = await this.jwtService.getUserIdByToken(
-      req.headers.authorization!.split(' ')[1],
+      headers.authorization.split(' ')[1],
     );
-    const user: any = await this.usersRepository.getUserId(userId!.toString());
+    const user: any = await this.usersRepository.getUserId(userId.toString());
     const lakeStatus = await this.commentsService.createLikeStatus(
-      commentId.commentId,
+      commentId,
       userId.toString(),
       body.likeStatus,
       user.login,
     );
-    if (lakeStatus) res.sendStatus(204);
+    if (lakeStatus) return;
   }
 }

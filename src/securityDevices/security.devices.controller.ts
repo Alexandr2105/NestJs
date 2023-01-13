@@ -2,10 +2,10 @@ import {
   Controller,
   Delete,
   Get,
+  HttpCode,
   Inject,
   Param,
   Req,
-  Res,
 } from '@nestjs/common';
 import { SecurityDevicesService } from './security-devices.service';
 import { SecurityDevicesRepository } from './security.devices.repository';
@@ -22,31 +22,27 @@ export class SecurityDevicesController {
   ) {}
 
   @Get()
-  async getDevices(@Req() req, @Res() res) {
+  async getDevices(@Req() req) {
     const user: any = this.jwtService.getUserByRefreshToken(
       req.cookies.refreshToken,
     );
-    const allDevicesUser =
-      await this.securityDevicesRepository.getAllDevicesUser(user.userId);
-    res.send(allDevicesUser);
+    return await this.securityDevicesRepository.getAllDevicesUser(user.userId);
   }
 
+  @HttpCode(204)
   @Delete()
-  async deleteDevices(@Req() req, @Res() res) {
+  async deleteDevices(@Req() req) {
     const user: any = this.jwtService.getUserByRefreshToken(
       req.cookies.refreshToken,
     );
     await this.devicesService.delAllDevicesExcludeCurrent(user.deviceId);
-    res.sendStatus(204);
+    return;
   }
 
+  @HttpCode(204)
   @Delete(':deviceId')
-  async deleteDevice(
-    @Param('deviceId') deviceId: string,
-    @Req() req,
-    @Res() res,
-  ) {
+  async deleteDevice(@Param('deviceId') deviceId: string) {
     const result = await this.devicesService.delDevice(deviceId);
-    if (result) res.sendStatus(204);
+    if (result) return;
   }
 }

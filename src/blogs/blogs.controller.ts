@@ -3,14 +3,14 @@ import {
   Controller,
   Delete,
   Get,
+  Headers,
+  HttpCode,
   Inject,
   NotFoundException,
   Param,
   Post,
   Put,
   Query,
-  Req,
-  Res,
   UseGuards,
 } from '@nestjs/common';
 import { QueryCount } from '../helper/query.count';
@@ -19,7 +19,6 @@ import { QueryRepository } from '../queryReposytories/query-Repository';
 import { PostsService } from '../posts/posts.service';
 import { Jwt } from '../application/jwt';
 import {
-  CheckBlogId,
   CreateBlogDto,
   CreatePostForBlogDto,
   UpdateBlogDto,
@@ -43,7 +42,6 @@ export class BlogsController {
   }
 
   @Get(':id')
-  // @HttpCode(404)
   async getBlog(@Param('id') blogId: string) {
     const blog = await this.blogsService.getBlogsId(blogId);
     if (blog) {
@@ -53,13 +51,15 @@ export class BlogsController {
     }
   }
 
+  @UseGuards(BasicAuthGuard)
+  @HttpCode(204)
   @Delete(':id')
-  async deleteBlog(@Param('id') blogId: string, @Res() res) {
+  async deleteBlog(@Param('id') blogId: string) {
     const result = await this.blogsService.deleteBlogsId(blogId);
     if (result) {
-      res.sendStatus(204);
+      return;
     } else {
-      res.sendStatus(404);
+      throw new NotFoundException();
     }
   }
 
@@ -70,17 +70,15 @@ export class BlogsController {
     return await this.blogsService.getBlogsId(createBlog.id);
   }
 
+  @UseGuards(BasicAuthGuard)
+  @HttpCode(204)
   @Put(':id')
-  async updateBlog(
-    @Param('id') blogId: string,
-    @Body() body: UpdateBlogDto,
-    @Res() res,
-  ) {
+  async updateBlog(@Param('id') blogId: string, @Body() body: UpdateBlogDto) {
     const updateBlog = await this.blogsService.updateBlog(blogId, body);
     if (updateBlog) {
-      res.sendStatus(204);
+      return;
     } else {
-      res.sendStatus(404);
+      throw new NotFoundException();
     }
   }
 
@@ -88,60 +86,45 @@ export class BlogsController {
   async getPostsForBlog(
     @Param('blogId') blogId: string,
     @Query() dataQuery,
-    @Res() res,
-    @Req() req,
+    @Headers() header,
   ) {
-    let postsBlogId;
     const query = this.queryCount.queryCheckHelper(dataQuery);
-    if (req.headers.authorization) {
-      const userId: any = this.jwtService.getUserIdByToken(
-        req.headers.authorization!.split(' ')[1],
+    if (header.authorization?.split(' ')[1]) {
+      const info: any = this.jwtService.getUserByRefreshToken(
+        header.authorization?.split(' ')[1],
       );
-      postsBlogId = await this.queryRepository.getQueryPostsBlogsId(
+      return await this.queryRepository.getQueryPostsBlogsId(
         query,
-        req.params.blogId,
-        userId,
+        blogId,
+        info?.userId,
       );
     } else {
-      postsBlogId = await this.queryRepository.getQueryPostsBlogsId(
+      return await this.queryRepository.getQueryPostsBlogsId(
         query,
-        req.params.blogId,
+        blogId,
         'null',
       );
     }
-    if (postsBlogId.items.length !== 0) {
-      res.send(postsBlogId);
-    } else {
-      res.sendStatus(404);
-    }
   }
 
+  @UseGuards(BasicAuthGuard)
   @Post('/:blogId/posts')
   async createPostsForBlog(
-    @Param('blogId') blogId: CheckBlogId,
+    @Param('blogId') blogId: string,
     @Body() body: CreatePostForBlogDto,
-    @Res() res,
   ) {
+    const blog = await this.blogsService.getBlogsId(blogId);
+    if (!blog) throw new NotFoundException();
     const newPostForBlogId = await this.postsService.createPost({
-      blogId: blogId.id,
+      blogId: blogId,
       title: body.title,
       content: body.content,
       shortDescription: body.shortDescription,
     });
     if (newPostForBlogId) {
-      const newPost = await this.postsService.getPostId(
-        newPostForBlogId.id,
-        'null',
-      );
-      res.send(newPost);
+      return await this.postsService.getPostId(newPostForBlogId.id, 'null');
     } else {
       throw new NotFoundException();
     }
   }
 }
-
-// @IsNotEmpty()
-// @Transform(({ value }) => value?.trim())
-// @Length(1)
-// @Validate(BlogIdValidation)
-// blogId: string;
