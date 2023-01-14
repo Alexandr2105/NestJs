@@ -1,15 +1,18 @@
 import {
   Controller,
   Delete,
+  ForbiddenException,
   Get,
   HttpCode,
   Inject,
+  NotFoundException,
   Param,
   Req,
 } from '@nestjs/common';
 import { SecurityDevicesService } from './security-devices.service';
 import { SecurityDevicesRepository } from './security.devices.repository';
 import { Jwt } from '../application/jwt';
+import { CheckDeviceId } from './dto/device.info.dto';
 
 @Controller('security/devices')
 export class SecurityDevicesController {
@@ -41,8 +44,13 @@ export class SecurityDevicesController {
 
   @HttpCode(204)
   @Delete(':deviceId')
-  async deleteDevice(@Param('deviceId') deviceId: string) {
-    const result = await this.devicesService.delDevice(deviceId);
+  async deleteDevice(@Param() param: CheckDeviceId, @Req() req) {
+    const device = await this.securityDevicesRepository.getDevice(
+      param.deviceId,
+    );
+    if (!device) throw new NotFoundException();
+    if (device.userId !== req.user.id) throw new ForbiddenException();
+    const result = await this.devicesService.delDevice(param.deviceId);
     if (result) return;
   }
 }

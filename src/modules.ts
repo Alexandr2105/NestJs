@@ -34,7 +34,6 @@ import { CountAttemptSchema } from './schemas/count.attempt.schema';
 import { LikesTypeSchema } from './schemas/like.type.schema';
 import { AuthRepository } from './auth/auth.repository';
 import { CheckBlogIdForBlog } from './customValidator/check.blog.id.for.blog';
-import { CheckBlogIdForPost } from './customValidator/check.blog.id.for.post';
 import { CheckLikeStatus } from './customValidator/check.like.status';
 import { CheckIdComment } from './customValidator/check.id.comment';
 import { BasicStrategy } from './strategies/basic.strategy';
@@ -44,6 +43,8 @@ import { PassportModule } from '@nestjs/passport';
 import { JwtStrategy } from './strategies/jwt.strategy';
 import { RefreshStrategy } from './strategies/refresh.strategy';
 import { MailerModule } from '@nestjs-modules/mailer';
+import { CheckUser } from './customValidator/check.user';
+import { CheckUserSecurityDevice } from './customValidator/check.user.security.device';
 
 @Module({
   imports: [
@@ -98,13 +99,14 @@ import { MailerModule } from '@nestjs-modules/mailer';
     SecurityDevicesRepository,
     AuthRepository,
     CheckBlogIdForBlog,
-    CheckBlogIdForPost,
     CheckLikeStatus,
     CheckIdComment,
     LocalStrategy,
     JwtStrategy,
     BasicStrategy,
     RefreshStrategy,
+    CheckUser,
+    CheckUserSecurityDevice,
   ],
 })
 export class Modules {}

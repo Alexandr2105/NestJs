@@ -130,11 +130,12 @@ export class PostsController {
     @Headers() headers,
     @Req() req,
   ) {
+    const user: any = await this.usersRepository.getUserId(req.user.id);
     const post = await this.postsService.creatNewCommentByPostId(
       postId,
       body.content,
-      req.user?.id,
-      req.user?.login,
+      user.id,
+      user.login,
     );
     const userId: any = await this.jwtService.getUserIdByToken(
       headers.authorization.split(' ')[1],

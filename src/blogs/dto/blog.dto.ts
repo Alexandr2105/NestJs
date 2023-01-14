@@ -1,5 +1,6 @@
-import { IsUrl, Length } from 'class-validator';
+import { IsUrl, Length, Validate } from 'class-validator';
 import { Transform } from 'class-transformer';
+import { CheckBlogIdForBlog } from '../../customValidator/check.blog.id.for.blog';
 
 export class CreateBlogDto {
   @Transform(({ value }) => value.trim())
@@ -37,4 +38,9 @@ export class CreatePostForBlogDto {
   @Transform(({ value }) => value.trim())
   @Length(1, 1000, { message: 'Не верно заполнено поле' })
   content: string;
+}
+
+export class CheckBlogId {
+  @Validate(CheckBlogIdForBlog)
+  blogId: string;
 }

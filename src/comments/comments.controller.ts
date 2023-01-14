@@ -10,12 +10,14 @@ import {
   Headers,
   NotFoundException,
   HttpCode,
+  Req,
+  ForbiddenException,
 } from '@nestjs/common';
 import { CommentsService } from './comments.service';
 import { CommentsRepository } from './comments.repostitory';
 import { UsersRepository } from '../users/users.repository';
 import { Jwt } from '../application/jwt';
-import { UpdateCommentDto } from './dto/comment.dto';
+import { CheckUserId, UpdateCommentDto } from './dto/comment.dto';
 import { LikeStatusDto } from '../helper/like.status.dto';
 import { JwtAuthGuard } from '../guard/jwt.auth.guard';
 
@@ -53,8 +55,12 @@ export class CommentsController {
   @UseGuards(JwtAuthGuard)
   @HttpCode(204)
   @Delete(':commentId')
-  async deleteComment(@Param('commentId') commentId: string) {
-    const delComment = await this.commentsService.deleteCommentById(commentId);
+  async deleteComment(@Param() param: CheckUserId, @Req() req) {
+    const comment = await this.commentsService.getCommentById(param.commentId);
+    if (comment.userId !== req.user.id) throw new ForbiddenException();
+    const delComment = await this.commentsService.deleteCommentById(
+      param.commentId,
+    );
     if (!delComment) {
       throw new NotFoundException();
     } else {
@@ -66,11 +72,14 @@ export class CommentsController {
   @HttpCode(204)
   @Put(':commentId')
   async updateComment(
-    @Param('commentId') commentId: string,
+    @Param() param: CheckUserId,
     @Body() body: UpdateCommentDto,
+    @Req() req,
   ) {
+    const comment = await this.commentsService.getCommentById(param.commentId);
+    if (comment.userId !== req.user.id) throw new ForbiddenException();
     const putComment = await this.commentsService.updateCommentById(
-      commentId,
+      param.commentId,
       body,
     );
     if (!putComment) {

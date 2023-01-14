@@ -91,7 +91,8 @@ export class PostsService {
   ): Promise<Comment | false> {
     const post = await this.postsRepository.getPostId(postId);
     if (!post) return false;
-    const newComment = new this.commentsCollection(content);
+    const newComment = new this.commentsCollection();
+    newComment.content = content;
     newComment.idPost = post.id;
     newComment.userId = userId;
     newComment.userLogin = userLogin;

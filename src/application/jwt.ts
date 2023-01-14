@@ -9,7 +9,7 @@ export class Jwt {
 
   creatJWT(user: ItemsUsers) {
     return {
-      access_token: this.jwt.sign(
+      accessToken: this.jwt.sign(
         { userId: user.id },
         { expiresIn: settings.TOKEN_LIFE, secret: settings.JWT_SECRET },
       ),

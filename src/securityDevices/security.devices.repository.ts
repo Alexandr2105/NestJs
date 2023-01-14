@@ -57,4 +57,10 @@ export class SecurityDevicesRepository {
       $and: [{ userId: userId }, { deviceId: deviceId }],
     });
   }
+
+  async getDevice(diveceId: string) {
+    return this.refreshTokenDataCollection.findOne({
+      deviceId: diveceId,
+    });
+  }
 }

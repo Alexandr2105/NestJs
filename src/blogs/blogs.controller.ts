@@ -19,6 +19,7 @@ import { QueryRepository } from '../queryReposytories/query-Repository';
 import { PostsService } from '../posts/posts.service';
 import { Jwt } from '../application/jwt';
 import {
+  CheckBlogId,
   CreateBlogDto,
   CreatePostForBlogDto,
   UpdateBlogDto,
@@ -110,13 +111,11 @@ export class BlogsController {
   @UseGuards(BasicAuthGuard)
   @Post('/:blogId/posts')
   async createPostsForBlog(
-    @Param('blogId') blogId: string,
+    @Param() param: CheckBlogId,
     @Body() body: CreatePostForBlogDto,
   ) {
-    const blog = await this.blogsService.getBlogsId(blogId);
-    if (!blog) throw new NotFoundException();
     const newPostForBlogId = await this.postsService.createPost({
-      blogId: blogId,
+      blogId: param.blogId,
       title: body.title,
       content: body.content,
       shortDescription: body.shortDescription,

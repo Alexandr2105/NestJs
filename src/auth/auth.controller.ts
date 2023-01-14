@@ -16,7 +16,12 @@ import { AuthService } from './auth.service';
 import { EmailManager } from '../manager/email-manager';
 import { SecurityDevicesService } from '../securityDevices/security-devices.service';
 import { EmailConfirmationDocument } from '../schemas/email.confirmation.schema';
-import { EmailResending, LoginDto, NewPassword } from './dto/auth.dto';
+import {
+  EmailResending,
+  LoginDto,
+  NewPassword,
+  RegistrationConformation,
+} from './dto/auth.dto';
 import { CreateUserDto } from '../users/dto/user.dto';
 import { LocalAuthGuard } from '../guard/local.auth.guard';
 import { JwtAuthGuard } from '../guard/jwt.auth.guard';
@@ -33,8 +38,6 @@ export class AuthController {
     @Inject(EmailManager) protected emailManager: EmailManager,
     @Inject(Jwt) protected jwtService: Jwt,
   ) {}
-
-  // TODO: удалить @Req();
 
   @UseGuards(LocalAuthGuard)
   @Post('login')
@@ -73,7 +76,7 @@ export class AuthController {
   }
   @HttpCode(204)
   @Post('registration-confirmation')
-  async registrationConfirmation(@Body() body) {
+  async registrationConfirmation(@Body() body: RegistrationConformation) {
     const userByCode: EmailConfirmationDocument =
       await this.usersRepository.getUserByCode(body.code);
     await this.usersRepository.updateEmailConfirmation(userByCode?.userId);
@@ -112,7 +115,7 @@ export class AuthController {
       userId: req.user.userId,
     });
     res.cookie('refreshToken', refreshToken, { httpOnly: false, secure: true });
-    res.send({ accessToken: token });
+    res.send(token);
   }
 
   @Post('logout')

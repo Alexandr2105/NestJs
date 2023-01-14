@@ -9,22 +9,27 @@ import { RefreshTokenData } from '../schemas/refresh.token.data.schema';
 
 @ValidatorConstraint({ name: 'comment', async: true })
 @Injectable()
-export class CheckIdComment implements ValidatorConstraintInterface {
+export class CheckUserSecurityDevice implements ValidatorConstraintInterface {
   constructor(
     @InjectModel('refreshTokenData')
     protected refreshTokenDataCollection: Model<RefreshTokenData>,
   ) {}
 
-  async validate(id: string): Promise<any> {
+  async validate(id: string): Promise<boolean> {
     const deviceId = await this.refreshTokenDataCollection.findOne({
       deviceId: id,
     });
     if (!deviceId) {
       throw new NotFoundException();
+    } else {
+      return false;
     }
-    //TODO:когда сделаю авторизацию, тогда надо будет с этим разобраться!!!
-    // if (deviceId.userId !== req.user.userId) {
-    //   throw new ForbiddenException();
-    // }
   }
+
+  // async check(@Req() req, deviceId): Promise<boolean> {
+  //   if (deviceId.userId !== req.user.userId) {
+  //     throw new ForbiddenException();
+  //   }
+  //   return false;
+  // }
 }
