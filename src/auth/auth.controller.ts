@@ -26,6 +26,7 @@ import { CreateUserDto } from '../users/dto/user.dto';
 import { LocalAuthGuard } from '../guard/local.auth.guard';
 import { JwtAuthGuard } from '../guard/jwt.auth.guard';
 import { RefreshAuthGuard } from '../guard/refresh.auth.guard';
+// import { CountAttemptGuard } from '../guard/count.attempt.guard';
 
 @Controller('auth')
 export class AuthController {
@@ -39,6 +40,7 @@ export class AuthController {
     @Inject(Jwt) protected jwtService: Jwt,
   ) {}
 
+  // @UseGuards(CountAttemptGuard)
   @UseGuards(LocalAuthGuard)
   @Post('login')
   async loginUser(@Request() req, @Body() body: LoginDto, @Res() res) {
@@ -57,8 +59,8 @@ export class AuthController {
     });
     await this.devicesService.delOldRefreshTokenData(+new Date());
     res.cookie('refreshToken', refreshToken, {
-      // httpOnly: true,
-      // secure: true,
+      httpOnly: true,
+      secure: true,
     });
     res.send(accessToken);
   }
@@ -74,6 +76,8 @@ export class AuthController {
         userId: user.id,
       };
   }
+
+  // @UseGuards(CountAttemptGuard)
   @HttpCode(204)
   @Post('registration-confirmation')
   async registrationConfirmation(@Body() body: RegistrationConformation) {
@@ -82,6 +86,7 @@ export class AuthController {
     await this.usersRepository.updateEmailConfirmation(userByCode?.userId);
   }
 
+  // @UseGuards(CountAttemptGuard)
   @HttpCode(204)
   @Post('registration')
   async registration(@Body() body: CreateUserDto) {
@@ -89,6 +94,7 @@ export class AuthController {
     if (newUser) await this.authService.confirmation(newUser.id, body);
   }
 
+  // @UseGuards(CountAttemptGuard)
   @HttpCode(204)
   @Post('registration-email-resending')
   async registrationEmailResending(@Body() body: EmailResending) {
@@ -96,6 +102,7 @@ export class AuthController {
     await this.emailManager.sendEmailAndConfirm(body, newCode);
   }
 
+  // @UseGuards(CountAttemptGuard)
   @UseGuards(RefreshAuthGuard)
   @Post('refresh-token')
   async createRefreshToken(@Request() req, @Res() res) {
@@ -114,7 +121,7 @@ export class AuthController {
       deviceName: req.headers['user-agent'],
       userId: req.user.userId,
     });
-    res.cookie('refreshToken', refreshToken, { httpOnly: false, secure: true });
+    res.cookie('refreshToken', refreshToken, { httpOnly: true, secure: true });
     res.send(token);
   }
 
@@ -127,6 +134,7 @@ export class AuthController {
     if (result) res.sendStatus(204);
   }
 
+  // @UseGuards(CountAttemptGuard)
   @HttpCode(204)
   @Post('password-recovery')
   async passwordRecovery(@Body() body: EmailResending) {
@@ -136,6 +144,7 @@ export class AuthController {
     await this.emailManager.sendEmailPasswordRecovery(body, recoveryCode);
   }
 
+  // @UseGuards(CountAttemptGuard)
   @HttpCode(204)
   @Post('new-password')
   async createNewPassword(@Body() body: NewPassword) {
