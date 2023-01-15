@@ -60,8 +60,8 @@ export class AuthController {
     });
     await this.devicesService.delOldRefreshTokenData(+new Date());
     res.cookie('refreshToken', refreshToken, {
-      // httpOnly: true,
-      // secure: true,
+      httpOnly: true,
+      secure: true,
     });
     res.send(accessToken);
   }
@@ -123,8 +123,8 @@ export class AuthController {
       userId: req.user.userId,
     });
     res.cookie('refreshToken', refreshToken, {
-      httpOnly: false,
-      secure: false,
+      httpOnly: true,
+      secure: true,
     });
     res.send(token);
   }
