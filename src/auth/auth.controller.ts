@@ -42,6 +42,7 @@ export class AuthController {
 
   // @UseGuards(CountAttemptGuard)
   @UseGuards(LocalAuthGuard)
+  @HttpCode(200)
   @Post('login')
   async loginUser(@Request() req, @Body() body: LoginDto, @Res() res) {
     const accessToken = this.jwtService.creatJWT(req.user);
