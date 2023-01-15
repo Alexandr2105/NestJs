@@ -45,6 +45,11 @@ import { RefreshStrategy } from './strategies/refresh.strategy';
 import { MailerModule } from '@nestjs-modules/mailer';
 import { CheckUser } from './customValidator/check.user';
 import { CheckUserSecurityDevice } from './customValidator/check.user.security.device';
+import { CheckCode } from './customValidator/check.code';
+import { CheckRecoveryCode } from './customValidator/check.recovery.code';
+import { CheckEmailConfirmation } from './customValidator/check.email.confirmation';
+import { CheckOriginalEmail } from './customValidator/check.origin.email';
+import { CheckOriginalLogin } from './customValidator/check.original.login';
 
 @Module({
   imports: [
@@ -107,6 +112,11 @@ import { CheckUserSecurityDevice } from './customValidator/check.user.security.d
     RefreshStrategy,
     CheckUser,
     CheckUserSecurityDevice,
+    CheckCode,
+    CheckRecoveryCode,
+    CheckEmailConfirmation,
+    CheckOriginalEmail,
+    CheckOriginalLogin,
   ],
 })
 export class Modules {}
