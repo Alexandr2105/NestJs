@@ -50,6 +50,8 @@ import { CheckRecoveryCode } from './customValidator/check.recovery.code';
 import { CheckEmailConfirmation } from './customValidator/check.email.confirmation';
 import { CheckOriginalEmail } from './customValidator/check.origin.email';
 import { CheckOriginalLogin } from './customValidator/check.original.login';
+import { CheckIdForBlog } from './customValidator/check.id.for.blog';
+import { CountAttemptGuard } from './guard/count.attempt.guard';
 
 @Module({
   imports: [
@@ -117,6 +119,8 @@ import { CheckOriginalLogin } from './customValidator/check.original.login';
     CheckEmailConfirmation,
     CheckOriginalEmail,
     CheckOriginalLogin,
+    CheckIdForBlog,
+    CountAttemptGuard,
   ],
 })
 export class Modules {}

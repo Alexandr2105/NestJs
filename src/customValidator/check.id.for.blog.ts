@@ -9,7 +9,7 @@ import { BlogDocument } from '../blogs/schema/blogs.schema';
 
 @ValidatorConstraint({ name: 'blog', async: true })
 @Injectable()
-export class CheckBlogIdForBlog implements ValidatorConstraintInterface {
+export class CheckIdForBlog implements ValidatorConstraintInterface {
   constructor(
     @InjectModel('blogs') protected blogsCollection: Model<BlogDocument>,
   ) {}
