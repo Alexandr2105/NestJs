@@ -18,9 +18,10 @@ export class CheckOriginalEmail implements ValidatorConstraintInterface {
     const user = await this.usersCollection.findOne({
       $or: [{ login: email }, { email: email }],
     });
-    if (user !== null) {
-      throw new Error('Такое имя уже существует');
-    }
-    return true;
+    return user === null;
+  }
+
+  defaultMessage(): string {
+    return 'Не верные данные';
   }
 }

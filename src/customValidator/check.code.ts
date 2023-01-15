@@ -12,9 +12,10 @@ export class CheckCode implements ValidatorConstraintInterface {
   constructor(@Inject(AuthService) protected authService: AuthService) {}
 
   async validate(code: RegistrationConformation): Promise<boolean> {
-    if (await this.authService.confirmEmail(code)) {
-      throw new Error('Не верный код');
-    }
-    return true;
+    return !(await this.authService.confirmEmail(code));
+  }
+
+  defaultMessage(): string {
+    return 'Не верные данные';
   }
 }

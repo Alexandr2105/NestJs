@@ -26,10 +26,7 @@ export class CheckUserSecurityDevice implements ValidatorConstraintInterface {
     }
   }
 
-  // async check(@Req() req, deviceId): Promise<boolean> {
-  //   if (deviceId.userId !== req.user.userId) {
-  //     throw new ForbiddenException();
-  //   }
-  //   return false;
-  // }
+  defaultMessage(): string {
+    return 'Не верные данные';
+  }
 }

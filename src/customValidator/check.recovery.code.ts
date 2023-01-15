@@ -12,9 +12,10 @@ export class CheckRecoveryCode implements ValidatorConstraintInterface {
   constructor(@Inject(AuthService) protected authService: AuthService) {}
 
   async validate(code: RegistrationConformation): Promise<boolean> {
-    if (await this.authService.confirmRecoveryCode(code)) {
-      throw new Error('Не верный код');
-    }
-    return true;
+    return !(await this.authService.confirmRecoveryCode(code));
+  }
+
+  defaultMessage(): string {
+    return 'Не верные данные';
   }
 }

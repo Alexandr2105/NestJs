@@ -25,9 +25,10 @@ export class CheckEmailConfirmation implements ValidatorConstraintInterface {
     const conf = await this.registrationUsersCollection.findOne({
       userId: user?.id,
     });
-    if (conf?.isConfirmed) {
-      throw new Error('Email уже поттверждён');
-    }
-    return true;
+    return !conf?.isConfirmed;
+  }
+
+  defaultMessage(): string {
+    return 'Не верные данные';
   }
 }
