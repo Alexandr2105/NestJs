@@ -69,8 +69,8 @@ import { CheckOriginalLogin } from './customValidator/check.original.login';
       transport: {
         host: 'smtp.gmail.com',
         auth: {
-          user: 'testnodemaileremail@gmail.com',
-          pass: 'nfzdgxtapolqzxvo',
+          user: process.env.EMAIL,
+          pass: process.env.PASSWORD_EMAIL,
         },
       },
     }),
