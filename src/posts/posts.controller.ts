@@ -43,11 +43,11 @@ export class PostsController {
   async getPosts(@Query() dataQuery, @Headers() headers) {
     let post;
     const query = this.queryCount.queryCheckHelper(dataQuery);
-    if (headers.cookie) {
-      const user: any = this.jwtService.getUserByRefreshToken(
-        headers.cookie.split('=')[1],
+    if (headers.authorization) {
+      const userId: any = this.jwtService.getUserIdByToken(
+        headers.authorization.split(' ')[1],
       );
-      post = await this.queryRepository.getQueryPosts(query, user.userId);
+      post = await this.queryRepository.getQueryPosts(query, userId.toString());
     } else {
       post = await this.queryRepository.getQueryPosts(query, 'null');
     }
@@ -57,11 +57,11 @@ export class PostsController {
   @Get(':id')
   async getPost(@Param('id') postId: string, @Headers() headers) {
     let post;
-    if (headers.cookie) {
-      const user: any = this.jwtService.getUserByRefreshToken(
+    if (headers.authorization) {
+      const userId: any = this.jwtService.getUserIdByToken(
         headers.authorization.split(' ')[1],
       );
-      post = await this.postsService.getPostId(postId, user.userId);
+      post = await this.postsService.getPostId(postId, userId.toString());
     } else {
       post = await this.postsService.getPostId(postId, 'null');
     }
