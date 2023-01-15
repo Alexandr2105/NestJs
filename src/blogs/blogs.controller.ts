@@ -94,17 +94,21 @@ export class BlogsController {
       const info: any = this.jwtService.getUserByRefreshToken(
         header.authorization?.split(' ')[1],
       );
-      return await this.queryRepository.getQueryPostsBlogsId(
+      const post = await this.queryRepository.getQueryPostsBlogsId(
         query,
         blogId,
         info?.userId,
       );
+      if (post.items.length === 0) throw new NotFoundException();
+      return post;
     } else {
-      return await this.queryRepository.getQueryPostsBlogsId(
+      const post = await this.queryRepository.getQueryPostsBlogsId(
         query,
         blogId,
         'null',
       );
+      if (post.items.length === 0) throw new NotFoundException();
+      return post;
     }
   }
 

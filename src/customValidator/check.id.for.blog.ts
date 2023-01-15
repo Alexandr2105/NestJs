@@ -2,7 +2,7 @@ import {
   ValidatorConstraint,
   ValidatorConstraintInterface,
 } from 'class-validator';
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { BlogDocument } from '../blogs/schema/blogs.schema';
@@ -16,10 +16,10 @@ export class CheckBlogIdForBlog implements ValidatorConstraintInterface {
 
   async validate(id: string): Promise<boolean> {
     const blog = await this.blogsCollection.findOne({ id: id });
-    return !!blog;
-  }
-
-  defaultMessage(): string {
-    return 'Такой блог не существует';
+    if (blog) {
+      return true;
+    } else {
+      throw new NotFoundException();
+    }
   }
 }
