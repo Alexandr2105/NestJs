@@ -32,10 +32,15 @@ export class AuthService {
     emailConfirmation.isConfirmed = false;
     await this.authRepository.save(emailConfirmation);
     await this.usersRepository.createEmailConfirmation(emailConfirmation);
-    this.emailManager.sendEmailAndConfirm(
-      body,
-      emailConfirmation.confirmationCode,
-    );
+    try {
+      await this.emailManager.sendEmailAndConfirm(
+        body,
+        emailConfirmation.confirmationCode,
+      );
+    } catch (e) {
+      console.log(e);
+      return null;
+    }
   }
 
   async confirmEmail(body: RegistrationConformation): Promise<boolean> {
