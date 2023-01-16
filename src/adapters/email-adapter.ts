@@ -9,7 +9,7 @@ export class EmailAdapter {
   sendEmailRegistration(body: EmailResending, confirm: string) {
     try {
       this.mailService.sendMail({
-        from: 'Alex <testnodemaileremail@gmail.com>',
+        from: 'Alex <testnodemaileremail2@gmail.com>',
         to: body.email,
         subject: 'Registration',
         html: `<h1>Thank for your registration</h1>
@@ -25,7 +25,7 @@ export class EmailAdapter {
 
   async sendEmailPasswordRecovery(body: EmailResending, confirm: string) {
     await this.mailService.sendMail({
-      from: 'Alex <testnodemaileremail@gmail.com>',
+      from: 'Alex <testnodemaileremail2@gmail.com>',
       to: body.email,
       subject: 'Password Recovery',
       html: `<h1>Password recovery</h1>
