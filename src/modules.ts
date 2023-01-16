@@ -52,6 +52,7 @@ import { CheckOriginalEmail } from './customValidator/check.origin.email';
 import { CheckOriginalLogin } from './customValidator/check.original.login';
 import { CheckIdForBlog } from './customValidator/check.id.for.blog';
 import { CountAttemptGuard } from './guard/count.attempt.guard';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 
 @Module({
   imports: [
@@ -67,14 +68,21 @@ import { CountAttemptGuard } from './guard/count.attempt.guard';
       { name: 'countAttempts', schema: CountAttemptSchema },
     ]),
     JwtModule.register({}),
-    MailerModule.forRoot({
-      transport: {
-        host: 'smtp.gmail.com',
-        auth: {
-          user: process.env.EMAIL,
-          pass: process.env.PASSWORD_EMAIL,
+    MailerModule.forRootAsync({
+      imports: [ConfigModule],
+      useFactory: async (configService: ConfigService) => ({
+        transport: {
+          host: 'smtp.gmail.com',
+          port: 465,
+          secure: true,
+          ignoreTLS: true,
+          auth: {
+            user: configService.get('EMAIL'),
+            pass: configService.get('PASSWORD_EMAIL'),
+          },
         },
-      },
+      }),
+      inject: [ConfigService],
     }),
   ],
   controllers: [
