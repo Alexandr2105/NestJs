@@ -11,6 +11,6 @@ export class EmailManager {
   }
 
   async sendEmailPasswordRecovery(body: EmailResending, confirm: string) {
-    return await this.emailAdapter.sendEmailPasswordRecovery(body, confirm);
+    return this.emailAdapter.sendEmailPasswordRecovery(body, confirm);
   }
 }
