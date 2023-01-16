@@ -132,7 +132,7 @@ export class AuthController {
   @Post('logout')
   async logout(@Request() req, @Res() res) {
     const user: any = await this.jwtService.getUserByRefreshToken(
-      req.cookies.refreshToken,
+      req.cookie.refreshToken,
     );
     const result = await this.devicesService.delDevice(user.deviceId);
     if (result) res.sendStatus(204);
