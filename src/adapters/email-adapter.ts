@@ -7,6 +7,8 @@ export class EmailAdapter {
   constructor(protected mailService: MailerService) {}
 
   sendEmailRegistration(body: EmailResending, confirm: string) {
+    console.log(confirm, 'code into sendEmailRegistration');
+    console.log(body.email, 'email');
     try {
       this.mailService.sendMail({
         from: 'Alex <testnodemaileremail2@gmail.com>',
@@ -14,7 +16,7 @@ export class EmailAdapter {
         subject: 'Registration',
         html: `<h1>Thank for your registration</h1>
                        <p>To finish registration please follow the link below:
-                          <a href='https://somesite.com/registration-confirmation?code=${confirm}'>complete registration</a>
+                          <a href='https://somesite.com/registration-confirmation?code={{confirm}}'>complete registration</a>
                         </p>`,
       });
     } catch (e) {
