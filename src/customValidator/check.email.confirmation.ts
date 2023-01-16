@@ -20,7 +20,7 @@ export class CheckEmailConfirmation implements ValidatorConstraintInterface {
   async validate(email: string): Promise<boolean> {
     const user = await this.usersCollection.findOne({ email: email });
     if (user === null) {
-      throw new Error('Такого email не существует');
+      return false;
     }
     const conf = await this.registrationUsersCollection.findOne({
       userId: user?.id,

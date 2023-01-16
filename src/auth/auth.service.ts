@@ -4,7 +4,7 @@ import { Inject, Injectable } from '@nestjs/common';
 import { v4 as uuid4 } from 'uuid';
 import { EmailManager } from '../manager/email-manager';
 import { EmailConfirmationDocument } from '../schemas/email.confirmation.schema';
-import { RegistrationConformation, EmailResending } from './dto/auth.dto';
+import { EmailResending } from './dto/auth.dto';
 import { CreateUserDto } from '../users/dto/user.dto';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
@@ -43,21 +43,21 @@ export class AuthService {
     }
   }
 
-  async confirmEmail(body: RegistrationConformation): Promise<boolean> {
+  async confirmEmail(code: string): Promise<boolean> {
     const user: EmailConfirmationDocument =
-      await this.usersRepository.getUserByCode(body.code);
+      await this.usersRepository.getUserByCode(code);
     if (!user) return false;
     if (user.isConfirmed) return false;
-    if (user.confirmationCode !== body.code) return false;
+    if (user.confirmationCode !== code) return false;
     if (user.expirationDate < new Date()) return false;
     return await this.usersRepository.updateEmailConfirmation(user.userId);
   }
 
-  async confirmRecoveryCode(body: RegistrationConformation): Promise<boolean> {
-    const user = await this.usersRepository.getUserByCode(body.code);
+  async confirmRecoveryCode(code: string): Promise<boolean> {
+    const user = await this.usersRepository.getUserByCode(code);
     if (!user) return false;
     if (user.isConfirmed) return false;
-    if (user.confirmationCode !== body.code) return false;
+    if (user.confirmationCode !== code) return false;
     return user.expirationDate >= new Date();
   }
 
