@@ -100,7 +100,7 @@ export class AuthController {
   @Post('registration-email-resending')
   async registrationEmailResending(@Body() body: EmailResending) {
     const newCode: any = await this.authService.getNewConfirmationCode(body);
-    await this.emailManager.sendEmailAndConfirm(body, newCode);
+    this.emailManager.sendEmailAndConfirm(body, newCode);
   }
 
   // @UseGuards(CountAttemptGuard)
