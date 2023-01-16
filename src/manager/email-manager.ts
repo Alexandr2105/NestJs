@@ -6,8 +6,8 @@ import { EmailResending } from '../auth/dto/auth.dto';
 export class EmailManager {
   constructor(@Inject(EmailAdapter) protected emailAdapter: EmailAdapter) {}
 
-  async sendEmailAndConfirm(body: EmailResending, confirm: string) {
-    return await this.emailAdapter.sendEmailRegistration(body, confirm);
+  sendEmailAndConfirm(body: EmailResending, confirm: string) {
+    return this.emailAdapter.sendEmailRegistration(body, confirm);
   }
 
   async sendEmailPasswordRecovery(body: EmailResending, confirm: string) {

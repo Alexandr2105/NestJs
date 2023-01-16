@@ -6,8 +6,8 @@ import { MailerService } from '@nestjs-modules/mailer';
 export class EmailAdapter {
   constructor(protected mailService: MailerService) {}
 
-  async sendEmailRegistration(body: EmailResending, confirm: string) {
-    await this.mailService.sendMail({
+  sendEmailRegistration(body: EmailResending, confirm: string) {
+    this.mailService.sendMail({
       from: 'Alex <testnodemaileremail@gmail.com>',
       to: body.email,
       subject: 'Registration',

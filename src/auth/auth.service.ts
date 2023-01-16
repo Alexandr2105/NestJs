@@ -33,7 +33,7 @@ export class AuthService {
     await this.authRepository.save(emailConfirmation);
     await this.usersRepository.createEmailConfirmation(emailConfirmation);
     try {
-      await this.emailManager.sendEmailAndConfirm(
+      this.emailManager.sendEmailAndConfirm(
         body,
         emailConfirmation.confirmationCode,
       );
