@@ -34,7 +34,7 @@ export class Jwt {
       const result: any = this.jwt.verify(token, {
         secret: settings.JWT_SECRET,
       });
-      return new Object(result.userId);
+      return result.userId;
     } catch (error) {
       return null;
     }

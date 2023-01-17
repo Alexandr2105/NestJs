@@ -47,7 +47,7 @@ export class PostsController {
       const userId: any = this.jwtService.getUserIdByToken(
         headers.authorization.split(' ')[1],
       );
-      post = await this.queryRepository.getQueryPosts(query, userId.toString());
+      post = await this.queryRepository.getQueryPosts(query, userId);
     } else {
       post = await this.queryRepository.getQueryPosts(query, 'null');
     }
@@ -61,7 +61,7 @@ export class PostsController {
       const userId: any = this.jwtService.getUserIdByToken(
         headers.authorization.split(' ')[1],
       );
-      post = await this.postsService.getPostId(postId, userId.toString());
+      post = await this.postsService.getPostId(postId, userId);
     } else {
       post = await this.postsService.getPostId(postId, 'null');
     }
@@ -141,10 +141,7 @@ export class PostsController {
       headers.authorization.split(' ')[1],
     );
     if (post) {
-      return await this.commentsService.getLikesInfo(
-        post.id,
-        userId.toString(),
-      );
+      return await this.commentsService.getLikesInfo(post.id, userId);
     } else {
       throw new NotFoundException();
     }
@@ -165,10 +162,10 @@ export class PostsController {
     const userId = await this.jwtService.getUserIdByToken(
       headers.authorization.split(' ')[1],
     );
-    const user: any = await this.usersRepository.getUserId(userId.toString());
+    const user: any = await this.usersRepository.getUserId(userId);
     const likeStatus = await this.postsService.createLikeStatus(
       postId,
-      userId.toString(),
+      userId,
       body.likeStatus,
       user.login,
     );

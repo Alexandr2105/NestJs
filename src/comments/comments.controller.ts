@@ -38,10 +38,7 @@ export class CommentsController {
       const userId: any = this.jwtService.getUserIdByToken(
         headers.authorization.split(' ')[1],
       );
-      comment = await this.commentsService.getLikesInfo(
-        commentId,
-        userId.toString(),
-      );
+      comment = await this.commentsService.getLikesInfo(commentId, userId);
     } else {
       comment = await this.commentsService.getLikesInfo(commentId, 'null');
     }
@@ -102,10 +99,10 @@ export class CommentsController {
     const userId: any = await this.jwtService.getUserIdByToken(
       headers.authorization.split(' ')[1],
     );
-    const user: any = await this.usersRepository.getUserId(userId.toString());
+    const user: any = await this.usersRepository.getUserId(userId);
     const lakeStatus = await this.commentsService.createLikeStatus(
       commentId,
-      userId.toString(),
+      userId,
       body.likeStatus,
       user.login,
     );

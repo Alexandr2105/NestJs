@@ -97,7 +97,7 @@ export class BlogsController {
       const post = await this.queryRepository.getQueryPostsBlogsId(
         query,
         blogId,
-        info.toString(),
+        info,
       );
       if (post.items.length === 0) throw new NotFoundException();
       return post;
