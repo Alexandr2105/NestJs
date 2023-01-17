@@ -70,6 +70,7 @@ export class CountAttemptGuard implements CanActivate {
         return true;
       } else {
         res.sendStatus(429);
+        return;
       }
     }
   }
