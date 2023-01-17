@@ -8,11 +8,13 @@ import {
   NotFoundException,
   Param,
   Req,
+  UseGuards,
 } from '@nestjs/common';
 import { SecurityDevicesService } from './security-devices.service';
 import { SecurityDevicesRepository } from './security.devices.repository';
 import { Jwt } from '../application/jwt';
 import { CheckDeviceId } from './dto/device.info.dto';
+import { RefreshAuthGuard } from '../guard/refresh.auth.guard';
 
 @Controller('security/devices')
 export class SecurityDevicesController {
@@ -24,10 +26,11 @@ export class SecurityDevicesController {
     @Inject(Jwt) protected jwtService: Jwt,
   ) {}
 
+  @UseGuards(RefreshAuthGuard)
   @Get()
   async getDevices(@Req() req) {
     const user: any = this.jwtService.getUserByRefreshToken(
-      req.cookies.refreshToken,
+      req.headers.cookie.split('=')[1],
     );
     return await this.securityDevicesRepository.getAllDevicesUser(user.userId);
   }
