@@ -26,9 +26,6 @@ export class RefreshStrategy extends PassportStrategy(
   }
 
   validate(payload) {
-    if (payload.exp < +new Date() / 1000) {
-      return false;
-    }
     return { userId: payload.userId, deviceId: payload.deviceId };
   }
 }
