@@ -40,7 +40,7 @@ export class Jwt {
     }
   }
 
-  getUserByRefreshToken(token: string) /*:Object | null*/ {
+  getUserByRefreshToken(token: string) {
     try {
       const result = this.jwt.verify(token, {
         secret: settings.REFRESH_TOKEN_SECRET,
