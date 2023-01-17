@@ -14,7 +14,7 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
   }
 
   validate(payload: any) {
-    if (payload.exp < new Date()) {
+    if (payload.exp < +new Date() / 1000) {
       return false;
     }
     return { id: payload.userId };
