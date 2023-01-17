@@ -40,8 +40,8 @@ export class AuthController {
     @Inject(Jwt) protected jwtService: Jwt,
   ) {}
 
-  @UseGuards(CountAttemptGuard)
   @UseGuards(LocalAuthGuard)
+  @UseGuards(CountAttemptGuard)
   @HttpCode(200)
   @Post('login')
   async loginUser(@Request() req, @Body() body: LoginDto, @Res() res) {
