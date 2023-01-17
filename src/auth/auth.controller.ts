@@ -59,7 +59,7 @@ export class AuthController {
       deviceName: req.headers['user-agent'],
     });
     await this.devicesService.delOldRefreshTokenData(+new Date());
-    res.cookie('refreshToken', refreshToken, {
+    res.cookie(refreshToken, {
       httpOnly: true,
       secure: true,
     });
@@ -122,7 +122,7 @@ export class AuthController {
       deviceName: req.headers['user-agent'],
       userId: req.user.userId,
     });
-    res.cookie('refreshToken', refreshToken, {
+    res.cookie(refreshToken, {
       httpOnly: true,
       secure: true,
     });
