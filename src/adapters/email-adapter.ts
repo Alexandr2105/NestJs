@@ -7,8 +7,6 @@ export class EmailAdapter {
   constructor(protected mailService: MailerService) {}
 
   async sendEmailRegistration(body: EmailResending, confirm: string) {
-    console.log(confirm, 'code into sendEmailRegistration');
-    console.log(body.email, 'email');
     await this.mailService.sendMail({
       from: 'Alex <testnodemaileremail2@gmail.com>',
       to: body.email,

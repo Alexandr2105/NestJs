@@ -91,13 +91,13 @@ export class BlogsController {
   ) {
     const query = this.queryCount.queryCheckHelper(dataQuery);
     if (header.authorization?.split(' ')[1]) {
-      const info: any = this.jwtService.getUserByRefreshToken(
+      const info: any = this.jwtService.getUserIdByToken(
         header.authorization?.split(' ')[1],
       );
       const post = await this.queryRepository.getQueryPostsBlogsId(
         query,
         blogId,
-        info?.userId,
+        info.toString(),
       );
       if (post.items.length === 0) throw new NotFoundException();
       return post;
