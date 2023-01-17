@@ -5,7 +5,7 @@ import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
 export class Jwt {
-  constructor(protected jwt: JwtService, protected refreshT: JwtService) {}
+  constructor(protected jwt: JwtService, protected refreshToken: JwtService) {}
 
   creatJWT(user: ItemsUsers) {
     return {
@@ -17,7 +17,7 @@ export class Jwt {
   }
 
   creatRefreshJWT(user: ItemsUsers, deviceId: string) {
-    return this.refreshT.sign(
+    return this.refreshToken.sign(
       {
         userId: user.id,
         deviceId: deviceId,
