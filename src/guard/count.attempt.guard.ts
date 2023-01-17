@@ -1,9 +1,4 @@
-import {
-  CanActivate,
-  ExecutionContext,
-  ForbiddenException,
-  Injectable,
-} from '@nestjs/common';
+import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { CountAttemptDocument } from '../schemas/count.attempt.schema';
@@ -17,6 +12,7 @@ export class CountAttemptGuard implements CanActivate {
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const req = context.switchToHttp().getRequest();
+    const res = context.switchToHttp().getResponse();
     const dataIpDevice = await this.countAttemptCollection.findOne({
       ip: req.ip,
     });
@@ -73,7 +69,7 @@ export class CountAttemptGuard implements CanActivate {
         );
         return true;
       } else {
-        throw new ForbiddenException();
+        res.sendStatus(429);
       }
     }
   }
