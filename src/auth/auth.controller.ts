@@ -26,7 +26,7 @@ import { CreateUserDto } from '../users/dto/user.dto';
 import { LocalAuthGuard } from '../guard/local.auth.guard';
 import { JwtAuthGuard } from '../guard/jwt.auth.guard';
 import { RefreshAuthGuard } from '../guard/refresh.auth.guard';
-// import { CountAttemptGuard } from '../guard/count.attempt.guard';
+import { CountAttemptGuard } from '../guard/count.attempt.guard';
 
 @Controller('auth')
 export class AuthController {
@@ -41,7 +41,7 @@ export class AuthController {
   ) {}
 
   @UseGuards(LocalAuthGuard)
-  // @UseGuards(CountAttemptGuard)
+  @UseGuards(CountAttemptGuard)
   @HttpCode(200)
   @Post('login')
   async loginUser(@Request() req, @Body() body: LoginDto, @Res() res) {
@@ -78,7 +78,7 @@ export class AuthController {
       };
   }
 
-  // @UseGuards(CountAttemptGuard)
+  @UseGuards(CountAttemptGuard)
   @HttpCode(204)
   @Post('registration-confirmation')
   async registrationConfirmation(@Body() body: RegistrationConformation) {
@@ -87,7 +87,7 @@ export class AuthController {
     await this.usersRepository.updateEmailConfirmation(userByCode?.userId);
   }
 
-  // @UseGuards(CountAttemptGuard)
+  @UseGuards(CountAttemptGuard)
   @HttpCode(204)
   @Post('registration')
   async registration(@Body() body: CreateUserDto) {
@@ -95,7 +95,7 @@ export class AuthController {
     if (newUser) await this.authService.confirmation(newUser.id, body);
   }
 
-  // @UseGuards(CountAttemptGuard)
+  @UseGuards(CountAttemptGuard)
   @HttpCode(204)
   @Post('registration-email-resending')
   async registrationEmailResending(@Body() body: EmailResending) {
@@ -103,7 +103,7 @@ export class AuthController {
     await this.emailManager.sendEmailAndConfirm(body, newCode);
   }
 
-  // @UseGuards(CountAttemptGuard)
+  @UseGuards(CountAttemptGuard)
   @UseGuards(RefreshAuthGuard)
   @HttpCode(200)
   @Post('refresh-token')
@@ -137,7 +137,7 @@ export class AuthController {
     if (result) res.sendStatus(204);
   }
 
-  // @UseGuards(CountAttemptGuard)
+  @UseGuards(CountAttemptGuard)
   @HttpCode(204)
   @Post('password-recovery')
   async passwordRecovery(@Body() body: EmailResending) {
@@ -147,7 +147,7 @@ export class AuthController {
     await this.emailManager.sendEmailPasswordRecovery(body, recoveryCode);
   }
 
-  // @UseGuards(CountAttemptGuard)
+  @UseGuards(CountAttemptGuard)
   @HttpCode(204)
   @Post('new-password')
   async createNewPassword(@Body() body: NewPassword) {
