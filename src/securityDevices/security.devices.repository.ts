@@ -58,9 +58,9 @@ export class SecurityDevicesRepository {
     });
   }
 
-  async getDevice(diveceId: string) {
+  async getDevice(deviceId: string) {
     return this.refreshTokenDataCollection.findOne({
-      deviceId: diveceId,
+      deviceId: deviceId,
     });
   }
 }

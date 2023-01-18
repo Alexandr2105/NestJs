@@ -61,7 +61,7 @@ export class AuthController {
     await this.devicesService.delOldRefreshTokenData(+new Date());
     res.cookie('refreshToken', refreshToken, {
       httpOnly: true,
-      secure: true,
+      secure: false,
     });
     res.send(accessToken);
   }
@@ -108,7 +108,7 @@ export class AuthController {
   @HttpCode(200)
   @Post('refresh-token')
   async createRefreshToken(@Request() req, @Res() res) {
-    const token = this.jwtService.creatJWT(req.user);
+    const token = this.jwtService.creatJWT(req.user.userId);
     const refreshToken = this.jwtService.creatRefreshJWT(
       req.user.userId,
       req.user.deviceId,
@@ -125,7 +125,7 @@ export class AuthController {
     });
     res.cookie('refreshToken', refreshToken, {
       httpOnly: true,
-      secure: true,
+      secure: false,
     });
     res.send(token);
   }

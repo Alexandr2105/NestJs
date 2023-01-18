@@ -2,7 +2,7 @@ import {
   ValidatorConstraint,
   ValidatorConstraintInterface,
 } from 'class-validator';
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { RefreshTokenData } from '../schemas/refresh.token.data.schema';
@@ -19,11 +19,7 @@ export class CheckUserSecurityDevice implements ValidatorConstraintInterface {
     const deviceId = await this.refreshTokenDataCollection.findOne({
       deviceId: id,
     });
-    if (!deviceId) {
-      throw new NotFoundException();
-    } else {
-      return false;
-    }
+    return !!deviceId;
   }
 
   defaultMessage(): string {

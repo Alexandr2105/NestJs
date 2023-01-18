@@ -35,16 +35,15 @@ export class SecurityDevicesController {
     return await this.securityDevicesRepository.getAllDevicesUser(user.userId);
   }
 
+  @UseGuards(RefreshAuthGuard)
   @HttpCode(204)
   @Delete()
   async deleteDevices(@Req() req) {
-    const user: any = this.jwtService.getUserByRefreshToken(
-      req.cookies.refreshToken,
-    );
-    await this.devicesService.delAllDevicesExcludeCurrent(user.deviceId);
+    await this.devicesService.delAllDevicesExcludeCurrent(req.user.deviceId);
     return;
   }
 
+  @UseGuards(RefreshAuthGuard)
   @HttpCode(204)
   @Delete(':deviceId')
   async deleteDevice(@Param() param: CheckDeviceId, @Req() req) {
