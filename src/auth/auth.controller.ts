@@ -45,7 +45,7 @@ export class AuthController {
   @HttpCode(200)
   @Post('login')
   async loginUser(@Request() req, @Body() body: LoginDto, @Res() res) {
-    const accessToken = this.jwtService.creatJWT(req.user);
+    const accessToken = this.jwtService.creatJWT(req.user.id);
     const deviceId = this.devicesService.createDeviceId();
     const refreshToken = this.jwtService.creatRefreshJWT(req.user.id, deviceId);
     const infoRefreshToken: any =

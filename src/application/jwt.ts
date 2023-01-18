@@ -1,5 +1,4 @@
 import { settings } from '../settings';
-import { ItemsUsers } from '../helper/allTypes';
 import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 
@@ -7,10 +6,10 @@ import { JwtService } from '@nestjs/jwt';
 export class Jwt {
   constructor(protected jwt: JwtService, protected refreshToken: JwtService) {}
 
-  creatJWT(user: ItemsUsers) {
+  creatJWT(id: string) {
     return {
       accessToken: this.jwt.sign(
-        { userId: user.id },
+        { userId: id },
         { expiresIn: settings.TOKEN_LIFE, secret: settings.JWT_SECRET },
       ),
     };
