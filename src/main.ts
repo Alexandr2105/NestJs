@@ -32,9 +32,9 @@ async function bootstrap() {
     }),
   );
   useContainer(app.select(AppModule), { fallbackOnErrors: true });
+  app.use(cookieParser());
   app.useGlobalFilters(new HttpExceptionFilter());
   await app.listen(port);
-  app.use(cookieParser());
 }
 
 bootstrap();

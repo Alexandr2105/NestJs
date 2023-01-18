@@ -30,7 +30,7 @@ export class SecurityDevicesController {
   @Get()
   async getDevices(@Req() req) {
     const user: any = this.jwtService.getUserByRefreshToken(
-      req.headers.cookie.split('=')[1],
+      req.cookies.refreshToken,
     );
     return await this.securityDevicesRepository.getAllDevicesUser(user.userId);
   }
