@@ -13,12 +13,12 @@ export class RefreshStrategy extends PassportStrategy(
     super({
       jwtFromRequest: ExtractJwt.fromExtractors([
         (req: Request) => {
-          // return req.cookies.refreshToken;
-          if (req.headers.cookie) {
-            return req.headers.cookie.split('=')[1];
-          } else {
-            return null;
-          }
+          return req.cookies.refreshToken;
+          // if (req.headers.cookie) {
+          //   return req.headers.cookie.split('=')[1];
+          // } else {
+          //   return null;
+          // }
         },
       ]),
       ignoreExpiration: false,
