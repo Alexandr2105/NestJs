@@ -5,7 +5,6 @@ import {
   Get,
   HttpCode,
   Inject,
-  NotFoundException,
   Param,
   Req,
   UseGuards,
@@ -50,8 +49,7 @@ export class SecurityDevicesController {
     const device = await this.securityDevicesRepository.getDevice(
       param.deviceId,
     );
-    if (!device) throw new NotFoundException();
-    if (device.userId !== req.user.id) throw new ForbiddenException();
+    if (device.userId !== req.user.userId) throw new ForbiddenException();
     const result = await this.devicesService.delDevice(param.deviceId);
     if (result) return;
   }
