@@ -105,6 +105,7 @@ export class AuthController {
 
   @UseGuards(CountAttemptGuard)
   @UseGuards(RefreshAuthGuard)
+  @HttpCode(200)
   @Post('refresh-token')
   async createRefreshToken(@Request() req, @Res() res) {
     const token = this.jwtService.creatJWT(req.user);
