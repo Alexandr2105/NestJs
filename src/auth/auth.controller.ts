@@ -47,7 +47,7 @@ export class AuthController {
   async loginUser(@Request() req, @Body() body: LoginDto, @Res() res) {
     const accessToken = this.jwtService.creatJWT(req.user);
     const deviceId = this.devicesService.createDeviceId();
-    const refreshToken = this.jwtService.creatRefreshJWT(req.user, deviceId);
+    const refreshToken = this.jwtService.creatRefreshJWT(req.user.id, deviceId);
     const infoRefreshToken: any =
       this.jwtService.getUserByRefreshToken(refreshToken);
     await this.devicesService.saveInfoAboutDevicesUser({
@@ -110,7 +110,7 @@ export class AuthController {
   async createRefreshToken(@Request() req, @Res() res) {
     const token = this.jwtService.creatJWT(req.user);
     const refreshToken = this.jwtService.creatRefreshJWT(
-      req.user,
+      req.user.userId,
       req.user.deviceId,
     );
     const infoRefreshToken: any =

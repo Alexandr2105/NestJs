@@ -16,10 +16,10 @@ export class Jwt {
     };
   }
 
-  creatRefreshJWT(user: ItemsUsers, deviceId: string) {
+  creatRefreshJWT(userId: string, deviceId: string) {
     return this.refreshToken.sign(
       {
-        userId: user.id,
+        userId: userId,
         deviceId: deviceId,
       },
       {
@@ -46,17 +46,6 @@ export class Jwt {
         secret: settings.REFRESH_TOKEN_SECRET,
       });
       return new Object(result);
-    } catch (error) {
-      return null;
-    }
-  }
-
-  getDeviceIdRefreshToken(token: string) {
-    try {
-      const result: any = this.jwt.verify(token, {
-        secret: settings.REFRESH_TOKEN_SECRET,
-      });
-      return new Object(result.deviceId);
     } catch (error) {
       return null;
     }
