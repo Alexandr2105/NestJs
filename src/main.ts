@@ -31,9 +31,9 @@ async function bootstrap() {
       },
     }),
   );
-  app.use(cookieParser());
   useContainer(app.select(AppModule), { fallbackOnErrors: true });
   app.useGlobalFilters(new HttpExceptionFilter());
+  app.use(cookieParser());
   await app.listen(port);
 }
 
