@@ -58,6 +58,7 @@ import { DeleteBlogUseCase } from './features/public/blogs/useCases/delete.blog.
 import { GetBlogIdUseCase } from './features/public/blogs/useCases/get.blog.id.use.case';
 import { UpdateBlogUseCase } from './features/public/blogs/useCases/update.blog.use.case';
 import { CreateUserUseCase } from './features/sa/users/useCases/create.user.use.case';
+import { BloggerController } from './features/blogger/blogger.controller';
 
 const strategies = [LocalStrategy, JwtStrategy, BasicStrategy, RefreshStrategy];
 const validators = [
@@ -120,6 +121,7 @@ const useCase = [
     TestingController,
     AuthController,
     SecurityDevicesController,
+    BloggerController,
   ],
   providers: [
     QueryCount,

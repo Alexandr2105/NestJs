@@ -29,7 +29,7 @@ import { PostsService } from '../public/posts/posts.service';
 import { GetBlogIdUseCase } from '../public/blogs/useCases/get.blog.id.use.case';
 
 @Controller('blogger/blogs')
-export class BlogsController {
+export class BloggerController {
   constructor(
     @Inject(QueryCount) protected queryCount: QueryCount,
     @Inject(QueryRepository) protected queryRepository: QueryRepository,
