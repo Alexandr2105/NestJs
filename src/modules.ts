@@ -74,7 +74,7 @@ const validators = [
   CheckOriginalLogin,
   CheckIdForBlog,
 ];
-const useCase = [
+const useCases = [
   CreateBlogUseCase,
   DeleteBlogUseCase,
   GetBlogIdUseCase,
@@ -145,7 +145,7 @@ const useCase = [
     ...strategies,
     ...validators,
     CountAttemptGuard,
-    ...useCase,
+    ...useCases,
   ],
 })
 export class Modules {}
