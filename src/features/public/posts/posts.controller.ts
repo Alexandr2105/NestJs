@@ -16,7 +16,7 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { PostsRepository } from './posts.repository';
-import { QueryRepository } from '../queryReposytories/query-Repository';
+import { QueryRepository } from '../queryReposytories/query.repository';
 import { QueryCount } from '../../../common/helper/query.count';
 import { Jwt } from '../auth/jwt';
 import { UsersRepository } from '../../sa/users/users.repository';

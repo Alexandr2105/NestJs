@@ -26,6 +26,7 @@ import { CreateUserDto } from '../../sa/users/dto/user.dto';
 import { LocalAuthGuard } from '../../../common/guard/local.auth.guard';
 import { JwtAuthGuard } from '../../../common/guard/jwt.auth.guard';
 import { RefreshAuthGuard } from '../../../common/guard/refresh.auth.guard';
+import { CreateUserUseCase } from '../../sa/users/useCases/create.user.use.case';
 // import { CountAttemptGuard } from '../guard/count.attempt.guard';
 
 @Controller('auth')
@@ -38,6 +39,7 @@ export class AuthController {
     protected devicesService: SecurityDevicesService,
     @Inject(EmailManager) protected emailManager: EmailManager,
     @Inject(Jwt) protected jwtService: Jwt,
+    @Inject(CreateUserUseCase) protected createUserUseCase: CreateUserUseCase,
   ) {}
 
   @UseGuards(LocalAuthGuard)
@@ -91,7 +93,7 @@ export class AuthController {
   @HttpCode(204)
   @Post('registration')
   async registration(@Body() body: CreateUserDto) {
-    const newUser = await this.usersService.creatNewUsers(body);
+    const newUser = await this.createUserUseCase.execute(body);
     if (newUser) await this.authService.confirmation(newUser.id, body);
   }
 

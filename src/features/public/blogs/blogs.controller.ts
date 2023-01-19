@@ -1,30 +1,18 @@
 import {
-  Body,
   Controller,
-  Delete,
   Get,
   Headers,
-  HttpCode,
   Inject,
   NotFoundException,
   Param,
-  Post,
-  Put,
   Query,
-  UseGuards,
 } from '@nestjs/common';
 import { QueryCount } from '../../../common/helper/query.count';
 import { BlogsService } from './blogs.service';
-import { QueryRepository } from '../queryReposytories/query-Repository';
+import { QueryRepository } from '../queryReposytories/query.repository';
 import { PostsService } from '../posts/posts.service';
 import { Jwt } from '../auth/jwt';
-import {
-  CheckBlogId,
-  CreateBlogDto,
-  CreatePostForBlogDto,
-  UpdateBlogDto,
-} from './dto/blog.dto';
-import { BasicAuthGuard } from '../../../common/guard/basic.auth.guard';
+import { GetBlogIdUseCase } from './useCases/get.blog.id.use.case';
 
 @Controller('blogs')
 export class BlogsController {
@@ -34,6 +22,7 @@ export class BlogsController {
     @Inject(QueryRepository) protected queryRepository: QueryRepository,
     @Inject(PostsService) protected postsService: PostsService,
     @Inject(Jwt) protected jwtService: Jwt,
+    @Inject(GetBlogIdUseCase) protected getBlogIdUseCase: GetBlogIdUseCase,
   ) {}
 
   @Get()
@@ -44,40 +33,9 @@ export class BlogsController {
 
   @Get(':id')
   async getBlog(@Param('id') blogId: string) {
-    const blog = await this.blogsService.getBlogsId(blogId);
+    const blog = await this.getBlogIdUseCase.execute(blogId);
     if (blog) {
       return blog;
-    } else {
-      throw new NotFoundException();
-    }
-  }
-
-  @UseGuards(BasicAuthGuard)
-  @HttpCode(204)
-  @Delete(':id')
-  async deleteBlog(@Param('id') blogId: string) {
-    const result = await this.blogsService.deleteBlogsId(blogId);
-    if (result) {
-      return;
-    } else {
-      throw new NotFoundException();
-    }
-  }
-
-  @UseGuards(BasicAuthGuard)
-  @Post()
-  async createBlog(@Body() body: CreateBlogDto) {
-    const createBlog = await this.blogsService.createBlog(body);
-    return await this.blogsService.getBlogsId(createBlog.id);
-  }
-
-  @UseGuards(BasicAuthGuard)
-  @HttpCode(204)
-  @Put(':id')
-  async updateBlog(@Param('id') blogId: string, @Body() body: UpdateBlogDto) {
-    const updateBlog = await this.blogsService.updateBlog(blogId, body);
-    if (updateBlog) {
-      return;
     } else {
       throw new NotFoundException();
     }
@@ -109,25 +67,6 @@ export class BlogsController {
       );
       if (post.items.length === 0) throw new NotFoundException();
       return post;
-    }
-  }
-
-  @UseGuards(BasicAuthGuard)
-  @Post('/:blogId/posts')
-  async createPostsForBlog(
-    @Param() param: CheckBlogId,
-    @Body() body: CreatePostForBlogDto,
-  ) {
-    const newPostForBlogId = await this.postsService.createPost({
-      blogId: param.blogId,
-      title: body.title,
-      content: body.content,
-      shortDescription: body.shortDescription,
-    });
-    if (newPostForBlogId) {
-      return await this.postsService.getPostId(newPostForBlogId.id, 'null');
-    } else {
-      throw new NotFoundException();
     }
   }
 }

@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { BlogsController } from './features/public/blogs/blogs.controller';
-import { QueryRepository } from './features/public/queryReposytories/query-Repository';
+import { QueryRepository } from './features/public/queryReposytories/query.repository';
 import { BlogsRepository } from './features/public/blogs/blogs.repository';
 import { QueryCount } from './common/helper/query.count';
 import { BlogsService } from './features/public/blogs/blogs.service';
@@ -53,6 +53,33 @@ import { CheckOriginalLogin } from './common/customValidator/check.original.logi
 import { CheckIdForBlog } from './common/customValidator/check.id.for.blog';
 import { CountAttemptGuard } from './common/guard/count.attempt.guard';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { CreateBlogUseCase } from './features/public/blogs/useCases/create.blog.use.case';
+import { DeleteBlogUseCase } from './features/public/blogs/useCases/delete.blog.use.case';
+import { GetBlogIdUseCase } from './features/public/blogs/useCases/get.blog.id.use.case';
+import { UpdateBlogUseCase } from './features/public/blogs/useCases/update.blog.use.case';
+import { CreateUserUseCase } from './features/sa/users/useCases/create.user.use.case';
+
+const strategies = [LocalStrategy, JwtStrategy, BasicStrategy, RefreshStrategy];
+const validators = [
+  CheckBlogIdForBlog,
+  CheckLikeStatus,
+  CheckIdComment,
+  CheckUser,
+  CheckUserSecurityDevice,
+  CheckCode,
+  CheckRecoveryCode,
+  CheckEmailConfirmation,
+  CheckOriginalEmail,
+  CheckOriginalLogin,
+  CheckIdForBlog,
+];
+const useCase = [
+  CreateBlogUseCase,
+  DeleteBlogUseCase,
+  GetBlogIdUseCase,
+  UpdateBlogUseCase,
+  CreateUserUseCase,
+];
 
 @Module({
   imports: [
@@ -113,22 +140,10 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
     SecurityDevicesService,
     SecurityDevicesRepository,
     AuthRepository,
-    CheckBlogIdForBlog,
-    CheckLikeStatus,
-    CheckIdComment,
-    LocalStrategy,
-    JwtStrategy,
-    BasicStrategy,
-    RefreshStrategy,
-    CheckUser,
-    CheckUserSecurityDevice,
-    CheckCode,
-    CheckRecoveryCode,
-    CheckEmailConfirmation,
-    CheckOriginalEmail,
-    CheckOriginalLogin,
-    CheckIdForBlog,
+    ...strategies,
+    ...validators,
     CountAttemptGuard,
+    ...useCase,
   ],
 })
 export class Modules {}

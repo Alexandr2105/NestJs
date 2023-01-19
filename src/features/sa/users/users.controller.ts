@@ -12,10 +12,11 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
-import { QueryRepository } from '../../public/queryReposytories/query-Repository';
+import { QueryRepository } from '../../public/queryReposytories/query.repository';
 import { QueryCount } from '../../../common/helper/query.count';
 import { CreateUserDto } from './dto/user.dto';
 import { BasicAuthGuard } from '../../../common/guard/basic.auth.guard';
+import { CreateUserUseCase } from './useCases/create.user.use.case';
 
 @Controller('users')
 export class UsersController {
@@ -24,6 +25,7 @@ export class UsersController {
     protected usersService: UsersService,
     @Inject(QueryRepository) protected queryRepository: QueryRepository,
     @Inject(QueryCount) protected queryCount: QueryCount,
+    @Inject(CreateUserUseCase) protected createNewUser: CreateUserUseCase,
   ) {}
 
   @UseGuards(BasicAuthGuard)
@@ -36,7 +38,7 @@ export class UsersController {
   @UseGuards(BasicAuthGuard)
   @Post()
   async createUser(@Body() body: CreateUserDto) {
-    const newUser = await this.usersService.creatNewUsers(body);
+    const newUser = await this.createNewUser.execute(body);
     return await this.usersService.getUserById(newUser.id);
   }
 
