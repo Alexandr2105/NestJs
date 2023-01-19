@@ -1,14 +1,14 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { BlogDocument } from '../blogs/schema/blogs.schema';
-import { PostDocument } from '../posts/schema/posts.schema';
-import { CommentDocument } from '../comments/schema/comment.schema';
-import { UserDocument } from '../users/schema/user';
-import { RefreshTokenDocument } from '../schemas/refresh.token.data.schema';
-import { EmailConfirmationDocument } from '../schemas/email.confirmation.schema';
-import { CountAttemptDocument } from '../schemas/count.attempt.schema';
-import { LikesModelDocument } from '../schemas/like.type.schema';
+import { BlogDocument } from '../features/public/blogs/schema/blogs.schema';
+import { PostDocument } from '../features/public/posts/schema/posts.schema';
+import { CommentDocument } from '../features/public/comments/schema/comment.schema';
+import { UserDocument } from '../features/sa/users/schema/user';
+import { RefreshTokenDocument } from '../common/schemas/refresh.token.data.schema';
+import { EmailConfirmationDocument } from '../common/schemas/email.confirmation.schema';
+import { CountAttemptDocument } from '../common/schemas/count.attempt.schema';
+import { LikesModelDocument } from '../common/schemas/like.type.schema';
 
 @Injectable()
 export class TestingRepository {
