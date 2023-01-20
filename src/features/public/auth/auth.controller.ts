@@ -3,13 +3,12 @@ import {
   Controller,
   Get,
   HttpCode,
-  Inject,
   Post,
   Request,
   Res,
   UseGuards,
 } from '@nestjs/common';
-import { UsersService } from '../../sa/users/users.service';
+import { UsersService } from '../../sa/users/application/users.service';
 import { UsersRepository } from '../../sa/users/users.repository';
 import { Jwt } from './jwt';
 import { AuthService } from './auth.service';
@@ -26,20 +25,21 @@ import { CreateUserDto } from '../../sa/users/dto/user.dto';
 import { LocalAuthGuard } from '../../../common/guard/local.auth.guard';
 import { JwtAuthGuard } from '../../../common/guard/jwt.auth.guard';
 import { RefreshAuthGuard } from '../../../common/guard/refresh.auth.guard';
-import { CreateUserUseCase } from '../../sa/users/useCases/create.user.use.case';
+import { CommandBus } from '@nestjs/cqrs';
+import { CreateUserCommand } from '../../sa/users/application/useCases/create.user.use.case';
+// import { CreateUserUseCase } from '../../sa/users/application/useCases/create.user.use.case';
 // import { CountAttemptGuard } from '../guard/count.attempt.guard';
 
 @Controller('auth')
 export class AuthController {
   constructor(
-    @Inject(AuthService) protected authService: AuthService,
-    @Inject(UsersService) protected usersService: UsersService,
-    @Inject(UsersRepository) protected usersRepository: UsersRepository,
-    @Inject(SecurityDevicesService)
+    protected authService: AuthService,
+    protected usersService: UsersService,
+    protected usersRepository: UsersRepository,
     protected devicesService: SecurityDevicesService,
-    @Inject(EmailManager) protected emailManager: EmailManager,
-    @Inject(Jwt) protected jwtService: Jwt,
-    @Inject(CreateUserUseCase) protected createUserUseCase: CreateUserUseCase,
+    protected emailManager: EmailManager,
+    protected jwtService: Jwt,
+    protected commandBus: CommandBus, // protected createUserUseCase: CreateUserUseCase,
   ) {}
 
   @UseGuards(LocalAuthGuard)
@@ -93,7 +93,7 @@ export class AuthController {
   @HttpCode(204)
   @Post('registration')
   async registration(@Body() body: CreateUserDto) {
-    const newUser = await this.createUserUseCase.execute(body);
+    const newUser = await this.commandBus.execute(new CreateUserCommand(body));
     if (newUser) await this.authService.confirmation(newUser.id, body);
   }
 

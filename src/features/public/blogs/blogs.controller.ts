@@ -2,27 +2,23 @@ import {
   Controller,
   Get,
   Headers,
-  Inject,
   NotFoundException,
   Param,
   Query,
 } from '@nestjs/common';
 import { QueryCount } from '../../../common/helper/query.count';
-import { BlogsService } from './blogs.service';
 import { QueryRepository } from '../queryReposytories/query.repository';
-import { PostsService } from '../posts/posts.service';
 import { Jwt } from '../auth/jwt';
-import { GetBlogIdUseCase } from './useCases/get.blog.id.use.case';
+import { CommandBus } from '@nestjs/cqrs';
+import { GetBlogIdCommand } from './useCases/get.blog.id.use.case';
 
 @Controller('blogs')
 export class BlogsController {
   constructor(
-    @Inject(QueryCount) protected queryCount: QueryCount,
-    @Inject(BlogsService) protected blogsService: BlogsService,
-    @Inject(QueryRepository) protected queryRepository: QueryRepository,
-    @Inject(PostsService) protected postsService: PostsService,
-    @Inject(Jwt) protected jwtService: Jwt,
-    @Inject(GetBlogIdUseCase) protected getBlogIdUseCase: GetBlogIdUseCase,
+    protected queryCount: QueryCount,
+    protected queryRepository: QueryRepository,
+    protected jwtService: Jwt,
+    protected commandBus: CommandBus,
   ) {}
 
   @Get()
@@ -33,7 +29,7 @@ export class BlogsController {
 
   @Get(':id')
   async getBlog(@Param('id') blogId: string) {
-    const blog = await this.getBlogIdUseCase.execute(blogId);
+    const blog = await this.commandBus.execute(new GetBlogIdCommand(blogId));
     if (blog) {
       return blog;
     } else {

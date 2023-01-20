@@ -9,7 +9,7 @@ import { PostsController } from './features/public/posts/posts.controller';
 import { PostsService } from './features/public/posts/posts.service';
 import { PostsRepository } from './features/public/posts/posts.repository';
 import { UsersController } from './features/sa/users/users.controller';
-import { UsersService } from './features/sa/users/users.service';
+import { UsersService } from './features/sa/users/application/users.service';
 import { UsersRepository } from './features/sa/users/users.repository';
 import { CommentsController } from './features/public/comments/comments.controller';
 import { CommentsService } from './features/public/comments/comments.service';
@@ -57,11 +57,12 @@ import { CreateBlogUseCase } from './features/public/blogs/useCases/create.blog.
 import { DeleteBlogUseCase } from './features/public/blogs/useCases/delete.blog.use.case';
 import { GetBlogIdUseCase } from './features/public/blogs/useCases/get.blog.id.use.case';
 import { UpdateBlogUseCase } from './features/public/blogs/useCases/update.blog.use.case';
-import { CreateUserUseCase } from './features/sa/users/useCases/create.user.use.case';
+import { CreateUserUseCase } from './features/sa/users/application/useCases/create.user.use.case';
 import { BloggerController } from './features/blogger/blogger.controller';
+import { CqrsModule } from '@nestjs/cqrs';
 
-const strategies = [LocalStrategy, JwtStrategy, BasicStrategy, RefreshStrategy];
-const validators = [
+const Strategies = [LocalStrategy, JwtStrategy, BasicStrategy, RefreshStrategy];
+const Validators = [
   CheckBlogIdForBlog,
   CheckLikeStatus,
   CheckIdComment,
@@ -74,7 +75,7 @@ const validators = [
   CheckOriginalLogin,
   CheckIdForBlog,
 ];
-const useCases = [
+const UseCases = [
   CreateBlogUseCase,
   DeleteBlogUseCase,
   GetBlogIdUseCase,
@@ -84,6 +85,7 @@ const useCases = [
 
 @Module({
   imports: [
+    CqrsModule,
     PassportModule,
     MongooseModule.forFeature([
       { name: 'blogs', schema: BlogSchema },
@@ -142,10 +144,10 @@ const useCases = [
     SecurityDevicesService,
     SecurityDevicesRepository,
     AuthRepository,
-    ...strategies,
-    ...validators,
+    ...Strategies,
+    ...Validators,
     CountAttemptGuard,
-    ...useCases,
+    ...UseCases,
   ],
 })
 export class Modules {}

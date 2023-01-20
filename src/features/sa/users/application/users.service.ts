@@ -1,17 +1,12 @@
 import * as bcrypt from 'bcrypt';
-import { Inject, Injectable } from '@nestjs/common';
-import { UsersRepository } from './users.repository';
-import { User, UserDocument } from './schema/user';
-import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
-import { LoginDto } from '../../public/auth/dto/auth.dto';
+import { Injectable } from '@nestjs/common';
+import { UsersRepository } from '../users.repository';
+import { User, UserDocument } from '../schema/user';
+import { LoginDto } from '../../../public/auth/dto/auth.dto';
 
 @Injectable()
 export class UsersService {
-  constructor(
-    @Inject(UsersRepository) protected usersRepository: UsersRepository,
-    @InjectModel('users') protected usersCollection: Model<User>,
-  ) {}
+  constructor(protected usersRepository: UsersRepository) {}
 
   // async creatNewUsers(body: CreateUserDto): Promise<User> {
   //   const passwordSalt = await bcrypt.genSalt(10);

@@ -1,15 +1,17 @@
 import { BlogDocument } from '../schema/blogs.schema';
-import { Inject, Injectable } from '@nestjs/common';
 import { BlogsRepository } from '../blogs.repository';
+import { CommandHandler } from '@nestjs/cqrs';
 
-@Injectable()
+export class GetBlogIdCommand {
+  constructor(public id: string) {}
+}
+
+@CommandHandler(GetBlogIdCommand)
 export class GetBlogIdUseCase {
-  constructor(
-    @Inject(BlogsRepository) protected blogsRepository: BlogsRepository,
-  ) {}
+  constructor(protected blogsRepository: BlogsRepository) {}
 
-  async execute(id: string): Promise<BlogDocument | false> {
-    const blog = await this.blogsRepository.getBlogId(id);
+  async execute(command: GetBlogIdCommand): Promise<BlogDocument | false> {
+    const blog = await this.blogsRepository.getBlogId(command.id);
     if (!blog) return false;
     return blog;
   }

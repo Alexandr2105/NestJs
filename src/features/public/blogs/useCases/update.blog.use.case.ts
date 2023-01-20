@@ -1,19 +1,21 @@
 import { UpdateBlogDto } from '../dto/blog.dto';
-import { Inject, Injectable } from '@nestjs/common';
 import { BlogsRepository } from '../blogs.repository';
+import { CommandHandler } from '@nestjs/cqrs';
 
-@Injectable()
+export class UpdateBlogCommand {
+  constructor(public id: string, public body: UpdateBlogDto) {}
+}
+
+@CommandHandler(UpdateBlogCommand)
 export class UpdateBlogUseCase {
-  constructor(
-    @Inject(BlogsRepository) protected blogsRepository: BlogsRepository,
-  ) {}
+  constructor(protected blogsRepository: BlogsRepository) {}
 
-  async execute(id: string, body: UpdateBlogDto): Promise<boolean> {
-    const blog = await this.blogsRepository.getBlogDocument(id);
+  async execute(command: UpdateBlogCommand): Promise<boolean> {
+    const blog = await this.blogsRepository.getBlogDocument(command.id);
     if (!blog) return false;
-    blog.name = body.name;
-    blog.websiteUrl = body.websiteUrl;
-    blog.description = body.description;
+    blog.name = command.body.name;
+    blog.websiteUrl = command.body.websiteUrl;
+    blog.description = command.body.description;
     await this.blogsRepository.save(blog);
     return true;
   }

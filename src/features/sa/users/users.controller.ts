@@ -11,21 +11,22 @@ import {
   Query,
   UseGuards,
 } from '@nestjs/common';
-import { UsersService } from './users.service';
+import { UsersService } from './application/users.service';
 import { QueryRepository } from '../../public/queryReposytories/query.repository';
 import { QueryCount } from '../../../common/helper/query.count';
 import { CreateUserDto } from './dto/user.dto';
 import { BasicAuthGuard } from '../../../common/guard/basic.auth.guard';
-import { CreateUserUseCase } from './useCases/create.user.use.case';
+import { CreateUserCommand } from './application/useCases/create.user.use.case';
+import { CommandBus } from '@nestjs/cqrs';
 
 @Controller('users')
 export class UsersController {
   constructor(
     @Inject(UsersService)
     protected usersService: UsersService,
-    @Inject(QueryRepository) protected queryRepository: QueryRepository,
-    @Inject(QueryCount) protected queryCount: QueryCount,
-    @Inject(CreateUserUseCase) protected createNewUser: CreateUserUseCase,
+    protected queryRepository: QueryRepository,
+    protected queryCount: QueryCount,
+    protected commandBus: CommandBus,
   ) {}
 
   @UseGuards(BasicAuthGuard)
@@ -38,7 +39,7 @@ export class UsersController {
   @UseGuards(BasicAuthGuard)
   @Post()
   async createUser(@Body() body: CreateUserDto) {
-    const newUser = await this.createNewUser.execute(body);
+    const newUser = await this.commandBus.execute(new CreateUserCommand(body));
     return await this.usersService.getUserById(newUser.id);
   }
 
