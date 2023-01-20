@@ -27,8 +27,6 @@ import { JwtAuthGuard } from '../../../common/guard/jwt.auth.guard';
 import { RefreshAuthGuard } from '../../../common/guard/refresh.auth.guard';
 import { CommandBus } from '@nestjs/cqrs';
 import { CreateUserCommand } from '../../sa/users/application/useCases/create.user.use.case';
-// import { CreateUserUseCase } from '../../sa/users/application/useCases/create.user.use.case';
-// import { CountAttemptGuard } from '../guard/count.attempt.guard';
 
 @Controller('auth')
 export class AuthController {
@@ -39,7 +37,7 @@ export class AuthController {
     protected devicesService: SecurityDevicesService,
     protected emailManager: EmailManager,
     protected jwtService: Jwt,
-    protected commandBus: CommandBus, // protected createUserUseCase: CreateUserUseCase,
+    protected commandBus: CommandBus,
   ) {}
 
   @UseGuards(LocalAuthGuard)
