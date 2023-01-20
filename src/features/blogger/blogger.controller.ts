@@ -20,13 +20,12 @@ import {
 import { QueryRepository } from '../public/queryReposytories/query.repository';
 import { QueryCount } from '../../common/helper/query.count';
 import { JwtAuthGuard } from '../../common/guard/jwt.auth.guard';
-// import { DeleteBlogUseCase } from '../public/blogs/useCases/delete.blog.use.case';
-import { CreateBlogCommand } from '../public/blogs/useCases/create.blog.use.case';
+import { CreateBlogCommand } from './application/useCase/create.blog.use.case';
 import { PostsService } from '../public/posts/posts.service';
 import { GetBlogIdUseCase } from '../public/blogs/useCases/get.blog.id.use.case';
 import { CommandBus } from '@nestjs/cqrs';
-import { UpdateBlogCommand } from '../public/blogs/useCases/update.blog.use.case';
-import { DeleteBlogCommand } from '../public/blogs/useCases/delete.blog.use.case';
+import { UpdateBlogCommand } from './application/useCase/update.blog.use.case';
+import { DeleteBlogCommand } from './application/useCase/delete.blog.use.case';
 
 @Controller('blogger/blogs')
 export class BloggerController {
@@ -34,7 +33,6 @@ export class BloggerController {
     protected queryCount: QueryCount,
     protected queryRepository: QueryRepository,
     protected commandBus: CommandBus,
-    // protected deleteBlogUseCase: DeleteBlogUseCase,
     protected postsService: PostsService,
     protected getBlogIdUseCase: GetBlogIdUseCase,
   ) {}

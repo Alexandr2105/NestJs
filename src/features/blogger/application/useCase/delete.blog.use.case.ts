@@ -1,5 +1,5 @@
 import { Inject } from '@nestjs/common';
-import { BlogsRepository } from '../blogs.repository';
+import { BlogsRepository } from '../../../public/blogs/blogs.repository';
 import { CommandHandler } from '@nestjs/cqrs';
 
 export class DeleteBlogCommand {

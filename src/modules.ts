@@ -4,7 +4,6 @@ import { BlogsController } from './features/public/blogs/blogs.controller';
 import { QueryRepository } from './features/public/queryReposytories/query.repository';
 import { BlogsRepository } from './features/public/blogs/blogs.repository';
 import { QueryCount } from './common/helper/query.count';
-import { BlogsService } from './features/public/blogs/blogs.service';
 import { PostsController } from './features/public/posts/posts.controller';
 import { PostsService } from './features/public/posts/posts.service';
 import { PostsRepository } from './features/public/posts/posts.repository';
@@ -53,10 +52,10 @@ import { CheckOriginalLogin } from './common/customValidator/check.original.logi
 import { CheckIdForBlog } from './common/customValidator/check.id.for.blog';
 import { CountAttemptGuard } from './common/guard/count.attempt.guard';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { CreateBlogUseCase } from './features/public/blogs/useCases/create.blog.use.case';
-import { DeleteBlogUseCase } from './features/public/blogs/useCases/delete.blog.use.case';
+import { CreateBlogUseCase } from './features/blogger/application/useCase/create.blog.use.case';
+import { DeleteBlogUseCase } from './features/blogger/application/useCase/delete.blog.use.case';
 import { GetBlogIdUseCase } from './features/public/blogs/useCases/get.blog.id.use.case';
-import { UpdateBlogUseCase } from './features/public/blogs/useCases/update.blog.use.case';
+import { UpdateBlogUseCase } from './features/blogger/application/useCase/update.blog.use.case';
 import { CreateUserUseCase } from './features/sa/users/application/useCases/create.user.use.case';
 import { BloggerController } from './features/blogger/blogger.controller';
 import { CqrsModule } from '@nestjs/cqrs';
@@ -127,7 +126,6 @@ const UseCases = [
   ],
   providers: [
     QueryCount,
-    BlogsService,
     BlogsRepository,
     QueryRepository,
     PostsService,

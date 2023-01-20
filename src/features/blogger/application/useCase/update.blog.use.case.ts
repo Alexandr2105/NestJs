@@ -1,5 +1,5 @@
-import { UpdateBlogDto } from '../dto/blog.dto';
-import { BlogsRepository } from '../blogs.repository';
+import { UpdateBlogDto } from '../../../public/blogs/dto/blog.dto';
+import { BlogsRepository } from '../../../public/blogs/blogs.repository';
 import { CommandHandler } from '@nestjs/cqrs';
 
 export class UpdateBlogCommand {
