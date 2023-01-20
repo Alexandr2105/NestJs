@@ -1,5 +1,5 @@
 import { PostsRepository } from './posts.repository';
-import { Inject, Injectable } from '@nestjs/common';
+import { ForbiddenException, Inject, Injectable } from '@nestjs/common';
 import { CommentsRepository } from '../comments/comments.repostitory';
 import { Post, PostDocument } from './schema/posts.schema';
 import { CreatePostDto, UpdatePostDto } from './dto/post.dto';
@@ -73,12 +73,14 @@ export class PostsService {
     return true;
   }
 
-  async createPost(post: CreatePostDto): Promise<Post | false> {
+  async createPost(post: CreatePostDto, userId: string): Promise<Post | false> {
     const infoBlog: any = await this.blogsRepository.getBlogId(post.blogId);
+    if (infoBlog.userId !== userId) throw new ForbiddenException();
     const newPost = new this.postsCollection(post);
     newPost.createdAt = new Date().toISOString();
     newPost.id = +new Date() + '';
     newPost.blogName = infoBlog.name;
+    newPost.userId = userId;
     await this.postsRepository.save(newPost);
     return newPost;
   }

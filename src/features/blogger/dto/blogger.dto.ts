@@ -1,6 +1,6 @@
-import { IsUrl, Length, Validate } from 'class-validator';
 import { Transform } from 'class-transformer';
-import { CheckIdForBlog } from '../../../../common/customValidator/check.id.for.blog';
+import { IsUrl, Length, Validate } from 'class-validator';
+import { CheckIdForBlog } from '../../../common/customValidator/check.id.for.blog';
 
 export class CreateBlogDto {
   @Transform(({ value }) => value.trim())
@@ -29,6 +29,18 @@ export class UpdateBlogDto {
 }
 
 export class CreatePostForBlogDto {
+  @Transform(({ value }) => value.trim())
+  @Length(1, 30, { message: 'Не верно заполнено поле' })
+  title: string;
+  @Length(1, 100, { message: 'Не верно заполнено поле' })
+  @Transform(({ value }) => value.trim())
+  shortDescription: string;
+  @Transform(({ value }) => value.trim())
+  @Length(1, 1000, { message: 'Не верно заполнено поле' })
+  content: string;
+}
+
+export class UpdatePostByIdDto {
   @Transform(({ value }) => value.trim())
   @Length(1, 30, { message: 'Не верно заполнено поле' })
   title: string;

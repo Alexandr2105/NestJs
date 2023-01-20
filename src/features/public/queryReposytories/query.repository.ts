@@ -1,4 +1,4 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import {
   BlogsQueryType,
   PostQueryType,
@@ -26,10 +26,9 @@ export class QueryRepository {
     protected commentsCollection: Model<CommentDocument>,
     @InjectModel('likeStatuses')
     protected likeInfoCollection: Model<LikesModelDocument>,
-    @Inject(QueryCount) protected queryCount: QueryCount,
-    @Inject(CommentsRepository)
+    protected queryCount: QueryCount,
     protected commentsRepository: CommentsRepository,
-    @Inject(PostsRepository) protected postsRepository: PostsRepository,
+    protected postsRepository: PostsRepository,
   ) {}
 
   async getQueryBlogs(query: any): Promise<BlogsQueryType> {
@@ -264,6 +263,45 @@ export class QueryRepository {
           };
         }),
       ),
+    };
+  }
+
+  async getQueryBlogsAuthUser(
+    query: any,
+    userId: string,
+  ): Promise<BlogsQueryType> {
+    const totalCount = await this.blogsCollection.countDocuments({
+      name: {
+        $regex: query.searchNameTerm,
+        $options: 'i',
+      },
+      userId: userId,
+    });
+    const sortedBlogsArray = await this.blogsCollection
+      .find({
+        name: {
+          $regex: query.searchNameTerm,
+          $options: 'i',
+        },
+        userId: userId,
+      })
+      .sort({ [query.sortBy]: query.sortDirection })
+      .skip(this.queryCount.skipHelper(query.pageNumber, query.pageSize))
+      .limit(query.pageSize);
+    return {
+      pagesCount: this.queryCount.pagesCountHelper(totalCount, query.pageSize),
+      page: query.pageNumber,
+      pageSize: query.pageSize,
+      totalCount: totalCount,
+      items: sortedBlogsArray.map((a) => {
+        return {
+          id: a.id,
+          name: a.name,
+          description: a.description,
+          websiteUrl: a.websiteUrl,
+          createdAt: a.createdAt,
+        };
+      }),
     };
   }
 }

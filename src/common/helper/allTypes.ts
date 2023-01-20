@@ -1,12 +1,17 @@
-import { Blog } from '../../features/public/blogs/schema/blogs.schema';
-import { Post } from '../../features/public/posts/schema/posts.schema';
-
 export type BlogsQueryType = {
   pagesCount: number;
   pageSize: number;
   page: number;
   totalCount: number;
-  items: Blog[];
+  items: BlogNotUserId[];
+};
+
+type BlogNotUserId = {
+  id: string;
+  name: string;
+  description: string;
+  websiteUrl: string;
+  createdAt: string;
 };
 
 export type PostQueryType = {
@@ -14,7 +19,17 @@ export type PostQueryType = {
   page: number;
   pageSize: number;
   totalCount: number;
-  items: Post[];
+  items: PostNotUserId[];
+};
+
+type PostNotUserId = {
+  id: string;
+  title: string;
+  shortDescription: string;
+  content: string;
+  blogId: string;
+  blogName: string;
+  createdAt: string;
 };
 
 export type ItemsUsers = {

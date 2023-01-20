@@ -59,6 +59,8 @@ import { UpdateBlogUseCase } from './features/blogger/application/useCase/update
 import { CreateUserUseCase } from './features/sa/users/application/useCases/create.user.use.case';
 import { BloggerController } from './features/blogger/blogger.controller';
 import { CqrsModule } from '@nestjs/cqrs';
+import { UpdatePostByIdUseCase } from './features/blogger/application/useCase/update.post.by.id.use.case';
+import { DeletePostByIdUseCase } from './features/blogger/application/useCase/delete.post.by.id.use.case';
 
 const Strategies = [LocalStrategy, JwtStrategy, BasicStrategy, RefreshStrategy];
 const Validators = [
@@ -80,6 +82,8 @@ const UseCases = [
   GetBlogIdUseCase,
   UpdateBlogUseCase,
   CreateUserUseCase,
+  UpdatePostByIdUseCase,
+  DeletePostByIdUseCase,
 ];
 
 @Module({

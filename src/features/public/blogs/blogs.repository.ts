@@ -11,7 +11,7 @@ export class BlogsRepository {
   async getBlogId(id: string): Promise<BlogDocument | false> {
     const blog = await this.blogsCollection
       .findOne({ id: id })
-      .select('-__v -_id');
+      .select('-__v -_id -userId');
     if (blog) {
       return blog;
     } else {

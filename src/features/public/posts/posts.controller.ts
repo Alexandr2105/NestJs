@@ -21,7 +21,7 @@ import { QueryCount } from '../../../common/helper/query.count';
 import { Jwt } from '../auth/jwt';
 import { UsersRepository } from '../../sa/users/users.repository';
 import { CommentsService } from '../comments/comments.service';
-import { CreatePostDto, UpdatePostDto } from './dto/post.dto';
+import { UpdatePostDto } from './dto/post.dto';
 import { CreateCommentDto } from '../comments/dto/comment.dto';
 import { LikeStatusDto } from '../../../common/helper/like.status.dto';
 import { JwtAuthGuard } from '../../../common/guard/jwt.auth.guard';
@@ -84,13 +84,13 @@ export class PostsController {
     }
   }
 
-  @UseGuards(BasicAuthGuard)
-  @Post()
-  async createPost(@Body() body: CreatePostDto) {
-    const createPost = await this.postsService.createPost(body);
-    if (!createPost) return false;
-    return await this.postsService.getPostId(createPost.id, 'null');
-  }
+  // @UseGuards(BasicAuthGuard)
+  // @Post()
+  // async createPost(@Body() body: CreatePostDto) {
+  //   const createPost = await this.postsService.createPost(body);
+  //   if (!createPost) return false;
+  //   return await this.postsService.getPostId(createPost.id, 'null');
+  // }
 
   @UseGuards(BasicAuthGuard)
   @HttpCode(204)
