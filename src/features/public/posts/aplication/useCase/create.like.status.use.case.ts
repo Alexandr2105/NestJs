@@ -1,5 +1,4 @@
 import { CommandHandler } from '@nestjs/cqrs';
-import { CreatePostByIdCommand } from '../../../../blogger/application/useCase/create.post.by.id.use.case';
 import { PostsRepository } from '../../posts.repository';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
@@ -14,7 +13,7 @@ export class CreateLikeStatusCommand {
   ) {}
 }
 
-@CommandHandler(CreatePostByIdCommand)
+@CommandHandler(CreateLikeStatusCommand)
 export class CreateLikeStatusUseCase {
   constructor(
     protected postsRepository: PostsRepository,
