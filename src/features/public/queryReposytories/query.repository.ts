@@ -15,6 +15,7 @@ import { PostDocument } from '../posts/schema/posts.schema';
 import { CommentDocument } from '../comments/schema/comment.schema';
 import { User } from '../../sa/users/schema/user';
 import { LikesModelDocument } from '../../../common/schemas/like.type.schema';
+import { BanUser } from '../../sa/users/schema/banUser';
 
 @Injectable()
 export class QueryRepository {
@@ -26,6 +27,7 @@ export class QueryRepository {
     protected commentsCollection: Model<CommentDocument>,
     @InjectModel('likeStatuses')
     protected likeInfoCollection: Model<LikesModelDocument>,
+    @InjectModel('banUsers') protected banUsers: Model<BanUser>,
     protected queryCount: QueryCount,
     protected commentsRepository: CommentsRepository,
     protected postsRepository: PostsRepository,
@@ -208,14 +210,22 @@ export class QueryRepository {
       page: query.pageNumber,
       pageSize: query.pageSize,
       totalCount: totalCount,
-      items: sortArrayUsers.map((a) => {
-        return {
-          id: a.id,
-          login: a.login,
-          email: a.email,
-          createdAt: a.createdAt,
-        };
-      }),
+      items: await Promise.all(
+        sortArrayUsers.map(async (a) => {
+          const banInfo = await this.banUsers.findOne({ userId: a.id });
+          return {
+            id: a.id,
+            login: a.login,
+            email: a.email,
+            createdAt: a.createdAt,
+            banInfo: {
+              isBanned: banInfo.isBanned,
+              banDate: banInfo.banDate,
+              banReason: banInfo.banReason,
+            },
+          };
+        }),
+      ),
     };
   }
 

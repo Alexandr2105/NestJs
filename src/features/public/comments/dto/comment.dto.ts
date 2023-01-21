@@ -1,6 +1,6 @@
 import { Length, Validate } from 'class-validator';
 import { Transform } from 'class-transformer';
-import { CheckUser } from '../../../../common/customValidator/check.user';
+import { CheckUserForComments } from '../../../../common/customValidator/check.user.for.comments';
 
 export class UpdateCommentDto {
   @Transform(({ value }) => value.trim())
@@ -15,6 +15,6 @@ export class CreateCommentDto {
 }
 
 export class CheckUserId {
-  @Validate(CheckUser)
+  @Validate(CheckUserForComments)
   commentId: string;
 }

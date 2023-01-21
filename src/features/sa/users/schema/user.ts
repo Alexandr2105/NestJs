@@ -15,6 +15,8 @@ export class User {
   public email: string;
   @Prop({ required: true })
   public createdAt: string;
+  @Prop({ required: true })
+  public ban: boolean;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);

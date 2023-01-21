@@ -32,11 +32,18 @@ type PostNotUserId = {
   createdAt: string;
 };
 
+export type BanInfo = {
+  isBanned: boolean | undefined;
+  banDate: string | undefined;
+  banReason: string | undefined;
+};
+
 export type ItemsUsers = {
   id: string;
   login: string;
   email: string;
   createdAt: string;
+  banInfo: BanInfo;
 };
 
 export type UserQueryType = {

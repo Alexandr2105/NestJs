@@ -41,7 +41,7 @@ import { PassportModule } from '@nestjs/passport';
 import { JwtStrategy } from './common/strategies/jwt.strategy';
 import { RefreshStrategy } from './common/strategies/refresh.strategy';
 import { MailerModule } from '@nestjs-modules/mailer';
-import { CheckUser } from './common/customValidator/check.user';
+import { CheckUserForComments } from './common/customValidator/check.user.for.comments';
 import { CheckUserSecurityDevice } from './common/customValidator/check.user.security.device';
 import { CheckCode } from './common/customValidator/check.code';
 import { CheckRecoveryCode } from './common/customValidator/check.recovery.code';
@@ -64,13 +64,14 @@ import { GetPostIdUseCase } from './features/public/posts/aplication/useCase/get
 import { CreatePostByIdUseCase } from './features/blogger/application/useCase/create.post.by.id.use.case';
 import { CreateCommentByPostUseCase } from './features/public/posts/aplication/useCase/create.comment.by.post.use.case';
 import { CreateLikeStatusUseCase } from './features/public/posts/aplication/useCase/create.like.status.use.case';
+import { BunUserSchema } from './features/sa/users/schema/banUser';
 
 const Strategies = [LocalStrategy, JwtStrategy, BasicStrategy, RefreshStrategy];
 const Validators = [
   CheckBlogIdForBlog,
   CheckLikeStatus,
   CheckIdComment,
-  CheckUser,
+  CheckUserForComments,
   CheckUserSecurityDevice,
   CheckCode,
   CheckRecoveryCode,
@@ -106,6 +107,7 @@ const UseCases = [
       { name: 'emailConfirmations', schema: EmailConfirmationSchema },
       { name: 'refreshTokenData', schema: RefreshTokenSchema },
       { name: 'countAttempts', schema: CountAttemptSchema },
+      { name: 'banUsers', schema: BunUserSchema },
     ]),
     JwtModule.register({}),
     MailerModule.forRootAsync({

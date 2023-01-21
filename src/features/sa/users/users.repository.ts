@@ -6,6 +6,7 @@ import { add } from 'date-fns';
 import { User, UserDocument } from './schema/user';
 import { EmailConfirmationDocument } from '../../../common/schemas/email.confirmation.schema';
 import { EmailResending } from '../../public/auth/dto/auth.dto';
+import { BanUserDocument } from './schema/banUser';
 
 @Injectable()
 export class UsersRepository {
@@ -84,5 +85,9 @@ export class UsersRepository {
 
   async save(user: UserDocument) {
     await user.save();
+  }
+
+  async saveBan(banInfo: BanUserDocument) {
+    await banInfo.save();
   }
 }

@@ -9,7 +9,7 @@ import { CommentDocument } from '../../features/public/comments/schema/comment.s
 
 @ValidatorConstraint({ name: 'comment', async: true })
 @Injectable()
-export class CheckUser implements ValidatorConstraintInterface {
+export class CheckUserForComments implements ValidatorConstraintInterface {
   constructor(
     @InjectModel('comments')
     protected commentCollection: Model<CommentDocument>,

@@ -29,6 +29,7 @@ export class CreateUserUseCase {
     newUser.id = +new Date() + '';
     newUser.password = passwordHash;
     newUser.createdAt = new Date().toISOString();
+    newUser.ban = false;
     await this.usersRepository.save(newUser);
     return newUser;
   }

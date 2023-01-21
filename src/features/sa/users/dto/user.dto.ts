@@ -1,4 +1,4 @@
-import { IsEmail, Length, Validate } from 'class-validator';
+import { IsBoolean, IsEmail, Length, Validate } from 'class-validator';
 import { Transform } from 'class-transformer';
 import { CheckOriginalLogin } from '../../../../common/customValidator/check.original.login';
 import { CheckOriginalEmail } from '../../../../common/customValidator/check.origin.email';
@@ -15,4 +15,12 @@ export class CreateUserDto {
   @Transform(({ value }) => value.trim())
   @Length(6, 20, { message: 'Не верно заполнено поле' })
   password: string;
+}
+
+export class BanUserDto {
+  @IsBoolean()
+  isBanned: boolean;
+  @Transform(({ value }) => value.trim())
+  @Length(20, 1000, { message: 'Не верная длинна строки' })
+  banReason: string;
 }
