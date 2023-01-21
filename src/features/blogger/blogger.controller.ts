@@ -16,8 +16,7 @@ import { QueryRepository } from '../public/queryReposytories/query.repository';
 import { QueryCount } from '../../common/helper/query.count';
 import { JwtAuthGuard } from '../../common/guard/jwt.auth.guard';
 import { CreateBlogCommand } from './application/useCase/create.blog.use.case';
-import { PostsService } from '../public/posts/posts.service';
-import { GetBlogIdCommand } from '../public/blogs/useCases/get.blog.id.use.case';
+import { GetBlogIdCommand } from '../public/blogs/aplication/useCases/get.blog.id.use.case';
 import { CommandBus } from '@nestjs/cqrs';
 import { UpdateBlogCommand } from './application/useCase/update.blog.use.case';
 import { DeleteBlogCommand } from './application/useCase/delete.blog.use.case';
@@ -30,6 +29,8 @@ import {
 } from './dto/blogger.dto';
 import { UpdatePostByIdCommand } from './application/useCase/update.post.by.id.use.case';
 import { DeletePostByIdCommand } from './application/useCase/delete.post.by.id.use.case';
+import { GetPostIdCommand } from '../public/posts/aplication/useCase/get.post.id.use.case';
+import { CreatePostByIdCommand } from './application/useCase/create.post.by.id.use.case';
 
 @Controller('blogger/blogs')
 export class BloggerController {
@@ -37,7 +38,6 @@ export class BloggerController {
     protected queryCount: QueryCount,
     protected queryRepository: QueryRepository,
     protected commandBus: CommandBus,
-    protected postsService: PostsService,
   ) {}
 
   @UseGuards(JwtAuthGuard)
@@ -95,19 +95,20 @@ export class BloggerController {
     @Body() body: CreatePostForBlogDto,
     @Req() req,
   ) {
-    const newPostForBlogId = await this.postsService.createPost(
-      {
-        blogId: param.blogId,
-        title: body.title,
-        content: body.content,
-        shortDescription: body.shortDescription,
-      },
-      req.user.id,
+    const newPostForBlogId = await this.commandBus.execute(
+      new CreatePostByIdCommand(
+        {
+          title: body.title,
+          content: body.content,
+          shortDescription: body.shortDescription,
+        },
+        param.blogId,
+        req.user.id,
+      ),
     );
     if (newPostForBlogId) {
-      return await this.postsService.getPostId(
-        newPostForBlogId.id,
-        req.user.id,
+      return await this.commandBus.execute(
+        new GetPostIdCommand(newPostForBlogId.id, req.user.id),
       );
     } else {
       throw new NotFoundException();

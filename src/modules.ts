@@ -5,7 +5,6 @@ import { QueryRepository } from './features/public/queryReposytories/query.repos
 import { BlogsRepository } from './features/public/blogs/blogs.repository';
 import { QueryCount } from './common/helper/query.count';
 import { PostsController } from './features/public/posts/posts.controller';
-import { PostsService } from './features/public/posts/posts.service';
 import { PostsRepository } from './features/public/posts/posts.repository';
 import { UsersController } from './features/sa/users/users.controller';
 import { UsersService } from './features/sa/users/application/users.service';
@@ -54,13 +53,17 @@ import { CountAttemptGuard } from './common/guard/count.attempt.guard';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { CreateBlogUseCase } from './features/blogger/application/useCase/create.blog.use.case';
 import { DeleteBlogUseCase } from './features/blogger/application/useCase/delete.blog.use.case';
-import { GetBlogIdUseCase } from './features/public/blogs/useCases/get.blog.id.use.case';
+import { GetBlogIdUseCase } from './features/public/blogs/aplication/useCases/get.blog.id.use.case';
 import { UpdateBlogUseCase } from './features/blogger/application/useCase/update.blog.use.case';
 import { CreateUserUseCase } from './features/sa/users/application/useCases/create.user.use.case';
 import { BloggerController } from './features/blogger/blogger.controller';
 import { CqrsModule } from '@nestjs/cqrs';
 import { UpdatePostByIdUseCase } from './features/blogger/application/useCase/update.post.by.id.use.case';
 import { DeletePostByIdUseCase } from './features/blogger/application/useCase/delete.post.by.id.use.case';
+import { GetPostIdUseCase } from './features/public/posts/aplication/useCase/get.post.id.use.case';
+import { CreatePostByIdUseCase } from './features/blogger/application/useCase/create.post.by.id.use.case';
+import { CreateCommentByPostUseCase } from './features/public/posts/aplication/useCase/create.comment.by.post.use.case';
+import { CreateLikeStatusUseCase } from './features/public/posts/aplication/useCase/create.like.status.use.case';
 
 const Strategies = [LocalStrategy, JwtStrategy, BasicStrategy, RefreshStrategy];
 const Validators = [
@@ -84,6 +87,10 @@ const UseCases = [
   CreateUserUseCase,
   UpdatePostByIdUseCase,
   DeletePostByIdUseCase,
+  GetPostIdUseCase,
+  CreatePostByIdUseCase,
+  CreateCommentByPostUseCase,
+  CreateLikeStatusUseCase,
 ];
 
 @Module({
@@ -132,7 +139,6 @@ const UseCases = [
     QueryCount,
     BlogsRepository,
     QueryRepository,
-    PostsService,
     PostsRepository,
     UsersService,
     UsersRepository,

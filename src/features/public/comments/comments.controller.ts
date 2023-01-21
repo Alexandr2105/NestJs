@@ -18,7 +18,7 @@ import { CommentsRepository } from './comments.repostitory';
 import { UsersRepository } from '../../sa/users/users.repository';
 import { Jwt } from '../auth/jwt';
 import { CheckUserId, UpdateCommentDto } from './dto/comment.dto';
-import { LikeStatusDto } from '../../../common/helper/like.status.dto';
+import { LikeStatusDto } from '../posts/dto/like.status.dto';
 import { JwtAuthGuard } from '../../../common/guard/jwt.auth.guard';
 
 @Controller('comments')

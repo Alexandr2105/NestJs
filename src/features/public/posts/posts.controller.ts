@@ -1,12 +1,9 @@
-import { PostsService } from './posts.service';
 import {
   Body,
   Controller,
-  Delete,
   Get,
   Headers,
   HttpCode,
-  Inject,
   NotFoundException,
   Param,
   Post,
@@ -21,22 +18,24 @@ import { QueryCount } from '../../../common/helper/query.count';
 import { Jwt } from '../auth/jwt';
 import { UsersRepository } from '../../sa/users/users.repository';
 import { CommentsService } from '../comments/comments.service';
-import { UpdatePostDto } from './dto/post.dto';
 import { CreateCommentDto } from '../comments/dto/comment.dto';
-import { LikeStatusDto } from '../../../common/helper/like.status.dto';
+import { LikeStatusDto } from './dto/like.status.dto';
 import { JwtAuthGuard } from '../../../common/guard/jwt.auth.guard';
-import { BasicAuthGuard } from '../../../common/guard/basic.auth.guard';
+import { CommandBus } from '@nestjs/cqrs';
+import { GetPostIdCommand } from './aplication/useCase/get.post.id.use.case';
+import { CreateCommentByPostCommand } from './aplication/useCase/create.comment.by.post.use.case';
+import { CreateLikeStatusCommand } from './aplication/useCase/create.like.status.use.case';
 
 @Controller('posts')
 export class PostsController {
   constructor(
-    @Inject(PostsService) protected postsService: PostsService,
-    @Inject(QueryCount) protected queryCount: QueryCount,
-    @Inject(UsersRepository) protected usersRepository: UsersRepository,
-    @Inject(PostsRepository) protected postsRepository: PostsRepository,
-    @Inject(CommentsService) protected commentsService: CommentsService,
-    @Inject(QueryRepository) protected queryRepository: QueryRepository,
-    @Inject(Jwt) protected jwtService: Jwt,
+    protected queryCount: QueryCount,
+    protected usersRepository: UsersRepository,
+    protected postsRepository: PostsRepository,
+    protected commentsService: CommentsService,
+    protected queryRepository: QueryRepository,
+    protected jwtService: Jwt,
+    protected commandBus: CommandBus,
   ) {}
 
   @Get()
@@ -61,44 +60,16 @@ export class PostsController {
       const userId: any = this.jwtService.getUserIdByToken(
         headers.authorization.split(' ')[1],
       );
-      post = await this.postsService.getPostId(postId, userId);
+      post = await this.commandBus.execute(
+        new GetPostIdCommand(postId, userId),
+      );
     } else {
-      post = await this.postsService.getPostId(postId, 'null');
+      post = await this.commandBus.execute(
+        new GetPostIdCommand(postId, 'null'),
+      );
     }
     if (post) {
       return post;
-    } else {
-      throw new NotFoundException();
-    }
-  }
-
-  @UseGuards(BasicAuthGuard)
-  @HttpCode(204)
-  @Delete(':id')
-  async deletePost(@Param('id') postId: string) {
-    const post = await this.postsService.deletePostId(postId);
-    if (post) {
-      return;
-    } else {
-      throw new NotFoundException();
-    }
-  }
-
-  // @UseGuards(BasicAuthGuard)
-  // @Post()
-  // async createPost(@Body() body: CreatePostDto) {
-  //   const createPost = await this.postsService.createPost(body);
-  //   if (!createPost) return false;
-  //   return await this.postsService.getPostId(createPost.id, 'null');
-  // }
-
-  @UseGuards(BasicAuthGuard)
-  @HttpCode(204)
-  @Put(':id')
-  async updatePost(@Param('id') postId: string, @Body() body: UpdatePostDto) {
-    const postUpdate = await this.postsService.updatePostId(postId, body);
-    if (postUpdate) {
-      return;
     } else {
       throw new NotFoundException();
     }
@@ -122,7 +93,6 @@ export class PostsController {
   }
 
   @UseGuards(JwtAuthGuard)
-  @HttpCode(201)
   @Post(':postId/comments')
   async createCommentsForPost(
     @Param('postId') postId: string,
@@ -131,11 +101,8 @@ export class PostsController {
     @Req() req,
   ) {
     const user: any = await this.usersRepository.getUserId(req.user.id);
-    const post = await this.postsService.creatNewCommentByPostId(
-      postId,
-      body.content,
-      user.id,
-      user.login,
+    const post = await this.commandBus.execute(
+      new CreateCommentByPostCommand(postId, body.content, user.id, user.login),
     );
     const userId: any = await this.jwtService.getUserIdByToken(
       headers.authorization.split(' ')[1],
@@ -163,11 +130,8 @@ export class PostsController {
       headers.authorization.split(' ')[1],
     );
     const user: any = await this.usersRepository.getUserId(userId);
-    const likeStatus = await this.postsService.createLikeStatus(
-      postId,
-      userId,
-      body.likeStatus,
-      user.login,
+    const likeStatus = await this.commandBus.execute(
+      new CreateLikeStatusCommand(postId, userId, body.likeStatus, user.login),
     );
     if (likeStatus) {
       return;

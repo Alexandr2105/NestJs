@@ -10,7 +10,7 @@ import { QueryCount } from '../../../common/helper/query.count';
 import { QueryRepository } from '../queryReposytories/query.repository';
 import { Jwt } from '../auth/jwt';
 import { CommandBus } from '@nestjs/cqrs';
-import { GetBlogIdCommand } from './useCases/get.blog.id.use.case';
+import { GetBlogIdCommand } from './aplication/useCases/get.blog.id.use.case';
 
 @Controller('blogs')
 export class BlogsController {

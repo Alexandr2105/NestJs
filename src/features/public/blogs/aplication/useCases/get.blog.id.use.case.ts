@@ -1,5 +1,5 @@
-import { BlogDocument } from '../schema/blogs.schema';
-import { BlogsRepository } from '../blogs.repository';
+import { BlogDocument } from '../../schema/blogs.schema';
+import { BlogsRepository } from '../../blogs.repository';
 import { CommandHandler } from '@nestjs/cqrs';
 
 export class GetBlogIdCommand {
