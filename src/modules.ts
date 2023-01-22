@@ -65,6 +65,10 @@ import { CreatePostByIdUseCase } from './features/blogger/application/useCase/cr
 import { CreateCommentByPostUseCase } from './features/public/posts/aplication/useCase/create.comment.by.post.use.case';
 import { CreateLikeStatusUseCase } from './features/public/posts/aplication/useCase/create.like.status.use.case';
 import { BunUserSchema } from './features/sa/users/schema/banUser';
+import { BanUserUseCase } from './features/sa/users/application/useCases/ban.user.use.case';
+import { BlogsControllerSa } from './features/sa/blogs/blogs.controller.sa';
+import { CheckUserIdSa } from './common/customValidator/check.user.id.sa';
+import { CheckBlogIdSa } from './common/customValidator/check.blog.id.sa';
 
 const Strategies = [LocalStrategy, JwtStrategy, BasicStrategy, RefreshStrategy];
 const Validators = [
@@ -79,6 +83,8 @@ const Validators = [
   CheckOriginalEmail,
   CheckOriginalLogin,
   CheckIdForBlog,
+  CheckUserIdSa,
+  CheckBlogIdSa,
 ];
 const UseCases = [
   CreateBlogUseCase,
@@ -92,6 +98,7 @@ const UseCases = [
   CreatePostByIdUseCase,
   CreateCommentByPostUseCase,
   CreateLikeStatusUseCase,
+  BanUserUseCase,
 ];
 
 @Module({
@@ -136,6 +143,7 @@ const UseCases = [
     AuthController,
     SecurityDevicesController,
     BloggerController,
+    BlogsControllerSa,
   ],
   providers: [
     QueryCount,

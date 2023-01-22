@@ -1,15 +1,13 @@
-import { Controller, Delete, Inject, Res } from '@nestjs/common';
+import { Controller, Delete, HttpCode } from '@nestjs/common';
 import { TestingRepository } from './testing.repository';
 
 @Controller('testing')
 export class TestingController {
-  constructor(
-    @Inject(TestingRepository) protected testingRepository: TestingRepository,
-  ) {}
+  constructor(protected testingRepository: TestingRepository) {}
 
+  @HttpCode(204)
   @Delete('all-data')
-  async deleteAllBase(@Res() res) {
+  async deleteAllBase() {
     await this.testingRepository.deleteAllCollection();
-    res.sendStatus(204);
   }
 }

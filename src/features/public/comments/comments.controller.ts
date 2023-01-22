@@ -3,7 +3,6 @@ import {
   Controller,
   Delete,
   Get,
-  Inject,
   Param,
   Put,
   UseGuards,
@@ -24,15 +23,15 @@ import { JwtAuthGuard } from '../../../common/guard/jwt.auth.guard';
 @Controller('comments')
 export class CommentsController {
   constructor(
-    @Inject(CommentsService) protected commentsService: CommentsService,
-    @Inject(CommentsRepository)
+    protected commentsService: CommentsService,
     protected commentsRepository: CommentsRepository,
-    @Inject(UsersRepository) protected usersRepository: UsersRepository,
-    @Inject(Jwt) protected jwtService: Jwt,
+    protected usersRepository: UsersRepository,
+    protected jwtService: Jwt,
   ) {}
 
   @Get(':id')
   async getComment(@Param('id') commentId: string, @Headers() headers) {
+    const banUser = await this.usersRepository.getBunUsers();
     let comment;
     if (headers.authorization) {
       const userId: any = this.jwtService.getUserIdByToken(
@@ -42,11 +41,15 @@ export class CommentsController {
     } else {
       comment = await this.commentsService.getLikesInfo(commentId, 'null');
     }
-    if (comment) {
-      return comment;
-    } else {
+    if (!comment) throw new NotFoundException();
+    if (
+      comment.userId ===
+      banUser.map((a) => {
+        return a.id;
+      })
+    )
       throw new NotFoundException();
-    }
+    return comment;
   }
 
   @UseGuards(JwtAuthGuard)

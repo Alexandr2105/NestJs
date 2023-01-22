@@ -6,12 +6,34 @@ export type BlogsQueryType = {
   items: BlogNotUserId[];
 };
 
+export type BlogsQueryTypeSA = {
+  pagesCount: number;
+  pageSize: number;
+  page: number;
+  totalCount: number;
+  items: BlogNotUserIdSA[];
+};
+
 type BlogNotUserId = {
   id: string;
   name: string;
   description: string;
   websiteUrl: string;
   createdAt: string;
+};
+
+type BlogNotUserIdSA = {
+  id: string;
+  name: string;
+  description: string;
+  websiteUrl: string;
+  createdAt: string;
+  blogOwnerInfo: BlogOwnerInfoSA;
+};
+
+type BlogOwnerInfoSA = {
+  userId: string;
+  userLogin: string;
 };
 
 export type PostQueryType = {

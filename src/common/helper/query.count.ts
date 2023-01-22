@@ -33,6 +33,10 @@ export class QueryCount {
       query.searchEmailTerm === '' || query.searchEmailTerm === undefined
         ? ''
         : query.searchEmailTerm;
+    const banStatus =
+      query.banStatus === undefined || query.banStatus === ''
+        ? 'all'
+        : query.banStatus;
     return {
       pageNumber,
       pageSize,
@@ -41,6 +45,7 @@ export class QueryCount {
       searchNameTerm,
       searchLoginTerm,
       searchEmailTerm,
+      banStatus,
     };
   };
 }

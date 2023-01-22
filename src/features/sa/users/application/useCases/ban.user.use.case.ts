@@ -5,6 +5,7 @@ import { NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { BanUser } from '../../schema/banUser';
+import { SecurityDevicesRepository } from '../../../../public/securityDevices/security.devices.repository';
 
 export class BanUserCommand {
   constructor(public userId: string, public body: BanUserDto) {}
@@ -13,11 +14,12 @@ export class BanUserCommand {
 @CommandHandler(BanUserCommand)
 export class BanUserUseCase {
   constructor(
+    protected securityDevicesRepository: SecurityDevicesRepository,
     protected userRepository: UsersRepository,
     @InjectModel('banUsers') protected banUsers: Model<BanUser>,
   ) {}
   async execute(command: BanUserCommand) {
-    const user = await this.userRepository.getUserId(command.userId);
+    const user = await this.userRepository.getUserByIdAll(command.userId);
     if (!user) throw new NotFoundException();
     user.ban = command.body.isBanned;
     await this.userRepository.save(user);
@@ -25,5 +27,8 @@ export class BanUserUseCase {
     banInfo.banDate = +new Date() + '';
     banInfo.userId = command.userId;
     await this.userRepository.saveBan(banInfo);
+    if (user.ban === true) {
+      await this.securityDevicesRepository.delAllDevicesUser(user.id);
+    }
   }
 }

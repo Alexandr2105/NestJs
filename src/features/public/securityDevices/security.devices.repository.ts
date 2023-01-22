@@ -28,6 +28,12 @@ export class SecurityDevicesRepository {
     return result.deletedCount === 1;
   }
 
+  async delAllDevicesUser(userId: string) {
+    await this.refreshTokenDataCollection.deleteMany({
+      userId: userId,
+    });
+  }
+
   async getAllDevicesUser(userId: string): Promise<DeviceInfoDto[]> {
     const deviceInfo = await this.refreshTokenDataCollection.find({
       userId: userId,

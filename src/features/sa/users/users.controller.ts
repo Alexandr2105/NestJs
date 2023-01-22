@@ -33,7 +33,11 @@ export class UsersController {
   @Get()
   async getUsers(@Query() dataQuery) {
     const query = this.queryCount.queryCheckHelper(dataQuery);
-    return await this.queryRepository.getQueryUsers(query);
+    if (query.banStatus === 'all') {
+      return await this.queryRepository.getQueryAllUsers(query);
+    } else {
+      return await this.queryRepository.getQuerySortUsers(query);
+    }
   }
 
   @UseGuards(BasicAuthGuard)

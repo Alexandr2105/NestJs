@@ -4,6 +4,7 @@ import {
   PostQueryType,
   UserQueryType,
   CommentsType,
+  BlogsQueryTypeSA,
 } from '../../../common/helper/allTypes';
 import { QueryCount } from '../../../common/helper/query.count';
 import { InjectModel } from '@nestjs/mongoose';
@@ -16,6 +17,7 @@ import { CommentDocument } from '../comments/schema/comment.schema';
 import { User } from '../../sa/users/schema/user';
 import { LikesModelDocument } from '../../../common/schemas/like.type.schema';
 import { BanUser } from '../../sa/users/schema/banUser';
+import { UsersRepository } from '../../sa/users/users.repository';
 
 @Injectable()
 export class QueryRepository {
@@ -31,8 +33,10 @@ export class QueryRepository {
     protected queryCount: QueryCount,
     protected commentsRepository: CommentsRepository,
     protected postsRepository: PostsRepository,
+    protected usersRepository: UsersRepository,
   ) {}
 
+  //check
   async getQueryBlogs(query: any): Promise<BlogsQueryType> {
     const totalCount = await this.blogsCollection.countDocuments({
       name: {
@@ -67,13 +71,27 @@ export class QueryRepository {
     };
   }
 
+  // check
   async getQueryPosts(query: any, userId: string): Promise<PostQueryType> {
+    const banUsers = await this.usersRepository.getBunUsers();
     const sortPostsArray = await this.postsCollection
-      .find({})
+      .find({
+        userId: {
+          $nin: banUsers.map((a) => {
+            return a.id;
+          }),
+        },
+      })
       .sort({ [query.sortBy]: query.sortDirection })
       .skip(this.queryCount.skipHelper(query.pageNumber, query.pageSize))
       .limit(+query.pageSize);
-    const totalCount = await this.postsCollection.countDocuments({});
+    const totalCount = await this.postsCollection.countDocuments({
+      userId: {
+        $nin: banUsers.map((a) => {
+          return a.id;
+        }),
+      },
+    });
     return {
       pagesCount: this.queryCount.pagesCountHelper(totalCount, query.pageSize),
       page: query.pageNumber,
@@ -117,16 +135,30 @@ export class QueryRepository {
     };
   }
 
+  //check
   async getQueryPostsBlogsId(
     query: any,
     blogId: string,
     userId: string,
   ): Promise<PostQueryType> {
+    const banUsers = await this.usersRepository.getBunUsers();
     const totalCount = await this.postsCollection.countDocuments({
       blogId: blogId,
+      userId: {
+        $nin: banUsers.map((a) => {
+          return a.id;
+        }),
+      },
     });
     const sortPostsId = await this.postsCollection
-      .find({ blogId: blogId })
+      .find({
+        blogId: blogId,
+        userId: {
+          $nin: banUsers.map((a) => {
+            return a.id;
+          }),
+        },
+      })
       .sort({ [query.sortBy]: query.sortDirection })
       .skip(this.queryCount.skipHelper(query.pageNumber, query.pageSize))
       .limit(query.pageSize);
@@ -178,7 +210,8 @@ export class QueryRepository {
     };
   }
 
-  async getQueryUsers(query: any): Promise<UserQueryType> {
+  //check
+  async getQueryAllUsers(query: any): Promise<UserQueryType> {
     const totalCount = await this.usersCollection.countDocuments({
       $or: [
         { login: { $regex: query.searchLoginTerm, $options: 'i' } },
@@ -219,9 +252,9 @@ export class QueryRepository {
             email: a.email,
             createdAt: a.createdAt,
             banInfo: {
-              isBanned: banInfo.isBanned,
-              banDate: banInfo.banDate,
-              banReason: banInfo.banReason,
+              isBanned: banInfo?.isBanned,
+              banDate: banInfo?.banDate,
+              banReason: banInfo?.banReason,
             },
           };
         }),
@@ -229,18 +262,85 @@ export class QueryRepository {
     };
   }
 
+  async getQuerySortUsers(query: any): Promise<UserQueryType> {
+    const totalCount = await this.usersCollection.countDocuments({
+      $or: [
+        { login: { $regex: query.searchLoginTerm, $options: 'i' } },
+        {
+          email: {
+            $regex: query.searchEmailTerm,
+            $options: 'i',
+          },
+        },
+      ],
+      ban: query.banStatus === 'banned',
+    });
+    const sortArrayUsers = await this.usersCollection
+      .find({
+        $or: [
+          { login: { $regex: query.searchLoginTerm, $options: 'i' } },
+          {
+            email: {
+              $regex: query.searchEmailTerm,
+              $options: 'i',
+            },
+          },
+        ],
+        ban: query.banStatus === 'banned',
+      })
+      .sort({ [query.sortBy]: query.sortDirection })
+      .skip(this.queryCount.skipHelper(query.pageNumber, query.pageSize))
+      .limit(query.pageSize);
+    return {
+      pagesCount: this.queryCount.pagesCountHelper(totalCount, query.pageSize),
+      page: query.pageNumber,
+      pageSize: query.pageSize,
+      totalCount: totalCount,
+      items: await Promise.all(
+        sortArrayUsers.map(async (a) => {
+          const banInfo = await this.banUsers.findOne({ userId: a.id });
+          return {
+            id: a.id,
+            login: a.login,
+            email: a.email,
+            createdAt: a.createdAt,
+            banInfo: {
+              isBanned: banInfo?.isBanned,
+              banDate: banInfo?.banDate,
+              banReason: banInfo?.banReason,
+            },
+          };
+        }),
+      ),
+    };
+  }
+
+  //check
   async getQueryCommentsByPostId(
     query: any,
     postId: string,
   ): Promise<CommentsType | boolean> {
+    const banUsers = await this.usersRepository.getBunUsers();
     const totalCount = await this.commentsCollection.countDocuments({
       idPost: postId,
+      userId: {
+        $nin: banUsers.map((a) => {
+          return a.id;
+        }),
+      },
     });
     if (totalCount === 0) {
       return false;
     }
     const sortCommentsByPostId = await this.commentsCollection
-      .find({ idPost: postId })
+      .find({
+        idPost: postId,
+        userId: {
+          $nin: banUsers.map((a) => {
+            return a.id;
+          }),
+        },
+      })
       .sort({ [query.sortBy]: query.sortDirection })
       .skip(this.queryCount.skipHelper(query.pageNumber, query.pageSize))
       .limit(query.pageSize);
@@ -276,6 +376,7 @@ export class QueryRepository {
     };
   }
 
+  //check
   async getQueryBlogsAuthUser(
     query: any,
     userId: string,
@@ -312,6 +413,47 @@ export class QueryRepository {
           createdAt: a.createdAt,
         };
       }),
+    };
+  }
+
+  async getQueryBlogsSA(query: any): Promise<BlogsQueryTypeSA> {
+    const totalCount = await this.blogsCollection.countDocuments({
+      name: {
+        $regex: query.searchNameTerm,
+        $options: 'i',
+      },
+    });
+    const sortedBlogsArray = await this.blogsCollection
+      .find({
+        name: {
+          $regex: query.searchNameTerm,
+          $options: 'i',
+        },
+      })
+      .sort({ [query.sortBy]: query.sortDirection })
+      .skip(this.queryCount.skipHelper(query.pageNumber, query.pageSize))
+      .limit(query.pageSize);
+    return {
+      pagesCount: this.queryCount.pagesCountHelper(totalCount, query.pageSize),
+      page: query.pageNumber,
+      pageSize: query.pageSize,
+      totalCount: totalCount,
+      items: await Promise.all(
+        sortedBlogsArray.map(async (a) => {
+          const user: any = await this.usersRepository.getUserId(a.userId);
+          return {
+            id: a.id,
+            name: a.name,
+            description: a.description,
+            websiteUrl: a.websiteUrl,
+            createdAt: a.createdAt,
+            blogOwnerInfo: {
+              userId: user.id,
+              userLogin: user.login,
+            },
+          };
+        }),
+      ),
     };
   }
 }

@@ -83,6 +83,10 @@ export class UsersRepository {
     return this.usersCollection.findOne({ id: id });
   }
 
+  async getBunUsers() {
+    return this.usersCollection.find({ ban: true });
+  }
+
   async save(user: UserDocument) {
     await user.save();
   }
