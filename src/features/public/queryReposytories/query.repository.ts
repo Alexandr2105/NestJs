@@ -36,30 +36,17 @@ export class QueryRepository {
     protected usersRepository: UsersRepository,
   ) {}
 
-  //check
   async getQueryBlogs(query: any): Promise<BlogsQueryType> {
-    const totalCount = await this.blogsCollection.countDocuments({
-      name: {
-        $regex: query.searchNameTerm,
-        $options: 'i',
-      },
-    });
-    const sortedBlogsArray = await this.blogsCollection
-      .find({
-        name: {
-          $regex: query.searchNameTerm,
-          $options: 'i',
-        },
-      })
-      .sort({ [query.sortBy]: query.sortDirection })
-      .skip(this.queryCount.skipHelper(query.pageNumber, query.pageSize))
-      .limit(query.pageSize);
+    const blogsArrays = await this.getQueryBlogsHelper(query);
     return {
-      pagesCount: this.queryCount.pagesCountHelper(totalCount, query.pageSize),
+      pagesCount: this.queryCount.pagesCountHelper(
+        blogsArrays.totalCount,
+        query.pageSize,
+      ),
       page: query.pageNumber,
       pageSize: query.pageSize,
-      totalCount: totalCount,
-      items: sortedBlogsArray.map((a) => {
+      totalCount: blogsArrays.totalCount,
+      items: blogsArrays.sortedBlogsArray.map((a) => {
         return {
           id: a.id,
           name: a.name,
@@ -71,7 +58,6 @@ export class QueryRepository {
     };
   }
 
-  // check
   async getQueryPosts(query: any, userId: string): Promise<PostQueryType> {
     const banUsers = await this.usersRepository.getBunUsers();
     const sortPostsArray = await this.postsCollection
@@ -135,7 +121,6 @@ export class QueryRepository {
     };
   }
 
-  //check
   async getQueryPostsBlogsId(
     query: any,
     blogId: string,
@@ -210,7 +195,6 @@ export class QueryRepository {
     };
   }
 
-  //check
   async getQueryAllUsers(query: any): Promise<UserQueryType> {
     const totalCount = await this.usersCollection.countDocuments({
       $or: [
@@ -238,28 +222,7 @@ export class QueryRepository {
       .sort({ [query.sortBy]: query.sortDirection })
       .skip(this.queryCount.skipHelper(query.pageNumber, query.pageSize))
       .limit(query.pageSize);
-    return {
-      pagesCount: this.queryCount.pagesCountHelper(totalCount, query.pageSize),
-      page: query.pageNumber,
-      pageSize: query.pageSize,
-      totalCount: totalCount,
-      items: await Promise.all(
-        sortArrayUsers.map(async (a) => {
-          const banInfo = await this.banUsers.findOne({ userId: a.id });
-          return {
-            id: a.id,
-            login: a.login,
-            email: a.email,
-            createdAt: a.createdAt,
-            banInfo: {
-              isBanned: banInfo?.isBanned,
-              banDate: banInfo?.banDate,
-              banReason: banInfo?.banReason,
-            },
-          };
-        }),
-      ),
-    };
+    return this.returnObject(query, totalCount, sortArrayUsers);
   }
 
   async getQuerySortUsers(query: any): Promise<UserQueryType> {
@@ -291,31 +254,9 @@ export class QueryRepository {
       .sort({ [query.sortBy]: query.sortDirection })
       .skip(this.queryCount.skipHelper(query.pageNumber, query.pageSize))
       .limit(query.pageSize);
-    return {
-      pagesCount: this.queryCount.pagesCountHelper(totalCount, query.pageSize),
-      page: query.pageNumber,
-      pageSize: query.pageSize,
-      totalCount: totalCount,
-      items: await Promise.all(
-        sortArrayUsers.map(async (a) => {
-          const banInfo = await this.banUsers.findOne({ userId: a.id });
-          return {
-            id: a.id,
-            login: a.login,
-            email: a.email,
-            createdAt: a.createdAt,
-            banInfo: {
-              isBanned: banInfo?.isBanned,
-              banDate: banInfo?.banDate,
-              banReason: banInfo?.banReason,
-            },
-          };
-        }),
-      ),
-    };
+    return this.returnObject(query, totalCount, sortArrayUsers);
   }
 
-  //check
   async getQueryCommentsByPostId(
     query: any,
     postId: string,
@@ -376,7 +317,6 @@ export class QueryRepository {
     };
   }
 
-  //check
   async getQueryBlogsAuthUser(
     query: any,
     userId: string,
@@ -417,6 +357,35 @@ export class QueryRepository {
   }
 
   async getQueryBlogsSA(query: any): Promise<BlogsQueryTypeSA> {
+    const blogsArrays = await this.getQueryBlogsHelper(query);
+    return {
+      pagesCount: this.queryCount.pagesCountHelper(
+        blogsArrays.totalCount,
+        query.pageSize,
+      ),
+      page: query.pageNumber,
+      pageSize: query.pageSize,
+      totalCount: blogsArrays.totalCount,
+      items: await Promise.all(
+        blogsArrays.sortedBlogsArray.map(async (a) => {
+          const user: any = await this.usersRepository.getUserId(a.userId);
+          return {
+            id: a.id,
+            name: a.name,
+            description: a.description,
+            websiteUrl: a.websiteUrl,
+            createdAt: a.createdAt,
+            blogOwnerInfo: {
+              userId: user.id,
+              userLogin: user.login,
+            },
+          };
+        }),
+      ),
+    };
+  }
+
+  async getQueryBlogsHelper(query: any) {
     const totalCount = await this.blogsCollection.countDocuments({
       name: {
         $regex: query.searchNameTerm,
@@ -433,23 +402,27 @@ export class QueryRepository {
       .sort({ [query.sortBy]: query.sortDirection })
       .skip(this.queryCount.skipHelper(query.pageNumber, query.pageSize))
       .limit(query.pageSize);
+    return { totalCount, sortedBlogsArray };
+  }
+
+  async returnObject(query, totalCount, sortArrayUsers) {
     return {
       pagesCount: this.queryCount.pagesCountHelper(totalCount, query.pageSize),
       page: query.pageNumber,
       pageSize: query.pageSize,
       totalCount: totalCount,
       items: await Promise.all(
-        sortedBlogsArray.map(async (a) => {
-          const user: any = await this.usersRepository.getUserId(a.userId);
+        sortArrayUsers.map(async (a) => {
+          const banInfo = await this.banUsers.findOne({ userId: a.id });
           return {
             id: a.id,
-            name: a.name,
-            description: a.description,
-            websiteUrl: a.websiteUrl,
+            login: a.login,
+            email: a.email,
             createdAt: a.createdAt,
-            blogOwnerInfo: {
-              userId: user.id,
-              userLogin: user.login,
+            banInfo: {
+              isBanned: banInfo?.isBanned || false,
+              banDate: banInfo?.banDate || null,
+              banReason: banInfo?.banReason || null,
             },
           };
         }),
