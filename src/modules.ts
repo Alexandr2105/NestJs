@@ -16,7 +16,6 @@ import { TestingController } from './testing/testing.controller';
 import { TestingRepository } from './testing/testing.repository';
 import { AuthController } from './features/public/auth/auth.controller';
 import { Jwt } from './features/public/auth/jwt';
-import { AuthService } from './features/public/auth/auth.service';
 import { EmailManager } from './common/manager/email-manager';
 import { EmailAdapter } from './common/adapters/email-adapter';
 import { SecurityDevicesService } from './features/public/securityDevices/application/security-devices.service';
@@ -75,6 +74,8 @@ import { GetLikesInfoUseCase } from './features/public/comments/application/useC
 import { UpdateCommentByIdUseCase } from './features/public/comments/application/useCase/update.comment.by.id.use.case';
 import { UpdateInfoAboutDeviceUserUseCase } from './features/public/securityDevices/application/useCase/update.info.about.device.user.use.case';
 import { SaveInfoAboutDevicesUserUseCase } from './features/public/securityDevices/application/useCase/save.info.about.devices.user.use.case';
+import { GetNewConfirmationCodeUseCase } from './features/public/auth/application/useCase/get.new.confirmation.code.use.case';
+import { CreateEmailConfirmationUseCae } from './features/public/auth/application/useCase/create.email.confirmation.use.cae';
 
 const Strategies = [LocalStrategy, JwtStrategy, BasicStrategy, RefreshStrategy];
 const Validators = [
@@ -111,6 +112,8 @@ const UseCases = [
   UpdateCommentByIdUseCase,
   UpdateInfoAboutDeviceUserUseCase,
   SaveInfoAboutDevicesUserUseCase,
+  GetNewConfirmationCodeUseCase,
+  CreateEmailConfirmationUseCae,
 ];
 
 @Module({
@@ -168,7 +171,6 @@ const UseCases = [
     CommentsRepository,
     TestingRepository,
     Jwt,
-    AuthService,
     EmailManager,
     EmailAdapter,
     SecurityDevicesService,

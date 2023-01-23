@@ -11,7 +11,6 @@ import {
 import { UsersService } from '../../sa/users/application/users.service';
 import { UsersRepository } from '../../sa/users/users.repository';
 import { Jwt } from './jwt';
-import { AuthService } from './auth.service';
 import { EmailManager } from '../../../common/manager/email-manager';
 import { SecurityDevicesService } from '../securityDevices/application/security-devices.service';
 import { EmailConfirmationDocument } from '../../../common/schemas/email.confirmation.schema';
@@ -29,11 +28,12 @@ import { CommandBus } from '@nestjs/cqrs';
 import { CreateUserCommand } from '../../sa/users/application/useCases/create.user.use.case';
 import { UpdateInfoAboutDevicesUserCommand } from '../securityDevices/application/useCase/update.info.about.device.user.use.case';
 import { SaveInfoAboutDevicesUserCommand } from '../securityDevices/application/useCase/save.info.about.devices.user.use.case';
+import { CreateEmailConfirmationCommand } from './application/useCase/create.email.confirmation.use.cae';
+import { GetNewConfirmationCodeCommand } from './application/useCase/get.new.confirmation.code.use.case';
 
 @Controller('auth')
 export class AuthController {
   constructor(
-    protected authService: AuthService,
     protected usersService: UsersService,
     protected usersRepository: UsersRepository,
     protected devicesService: SecurityDevicesService,
@@ -96,14 +96,19 @@ export class AuthController {
   @Post('registration')
   async registration(@Body() body: CreateUserDto) {
     const newUser = await this.commandBus.execute(new CreateUserCommand(body));
-    if (newUser) await this.authService.confirmation(newUser.id, body);
+    if (newUser)
+      await this.commandBus.execute(
+        new CreateEmailConfirmationCommand(newUser.id, body),
+      );
   }
 
   // @UseGuards(CountAttemptGuard)
   @HttpCode(204)
   @Post('registration-email-resending')
   async registrationEmailResending(@Body() body: EmailResending) {
-    const newCode: any = await this.authService.getNewConfirmationCode(body);
+    const newCode: any = await this.commandBus.execute(
+      new GetNewConfirmationCodeCommand(body),
+    );
     await this.emailManager.sendEmailAndConfirm(body, newCode);
   }
 
@@ -147,8 +152,8 @@ export class AuthController {
   @HttpCode(204)
   @Post('password-recovery')
   async passwordRecovery(@Body() body: EmailResending) {
-    const recoveryCode: any = await this.authService.getNewConfirmationCode(
-      body,
+    const recoveryCode: any = await this.commandBus.execute(
+      new GetNewConfirmationCodeCommand(body),
     );
     await this.emailManager.sendEmailPasswordRecovery(body, recoveryCode);
   }

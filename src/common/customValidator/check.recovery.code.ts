@@ -2,16 +2,20 @@ import {
   ValidatorConstraint,
   ValidatorConstraintInterface,
 } from 'class-validator';
-import { Inject, Injectable } from '@nestjs/common';
-import { AuthService } from '../../features/public/auth/auth.service';
+import { Injectable } from '@nestjs/common';
+import { UsersRepository } from '../../features/sa/users/users.repository';
 
 @ValidatorConstraint({ name: '', async: true })
 @Injectable()
 export class CheckRecoveryCode implements ValidatorConstraintInterface {
-  constructor(@Inject(AuthService) protected authService: AuthService) {}
+  constructor(protected usersRepository: UsersRepository) {}
 
   async validate(code: string): Promise<boolean> {
-    return !(await this.authService.confirmRecoveryCode(code));
+    const user = await this.usersRepository.getUserByCode(code);
+    if (!user) return false;
+    if (user.isConfirmed) return false;
+    if (user.confirmationCode !== code) return false;
+    return user.expirationDate >= new Date();
   }
 
   defaultMessage(): string {
