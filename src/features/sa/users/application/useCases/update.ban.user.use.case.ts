@@ -23,12 +23,18 @@ export class UpdateBanUserUseCase {
     if (!user) throw new NotFoundException();
     user.ban = command.body.isBanned;
     await this.userRepository.save(user);
-    const banInfo = new this.banUsers(command.body);
-    banInfo.banDate = new Date().toISOString();
-    banInfo.userId = command.userId;
-    await this.userRepository.saveBan(banInfo);
-    if (user.ban === true) {
-      await this.securityDevicesRepository.delAllDevicesUser(user.id);
+    const ban = await this.banUsers.findOne({ userId: user.id });
+    if (!ban && user.ban === false) return;
+    if (ban && user.ban === false) {
+      await this.userRepository.deleteBanUsers(user.id);
+    } else {
+      const banInfo = new this.banUsers(command.body);
+      banInfo.banDate = new Date().toISOString();
+      banInfo.userId = command.userId;
+      await this.userRepository.saveBan(banInfo);
+      if (user.ban === true) {
+        await this.securityDevicesRepository.delAllDevicesUser(user.id);
+      }
     }
   }
 }

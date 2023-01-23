@@ -14,6 +14,7 @@ export class UsersRepository {
     @InjectModel('users') protected usersCollection: Model<User>,
     @InjectModel('emailConfirmations')
     protected registrationUsersCollection: Model<EmailConfirmationDocument>,
+    @InjectModel('banUsers') protected banUsers: Model<BanUserDocument>,
   ) {}
 
   async deleteUser(id: string): Promise<boolean> {
@@ -85,6 +86,10 @@ export class UsersRepository {
 
   async getBunUsers() {
     return this.usersCollection.find({ ban: true });
+  }
+
+  async deleteBanUsers(userId: string) {
+    await this.banUsers.deleteOne({ userId: userId });
   }
 
   async save(user: UserDocument) {
