@@ -10,7 +10,7 @@ import { UsersController } from './features/sa/users/users.controller';
 import { UsersService } from './features/sa/users/application/users.service';
 import { UsersRepository } from './features/sa/users/users.repository';
 import { CommentsController } from './features/public/comments/comments.controller';
-import { CommentsService } from './features/public/comments/comments.service';
+import { CommentsService } from './features/public/comments/application/comments.service';
 import { CommentsRepository } from './features/public/comments/comments.repostitory';
 import { TestingController } from './testing/testing.controller';
 import { TestingRepository } from './testing/testing.repository';
@@ -19,7 +19,7 @@ import { Jwt } from './features/public/auth/jwt';
 import { AuthService } from './features/public/auth/auth.service';
 import { EmailManager } from './common/manager/email-manager';
 import { EmailAdapter } from './common/adapters/email-adapter';
-import { SecurityDevicesService } from './features/public/securityDevices/security-devices.service';
+import { SecurityDevicesService } from './features/public/securityDevices/application/security-devices.service';
 import { SecurityDevicesRepository } from './features/public/securityDevices/security.devices.repository';
 import { BlogSchema } from './features/public/blogs/schema/blogs.schema';
 import { PostSchema } from './features/public/posts/schema/posts.schema';
@@ -60,16 +60,21 @@ import { BloggerController } from './features/blogger/blogger.controller';
 import { CqrsModule } from '@nestjs/cqrs';
 import { UpdatePostByIdUseCase } from './features/blogger/application/useCase/update.post.by.id.use.case';
 import { DeletePostByIdUseCase } from './features/blogger/application/useCase/delete.post.by.id.use.case';
-import { GetPostIdUseCase } from './features/public/posts/aplication/useCase/get.post.id.use.case';
+import { GetPostIdUseCase } from './features/public/posts/application/useCase/get.post.id.use.case';
 import { CreatePostByIdUseCase } from './features/blogger/application/useCase/create.post.by.id.use.case';
-import { CreateCommentByPostUseCase } from './features/public/posts/aplication/useCase/create.comment.by.post.use.case';
-import { CreateLikeStatusUseCase } from './features/public/posts/aplication/useCase/create.like.status.use.case';
+import { CreateCommentByPostUseCase } from './features/public/posts/application/useCase/create.comment.by.post.use.case';
+import { CreateLikeStatusForPostsUseCase } from './features/public/posts/application/useCase/create.like.status.for.posts.use.case';
 import { BunUserSchema } from './features/sa/users/schema/banUser';
 import { BanUserUseCase } from './features/sa/users/application/useCases/ban.user.use.case';
 import { BlogsControllerSa } from './features/sa/blogs/blogs.controller.sa';
 import { CheckUserIdSa } from './common/customValidator/check.user.id.sa';
 import { CheckBlogIdSa } from './common/customValidator/check.blog.id.sa';
 import { UpdateBlogOwnerUseCase } from './features/sa/blogs/aplication/useCase/update.blog.owner.use.case';
+import { CreateLikeStatusForCommentsUseCase } from './features/public/comments/application/useCase/create.like.status.for.comments.use.case';
+import { GetLikesInfoUseCase } from './features/public/comments/application/useCase/get.likes.Info.use.case';
+import { UpdateCommentByIdUseCase } from './features/public/comments/application/useCase/update.comment.by.id.use.case';
+import { UpdateInfoAboutDeviceUserUseCase } from './features/public/securityDevices/application/useCase/update.info.about.device.user.use.case';
+import { SaveInfoAboutDevicesUserUseCase } from './features/public/securityDevices/application/useCase/save.info.about.devices.user.use.case';
 
 const Strategies = [LocalStrategy, JwtStrategy, BasicStrategy, RefreshStrategy];
 const Validators = [
@@ -98,9 +103,14 @@ const UseCases = [
   GetPostIdUseCase,
   CreatePostByIdUseCase,
   CreateCommentByPostUseCase,
-  CreateLikeStatusUseCase,
+  CreateLikeStatusForPostsUseCase,
   BanUserUseCase,
   UpdateBlogOwnerUseCase,
+  CreateLikeStatusForCommentsUseCase,
+  GetLikesInfoUseCase,
+  UpdateCommentByIdUseCase,
+  UpdateInfoAboutDeviceUserUseCase,
+  SaveInfoAboutDevicesUserUseCase,
 ];
 
 @Module({

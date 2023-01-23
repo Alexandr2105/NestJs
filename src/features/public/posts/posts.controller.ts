@@ -17,14 +17,14 @@ import { QueryRepository } from '../queryReposytories/query.repository';
 import { QueryCount } from '../../../common/helper/query.count';
 import { Jwt } from '../auth/jwt';
 import { UsersRepository } from '../../sa/users/users.repository';
-import { CommentsService } from '../comments/comments.service';
 import { CreateCommentDto } from '../comments/dto/comment.dto';
 import { LikeStatusDto } from './dto/like.status.dto';
 import { JwtAuthGuard } from '../../../common/guard/jwt.auth.guard';
 import { CommandBus } from '@nestjs/cqrs';
-import { GetPostIdCommand } from './aplication/useCase/get.post.id.use.case';
-import { CreateCommentByPostCommand } from './aplication/useCase/create.comment.by.post.use.case';
-import { CreateLikeStatusCommand } from './aplication/useCase/create.like.status.use.case';
+import { GetPostIdCommand } from './application/useCase/get.post.id.use.case';
+import { CreateCommentByPostCommand } from './application/useCase/create.comment.by.post.use.case';
+import { CreateLikeStatusForPostsCommand } from './application/useCase/create.like.status.for.posts.use.case';
+import { GetLikesInfoCommand } from '../comments/application/useCase/get.likes.Info.use.case';
 
 @Controller('posts')
 export class PostsController {
@@ -32,7 +32,6 @@ export class PostsController {
     protected queryCount: QueryCount,
     protected usersRepository: UsersRepository,
     protected postsRepository: PostsRepository,
-    protected commentsService: CommentsService,
     protected queryRepository: QueryRepository,
     protected jwtService: Jwt,
     protected commandBus: CommandBus,
@@ -112,7 +111,9 @@ export class PostsController {
       headers.authorization.split(' ')[1],
     );
     if (post) {
-      return await this.commentsService.getLikesInfo(post.id, userId);
+      return await this.commandBus.execute(
+        new GetLikesInfoCommand(post.id, userId),
+      );
     } else {
       throw new NotFoundException();
     }
@@ -135,7 +136,12 @@ export class PostsController {
     );
     const user: any = await this.usersRepository.getUserId(userId);
     const likeStatus = await this.commandBus.execute(
-      new CreateLikeStatusCommand(postId, userId, body.likeStatus, user.login),
+      new CreateLikeStatusForPostsCommand(
+        postId,
+        userId,
+        body.likeStatus,
+        user.login,
+      ),
     );
     if (likeStatus) {
       return;

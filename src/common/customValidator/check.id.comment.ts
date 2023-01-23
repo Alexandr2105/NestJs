@@ -8,7 +8,7 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { CommentsService } from '../../features/public/comments/comments.service';
+import { CommentsService } from '../../features/public/comments/application/comments.service';
 
 @ValidatorConstraint({ name: 'comment', async: true })
 @Injectable()

@@ -13,7 +13,7 @@ import { UsersRepository } from '../../sa/users/users.repository';
 import { Jwt } from './jwt';
 import { AuthService } from './auth.service';
 import { EmailManager } from '../../../common/manager/email-manager';
-import { SecurityDevicesService } from '../securityDevices/security-devices.service';
+import { SecurityDevicesService } from '../securityDevices/application/security-devices.service';
 import { EmailConfirmationDocument } from '../../../common/schemas/email.confirmation.schema';
 import {
   EmailResending,
@@ -27,6 +27,8 @@ import { JwtAuthGuard } from '../../../common/guard/jwt.auth.guard';
 import { RefreshAuthGuard } from '../../../common/guard/refresh.auth.guard';
 import { CommandBus } from '@nestjs/cqrs';
 import { CreateUserCommand } from '../../sa/users/application/useCases/create.user.use.case';
+import { UpdateInfoAboutDevicesUserCommand } from '../securityDevices/application/useCase/update.info.about.device.user.use.case';
+import { SaveInfoAboutDevicesUserCommand } from '../securityDevices/application/useCase/save.info.about.devices.user.use.case';
 
 @Controller('auth')
 export class AuthController {
@@ -50,14 +52,16 @@ export class AuthController {
     const refreshToken = this.jwtService.creatRefreshJWT(req.user.id, deviceId);
     const infoRefreshToken: any =
       this.jwtService.getUserByRefreshToken(refreshToken);
-    await this.devicesService.saveInfoAboutDevicesUser({
-      iat: infoRefreshToken.iat,
-      exp: infoRefreshToken.exp,
-      deviceId: deviceId,
-      userId: infoRefreshToken.userId,
-      ip: req.ip,
-      deviceName: req.headers['user-agent'],
-    });
+    await this.commandBus.execute(
+      new SaveInfoAboutDevicesUserCommand({
+        iat: infoRefreshToken.iat,
+        exp: infoRefreshToken.exp,
+        deviceId: deviceId,
+        userId: infoRefreshToken.userId,
+        ip: req.ip,
+        deviceName: req.headers['user-agent'],
+      }),
+    );
     await this.devicesService.delOldRefreshTokenData(+new Date());
     res.cookie('refreshToken', refreshToken, {
       httpOnly: true,
@@ -115,14 +119,16 @@ export class AuthController {
     );
     const infoRefreshToken: any =
       this.jwtService.getUserByRefreshToken(refreshToken);
-    await this.devicesService.updateInfoAboutDeviceUser({
-      iat: infoRefreshToken.iat,
-      exp: infoRefreshToken.exp,
-      deviceId: req.user.deviceId,
-      ip: req.ip,
-      deviceName: req.headers['user-agent'],
-      userId: req.user.userId,
-    });
+    await this.commandBus.execute(
+      new UpdateInfoAboutDevicesUserCommand({
+        iat: infoRefreshToken.iat,
+        exp: infoRefreshToken.exp,
+        deviceId: req.user.deviceId,
+        ip: req.ip,
+        deviceName: req.headers['user-agent'],
+        userId: req.user.userId,
+      }),
+    );
     res.cookie('refreshToken', refreshToken, {
       httpOnly: true,
       secure: true,

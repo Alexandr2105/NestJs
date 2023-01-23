@@ -4,12 +4,11 @@ import {
   ForbiddenException,
   Get,
   HttpCode,
-  Inject,
   Param,
   Req,
   UseGuards,
 } from '@nestjs/common';
-import { SecurityDevicesService } from './security-devices.service';
+import { SecurityDevicesService } from './application/security-devices.service';
 import { SecurityDevicesRepository } from './security.devices.repository';
 import { Jwt } from '../auth/jwt';
 import { CheckDeviceId } from './dto/device.info.dto';
@@ -18,11 +17,9 @@ import { RefreshAuthGuard } from '../../../common/guard/refresh.auth.guard';
 @Controller('security/devices')
 export class SecurityDevicesController {
   constructor(
-    @Inject(SecurityDevicesService)
     protected devicesService: SecurityDevicesService,
-    @Inject(SecurityDevicesRepository)
     protected securityDevicesRepository: SecurityDevicesRepository,
-    @Inject(Jwt) protected jwtService: Jwt,
+    protected jwtService: Jwt,
   ) {}
 
   @UseGuards(RefreshAuthGuard)

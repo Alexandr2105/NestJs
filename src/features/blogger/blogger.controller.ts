@@ -29,7 +29,7 @@ import {
 } from './dto/blogger.dto';
 import { UpdatePostByIdCommand } from './application/useCase/update.post.by.id.use.case';
 import { DeletePostByIdCommand } from './application/useCase/delete.post.by.id.use.case';
-import { GetPostIdCommand } from '../public/posts/aplication/useCase/get.post.id.use.case';
+import { GetPostIdCommand } from '../public/posts/application/useCase/get.post.id.use.case';
 import { CreatePostByIdCommand } from './application/useCase/create.post.by.id.use.case';
 
 @Controller('blogger/blogs')

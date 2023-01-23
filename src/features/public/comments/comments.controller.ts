@@ -12,13 +12,17 @@ import {
   Req,
   ForbiddenException,
 } from '@nestjs/common';
-import { CommentsService } from './comments.service';
+import { CommentsService } from './application/comments.service';
 import { CommentsRepository } from './comments.repostitory';
 import { UsersRepository } from '../../sa/users/users.repository';
 import { Jwt } from '../auth/jwt';
 import { CheckUserId, UpdateCommentDto } from './dto/comment.dto';
 import { LikeStatusDto } from '../posts/dto/like.status.dto';
 import { JwtAuthGuard } from '../../../common/guard/jwt.auth.guard';
+import { CommandBus } from '@nestjs/cqrs';
+import { UpdateCommentByIdCommand } from './application/useCase/update.comment.by.id.use.case';
+import { GetLikesInfoCommand } from './application/useCase/get.likes.Info.use.case';
+import { CreateLikeStatusForCommentsCommand } from './application/useCase/create.like.status.for.comments.use.case';
 
 @Controller('comments')
 export class CommentsController {
@@ -27,6 +31,7 @@ export class CommentsController {
     protected commentsRepository: CommentsRepository,
     protected usersRepository: UsersRepository,
     protected jwtService: Jwt,
+    protected commandBus: CommandBus,
   ) {}
 
   @Get(':id')
@@ -37,9 +42,13 @@ export class CommentsController {
       const userId: any = this.jwtService.getUserIdByToken(
         headers.authorization.split(' ')[1],
       );
-      comment = await this.commentsService.getLikesInfo(commentId, userId);
+      comment = await this.commandBus.execute(
+        new GetLikesInfoCommand(commentId, userId),
+      );
     } else {
-      comment = await this.commentsService.getLikesInfo(commentId, 'null');
+      comment = await this.commandBus.execute(
+        new GetLikesInfoCommand(commentId, 'null'),
+      );
     }
     if (!comment) throw new NotFoundException();
     if (
@@ -78,9 +87,8 @@ export class CommentsController {
   ) {
     const comment = await this.commentsService.getCommentById(param.commentId);
     if (comment.userId !== req.user.id) throw new ForbiddenException();
-    const putComment = await this.commentsService.updateCommentById(
-      param.commentId,
-      body,
+    const putComment = await this.commandBus.execute(
+      new UpdateCommentByIdCommand(param.commentId, body),
     );
     if (!putComment) {
       throw new NotFoundException();
@@ -103,11 +111,13 @@ export class CommentsController {
       headers.authorization.split(' ')[1],
     );
     const user: any = await this.usersRepository.getUserId(userId);
-    const lakeStatus = await this.commentsService.createLikeStatus(
-      commentId,
-      userId,
-      body.likeStatus,
-      user.login,
+    const lakeStatus = await this.commandBus.execute(
+      new CreateLikeStatusForCommentsCommand(
+        commentId,
+        userId,
+        body.likeStatus,
+        user.login,
+      ),
     );
     if (lakeStatus) return;
   }

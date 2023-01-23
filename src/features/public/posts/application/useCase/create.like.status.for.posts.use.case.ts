@@ -4,7 +4,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { LikesModelDocument } from '../../../../../common/schemas/like.type.schema';
 
-export class CreateLikeStatusCommand {
+export class CreateLikeStatusForPostsCommand {
   constructor(
     public postId: string,
     public userId: string,
@@ -13,15 +13,15 @@ export class CreateLikeStatusCommand {
   ) {}
 }
 
-@CommandHandler(CreateLikeStatusCommand)
-export class CreateLikeStatusUseCase {
+@CommandHandler(CreateLikeStatusForPostsCommand)
+export class CreateLikeStatusForPostsUseCase {
   constructor(
     protected postsRepository: PostsRepository,
     @InjectModel('likeStatuses')
     protected likeInfoCollection: Model<LikesModelDocument>,
   ) {}
 
-  async execute(command: CreateLikeStatusCommand): Promise<boolean> {
+  async execute(command: CreateLikeStatusForPostsCommand): Promise<boolean> {
     const checkPost = await this.postsRepository.getInfoStatusByPost(
       command.postId,
       command.userId,
