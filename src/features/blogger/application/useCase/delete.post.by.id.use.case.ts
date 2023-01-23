@@ -15,7 +15,7 @@ export class DeletePostByIdUseCase {
   constructor(protected postsRepository: PostsRepository) {}
   async execute(command: DeletePostByIdCommand) {
     const post = await this.postsRepository.getPostId(command.postId);
-    if (post.blogId !== command.blogId) {
+    if (!post || post.blogId !== command.blogId) {
       throw new NotFoundException();
     } else if (post.userId === command.userId) {
       await this.postsRepository.deletePostId(post.id);
