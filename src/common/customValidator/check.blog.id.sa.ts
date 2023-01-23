@@ -14,4 +14,8 @@ export class CheckBlogIdSa implements ValidatorConstraintInterface {
     const blog = await this.blogsRepository.getBlogId(blogId);
     if (!blog || blog.userId) return false;
   }
+
+  defaultMessage(): string {
+    return 'Такой блог не существует или у него есть владелец';
+  }
 }

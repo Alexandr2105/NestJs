@@ -6,7 +6,7 @@ import { BlogsSaDto } from './dto/blogs.sa.dto';
 import { CommandBus } from '@nestjs/cqrs';
 import { UpdateBlogOwnerCommand } from './aplication/useCase/update.blog.owner.use.case';
 
-@Controller('blogs')
+@Controller('sa/blogs')
 export class BlogsControllerSa {
   constructor(
     protected queryRepository: QueryRepository,

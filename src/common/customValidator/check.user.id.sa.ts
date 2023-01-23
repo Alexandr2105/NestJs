@@ -14,4 +14,8 @@ export class CheckUserIdSa implements ValidatorConstraintInterface {
     const user = await this.usersRepository.getUserId(userId);
     return !!user;
   }
+
+  defaultMessage(): string {
+    return 'Нет такого пользователя';
+  }
 }
