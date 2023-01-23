@@ -51,13 +51,9 @@ export class CommentsController {
       );
     }
     if (!comment) throw new NotFoundException();
-    if (
-      comment.userId ===
-      banUser.map((a) => {
-        return a.id;
-      })
-    )
-      throw new NotFoundException();
+    banUser.map((a) => {
+      if (a.id == comment.userId) throw new NotFoundException();
+    });
     return comment;
   }
 
