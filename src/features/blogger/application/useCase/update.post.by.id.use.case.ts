@@ -18,7 +18,7 @@ export class UpdatePostByIdUseCase {
 
   async execute(command: UpdatePostByIdCommand) {
     const post = await this.postsRepository.getPostId(command.postId);
-    if (post.blogId !== command.blogId) {
+    if (!post || post.blogId !== command.blogId) {
       throw new NotFoundException();
     } else if (post.userId === command.userId) {
       post.title = command.body.title;
