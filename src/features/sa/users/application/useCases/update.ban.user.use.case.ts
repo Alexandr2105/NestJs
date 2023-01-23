@@ -24,7 +24,7 @@ export class UpdateBanUserUseCase {
     user.ban = command.body.isBanned;
     await this.userRepository.save(user);
     const banInfo = new this.banUsers(command.body);
-    banInfo.banDate = +new Date() + '';
+    banInfo.banDate = new Date().toISOString();
     banInfo.userId = command.userId;
     await this.userRepository.saveBan(banInfo);
     if (user.ban === true) {
