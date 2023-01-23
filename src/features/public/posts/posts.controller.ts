@@ -54,7 +54,7 @@ export class PostsController {
 
   @Get(':id')
   async getPost(@Param('id') postId: string, @Headers() headers) {
-    const banUser = await this.usersRepository.getBunUsers();
+    const banUsers = await this.usersRepository.getBunUsers();
     let post;
     if (headers.authorization) {
       const userId: any = this.jwtService.getUserIdByToken(
@@ -69,13 +69,10 @@ export class PostsController {
       );
     }
     if (!post) throw new NotFoundException();
-    if (
-      post.userId ===
-      banUser.map((a) => {
-        return a.id;
-      })
-    )
-      throw new NotFoundException();
+    banUsers.map((a) => {
+      if (post.userId === a.id) throw new NotFoundException();
+    });
+    return post;
   }
 
   @Get(':postId/comments')

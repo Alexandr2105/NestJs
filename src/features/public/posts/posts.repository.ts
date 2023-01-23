@@ -3,10 +3,12 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { PostDocument } from './schema/posts.schema';
 import { LikesModelDocument } from '../../../common/schemas/like.type.schema';
+import { UsersRepository } from '../../sa/users/users.repository';
 
 @Injectable()
 export class PostsRepository {
   constructor(
+    protected usersRepository: UsersRepository,
     @InjectModel('posts') protected postsCollection: Model<PostDocument>,
     @InjectModel('likeStatuses')
     protected likeInfoCollection: Model<LikesModelDocument>,
@@ -27,9 +29,15 @@ export class PostsRepository {
   }
 
   async getLikesInfo(idPost: string): Promise<number> {
+    const banUsers = await this.usersRepository.getBunUsers();
     const allLikes = await this.likeInfoCollection.find({
       id: idPost,
       status: { $regex: 'Like' },
+      userId: {
+        $nin: banUsers.map((a) => {
+          return a.id;
+        }),
+      },
     });
     if (allLikes) {
       return allLikes.length;
@@ -39,9 +47,15 @@ export class PostsRepository {
   }
 
   async getDislikeInfo(idPost: string): Promise<number | undefined> {
+    const banUsers = await this.usersRepository.getBunUsers();
     const allDislikes = await this.likeInfoCollection.find({
       id: idPost,
       status: { $regex: 'Dislike' },
+      userId: {
+        $nin: banUsers.map((a) => {
+          return a.id;
+        }),
+      },
     });
     if (allDislikes) {
       return allDislikes.length;
@@ -64,8 +78,17 @@ export class PostsRepository {
   }
 
   async getAllInfoLike(postId: string): Promise<LikesModelDocument[]> {
+    const banUsers = await this.usersRepository.getBunUsers();
     return this.likeInfoCollection
-      .find({ id: postId, status: 'Like' })
+      .find({
+        id: postId,
+        status: 'Like',
+        userId: {
+          $nin: banUsers.map((a) => {
+            return a.id;
+          }),
+        },
+      })
       .sort({ ['createDate']: 'desc' })
       .limit(3);
   }
