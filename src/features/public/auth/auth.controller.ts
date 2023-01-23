@@ -29,6 +29,7 @@ import { CommandBus } from '@nestjs/cqrs';
 import { CreateUserCommand } from '../../sa/users/application/useCases/create.user.use.case';
 import { UpdateInfoAboutDevicesUserCommand } from '../securityDevices/application/useCase/update.info.about.device.user.use.case';
 import { SaveInfoAboutDevicesUserCommand } from '../securityDevices/application/useCase/save.info.about.devices.user.use.case';
+import { CountAttemptGuard } from '../../../common/guard/count.attempt.guard';
 
 @Controller('auth')
 export class AuthController {
@@ -43,7 +44,7 @@ export class AuthController {
   ) {}
 
   @UseGuards(LocalAuthGuard)
-  // @UseGuards(CountAttemptGuard)
+  @UseGuards(CountAttemptGuard)
   @HttpCode(200)
   @Post('login')
   async loginUser(@Request() req, @Body() body: LoginDto, @Res() res) {
