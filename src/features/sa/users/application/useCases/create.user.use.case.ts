@@ -19,7 +19,7 @@ export class CreateUserUseCase {
     @InjectModel('users') protected usersCollection: Model<User>,
   ) {}
 
-  async execute(command: CreateUserCommand): Promise<User> {
+  async execute(command: CreateUserCommand) {
     const passwordSalt = await bcrypt.genSalt(10);
     const passwordHash = await this.usersService.generateHash(
       command.body.password,
@@ -31,6 +31,12 @@ export class CreateUserUseCase {
     newUser.createdAt = new Date().toISOString();
     newUser.ban = false;
     await this.usersRepository.save(newUser);
-    return newUser;
+    return {
+      id: newUser.id,
+      login: newUser.login,
+      email: newUser.email,
+      createdAt: newUser.createdAt,
+      banInfo: { isBanned: newUser.ban, banDate: null, banReason: null },
+    };
   }
 }

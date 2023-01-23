@@ -8,17 +8,6 @@ import { LoginDto } from '../../../public/auth/dto/auth.dto';
 export class UsersService {
   constructor(protected usersRepository: UsersRepository) {}
 
-  // async creatNewUsers(body: CreateUserDto): Promise<User> {
-  //   const passwordSalt = await bcrypt.genSalt(10);
-  //   const passwordHash = await this.generateHash(body.password, passwordSalt);
-  //   const newUser = new this.usersCollection(body);
-  //   newUser.id = +new Date() + '';
-  //   newUser.password = passwordHash;
-  //   newUser.createdAt = new Date().toISOString();
-  //   await this.usersRepository.save(newUser);
-  //   return newUser;
-  // }
-
   async checkUserOrLogin(body: LoginDto): Promise<User | false> {
     const user: any = await this.usersRepository.findLoginOrEmail(
       body.loginOrEmail,

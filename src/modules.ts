@@ -65,7 +65,7 @@ import { CreatePostByIdUseCase } from './features/blogger/application/useCase/cr
 import { CreateCommentByPostUseCase } from './features/public/posts/application/useCase/create.comment.by.post.use.case';
 import { CreateLikeStatusForPostsUseCase } from './features/public/posts/application/useCase/create.like.status.for.posts.use.case';
 import { BunUserSchema } from './features/sa/users/schema/banUser';
-import { BanUserUseCase } from './features/sa/users/application/useCases/ban.user.use.case';
+import { UpdateBanUserUseCase } from './features/sa/users/application/useCases/update.ban.user.use.case';
 import { BlogsControllerSa } from './features/sa/blogs/blogs.controller.sa';
 import { CheckUserIdSa } from './common/customValidator/check.user.id.sa';
 import { CheckBlogIdSa } from './common/customValidator/check.blog.id.sa';
@@ -104,7 +104,7 @@ const UseCases = [
   CreatePostByIdUseCase,
   CreateCommentByPostUseCase,
   CreateLikeStatusForPostsUseCase,
-  BanUserUseCase,
+  UpdateBanUserUseCase,
   UpdateBlogOwnerUseCase,
   CreateLikeStatusForCommentsUseCase,
   GetLikesInfoUseCase,

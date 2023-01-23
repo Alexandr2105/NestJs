@@ -18,7 +18,7 @@ import { BanUserDto, CreateUserDto } from './dto/user.dto';
 import { BasicAuthGuard } from '../../../common/guard/basic.auth.guard';
 import { CreateUserCommand } from './application/useCases/create.user.use.case';
 import { CommandBus } from '@nestjs/cqrs';
-import { BanUserCommand } from './application/useCases/ban.user.use.case';
+import { BanUserCommand } from './application/useCases/update.ban.user.use.case';
 
 @Controller('sa/users')
 export class UsersController {
@@ -43,8 +43,7 @@ export class UsersController {
   @UseGuards(BasicAuthGuard)
   @Post()
   async createUser(@Body() body: CreateUserDto) {
-    const newUser = await this.commandBus.execute(new CreateUserCommand(body));
-    return await this.usersService.getUserById(newUser.id);
+    return await this.commandBus.execute(new CreateUserCommand(body));
   }
 
   @UseGuards(BasicAuthGuard)

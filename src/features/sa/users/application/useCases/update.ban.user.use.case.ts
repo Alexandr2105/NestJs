@@ -12,7 +12,7 @@ export class BanUserCommand {
 }
 
 @CommandHandler(BanUserCommand)
-export class BanUserUseCase {
+export class UpdateBanUserUseCase {
   constructor(
     protected securityDevicesRepository: SecurityDevicesRepository,
     protected userRepository: UsersRepository,
