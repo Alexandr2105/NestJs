@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { BlogDocument } from './schema/blogs.schema';
@@ -38,6 +38,15 @@ export class BlogsRepository {
     const blog = await this.blogsCollection.findOne({ id: params.blogId });
     blog.userId = params.userId;
     await this.save(blog);
+  }
+
+  async getAllInfoAboutBlogId(id: string) {
+    const blog = await this.blogsCollection.findOne({ id: id });
+    if (blog) {
+      return blog;
+    } else {
+      throw new NotFoundException();
+    }
   }
 
   async save(blog: BlogDocument) {
