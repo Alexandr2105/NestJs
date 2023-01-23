@@ -3,12 +3,15 @@ import { QueryRepository } from '../../public/queryReposytories/query.repository
 import { BasicAuthGuard } from '../../../common/guard/basic.auth.guard';
 import { QueryCount } from '../../../common/helper/query.count';
 import { BlogsSaDto } from './dto/blogs.sa.dto';
+import { CommandBus } from '@nestjs/cqrs';
+import { UpdateBlogOwnerCommand } from './aplication/useCase/update.blog.owner.use.case';
 
 @Controller('blogs')
 export class BlogsControllerSa {
   constructor(
     protected queryRepository: QueryRepository,
     protected queryCount: QueryCount,
+    protected commandBus: CommandBus,
   ) {}
 
   @UseGuards(BasicAuthGuard)
@@ -20,5 +23,7 @@ export class BlogsControllerSa {
 
   @UseGuards(BasicAuthGuard)
   @Put('/:id/bind-with-user/:userId')
-  async updateBlogOwner(@Param() param: BlogsSaDto) {}
+  async updateBlogOwner(@Param() param: BlogsSaDto) {
+    await this.commandBus.execute(new UpdateBlogOwnerCommand(param));
+  }
 }

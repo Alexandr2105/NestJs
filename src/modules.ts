@@ -69,6 +69,7 @@ import { BanUserUseCase } from './features/sa/users/application/useCases/ban.use
 import { BlogsControllerSa } from './features/sa/blogs/blogs.controller.sa';
 import { CheckUserIdSa } from './common/customValidator/check.user.id.sa';
 import { CheckBlogIdSa } from './common/customValidator/check.blog.id.sa';
+import { UpdateBlogOwnerUseCase } from './features/sa/blogs/aplication/useCase/update.blog.owner.use.case';
 
 const Strategies = [LocalStrategy, JwtStrategy, BasicStrategy, RefreshStrategy];
 const Validators = [
@@ -99,6 +100,7 @@ const UseCases = [
   CreateCommentByPostUseCase,
   CreateLikeStatusUseCase,
   BanUserUseCase,
+  UpdateBlogOwnerUseCase,
 ];
 
 @Module({
