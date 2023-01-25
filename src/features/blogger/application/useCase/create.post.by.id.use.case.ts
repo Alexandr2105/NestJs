@@ -24,9 +24,7 @@ export class CreatePostByIdUseCase {
   ) {}
 
   async execute(command: CreatePostByIdCommand): Promise<Post | false> {
-    const infoBlog: any = await this.blogsRepository.getAllInfoAboutBlogId(
-      command.blogId,
-    );
+    const infoBlog: any = await this.blogsRepository.getBlogId(command.blogId);
     if (infoBlog.userId !== command.userId) throw new ForbiddenException();
     const newPost = new this.postsCollection(command.post);
     newPost.createdAt = new Date().toISOString();

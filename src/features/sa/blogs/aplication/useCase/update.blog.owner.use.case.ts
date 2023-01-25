@@ -11,6 +11,10 @@ export class UpdateBlogOwnerUseCase {
   constructor(protected blogsRepository: BlogsRepository) {}
 
   async execute(command: UpdateBlogOwnerCommand) {
-    await this.blogsRepository.updateBlogOwner(command.params);
+    const blog: any = await this.blogsRepository.getBlogId(
+      command.params.blogId,
+    );
+    blog.userId = command.params.userId;
+    await this.blogsRepository.save(blog);
   }
 }

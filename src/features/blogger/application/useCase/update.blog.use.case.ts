@@ -16,7 +16,7 @@ export class UpdateBlogUseCase {
   constructor(protected blogsRepository: BlogsRepository) {}
 
   async execute(command: UpdateBlogCommand): Promise<boolean> {
-    const blog = await this.blogsRepository.getBlogDocument(command.id);
+    const blog = await this.blogsRepository.getBlogId(command.id);
     if (!blog) throw new NotFoundException();
     if (blog.userId !== command.userId) throw new ForbiddenException();
     blog.name = command.body.name;

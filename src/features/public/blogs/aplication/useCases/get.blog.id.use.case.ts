@@ -11,7 +11,7 @@ export class GetBlogIdUseCase {
   constructor(protected blogsRepository: BlogsRepository) {}
 
   async execute(command: GetBlogIdCommand): Promise<BlogDocument | false> {
-    const blog = await this.blogsRepository.getBlogId(command.id);
+    const blog = await this.blogsRepository.getBlogIdSpecial(command.id);
     if (!blog) return false;
     return blog;
   }

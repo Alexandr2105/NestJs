@@ -10,7 +10,7 @@ export class DeleteBlogCommand {
 export class DeleteBlogUseCase {
   constructor(protected blogsRepository: BlogsRepository) {}
   async execute(command: DeleteBlogCommand): Promise<boolean> {
-    const blog = await this.blogsRepository.getAllInfoAboutBlogId(command.id);
+    const blog = await this.blogsRepository.getBlogId(command.id);
     if (!blog) throw new NotFoundException();
     if (blog.userId !== command.userId) throw new ForbiddenException();
     return this.blogsRepository.deleteBlogId(command.id);
