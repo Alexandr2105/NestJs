@@ -41,8 +41,6 @@ export class PostsRepository {
     });
     if (allLikes) {
       return allLikes.length;
-    } else {
-      return 0;
     }
   }
 

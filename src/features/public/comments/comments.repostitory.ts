@@ -6,16 +6,16 @@ import {
   LikesModel,
   LikesModelDocument,
 } from '../../../common/schemas/like.type.schema';
-import { User } from '../../sa/users/schema/user';
+import { UsersRepository } from '../../sa/users/users.repository';
 
 @Injectable()
 export class CommentsRepository {
   constructor(
+    protected usersRepository: UsersRepository,
     @InjectModel('comments')
     protected commentsCollection: Model<CommentDocument>,
     @InjectModel('likeStatuses')
     protected likeInfoCollection: Model<LikesModelDocument>,
-    @InjectModel('users') protected usersCollection: Model<User>,
   ) {}
 
   async getCommentById(id: string): Promise<CommentDocument | null> {
@@ -28,7 +28,7 @@ export class CommentsRepository {
   }
 
   async getLikesInfo(idComment: string): Promise<number> {
-    const banUsers = await this.usersCollection.find({ ban: true });
+    const banUsers = await this.usersRepository.getBunUsers();
     const allLikes = await this.likeInfoCollection.find({
       id: idComment,
       status: { $regex: 'Like' },
@@ -46,7 +46,7 @@ export class CommentsRepository {
   }
 
   async getDislikeInfo(idComment: string): Promise<number | undefined> {
-    const banUsers = await this.usersCollection.find({ ban: true });
+    const banUsers = await this.usersRepository.getBunUsers();
     const allDislikes = await this.likeInfoCollection.find({
       id: idComment,
       status: { $regex: 'Dislike' },
