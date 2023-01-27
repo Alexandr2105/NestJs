@@ -1,10 +1,13 @@
 import { CommandHandler } from '@nestjs/cqrs';
-import { Post, PostDocument } from '../../../public/posts/schema/posts.schema';
+import {
+  Post,
+  PostDocument,
+} from '../../../../public/posts/schema/posts.schema';
 import { ForbiddenException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { BlogsRepository } from '../../../public/blogs/blogs.repository';
-import { PostsRepository } from '../../../public/posts/posts.repository';
+import { BlogsRepository } from '../../../../public/blogs/blogs.repository';
+import { PostsRepository } from '../../../../public/posts/posts.repository';
 import { CreatePostForBlogDto } from '../../dto/blogger.dto';
 
 export class CreatePostByIdCommand {

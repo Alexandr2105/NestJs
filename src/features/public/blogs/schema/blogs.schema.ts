@@ -17,5 +17,7 @@ export class Blog {
   public createdAt: string;
   @Prop({ required: true })
   public userId: string;
+  @Prop({ required: true })
+  public banUsers: [{ userId: string }];
 }
 export const BlogSchema = SchemaFactory.createForClass(Blog);

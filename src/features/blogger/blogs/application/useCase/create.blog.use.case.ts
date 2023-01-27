@@ -1,5 +1,8 @@
-import { Blog, BlogDocument } from '../../../public/blogs/schema/blogs.schema';
-import { BlogsRepository } from '../../../public/blogs/blogs.repository';
+import {
+  Blog,
+  BlogDocument,
+} from '../../../../public/blogs/schema/blogs.schema';
+import { BlogsRepository } from '../../../../public/blogs/blogs.repository';
 import { Model } from 'mongoose';
 import { CommandHandler } from '@nestjs/cqrs';
 import { InjectModel } from '@nestjs/mongoose';

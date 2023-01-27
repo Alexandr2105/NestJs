@@ -12,11 +12,11 @@ import {
   Req,
   UseGuards,
 } from '@nestjs/common';
-import { QueryRepository } from '../public/queryReposytories/query.repository';
-import { QueryCount } from '../../common/helper/query.count';
-import { JwtAuthGuard } from '../../common/guard/jwt.auth.guard';
+import { QueryRepository } from '../../public/queryReposytories/query.repository';
+import { QueryCount } from '../../../common/helper/query.count';
+import { JwtAuthGuard } from '../../../common/guard/jwt.auth.guard';
 import { CreateBlogCommand } from './application/useCase/create.blog.use.case';
-import { GetBlogIdCommand } from '../public/blogs/aplication/useCases/get.blog.id.use.case';
+import { GetBlogIdCommand } from '../../public/blogs/aplication/useCases/get.blog.id.use.case';
 import { CommandBus } from '@nestjs/cqrs';
 import { UpdateBlogCommand } from './application/useCase/update.blog.use.case';
 import { DeleteBlogCommand } from './application/useCase/delete.blog.use.case';
@@ -29,11 +29,11 @@ import {
 } from './dto/blogger.dto';
 import { UpdatePostByIdCommand } from './application/useCase/update.post.by.id.use.case';
 import { DeletePostByIdCommand } from './application/useCase/delete.post.by.id.use.case';
-import { GetPostIdCommand } from '../public/posts/application/useCase/get.post.id.use.case';
+import { GetPostIdCommand } from '../../public/posts/application/useCase/get.post.id.use.case';
 import { CreatePostByIdCommand } from './application/useCase/create.post.by.id.use.case';
 
 @Controller('blogger/blogs')
-export class BloggerController {
+export class BlogsControllerBlogger {
   constructor(
     protected queryCount: QueryCount,
     protected queryRepository: QueryRepository,
@@ -45,6 +45,16 @@ export class BloggerController {
   async getBlogs(@Query() dataQuery, @Req() req) {
     const query = this.queryCount.queryCheckHelper(dataQuery);
     return await this.queryRepository.getQueryBlogsAuthUser(query, req.user.id);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('comments')
+  async getAllCommentsForAllPost(@Query() dataQuery, @Req() req) {
+    const query = this.queryCount.queryCheckHelper(dataQuery);
+    return await this.queryRepository.getQueryAllInfoForBlog(
+      query,
+      req.user.id,
+    );
   }
 
   @UseGuards(JwtAuthGuard)

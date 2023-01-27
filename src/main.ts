@@ -11,7 +11,6 @@ const port = process.env.PORT || 3000;
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.use(cookieParser());
-  // app.set('trust proxy', true);
   app.enableCors();
   app.useGlobalPipes(
     new ValidationPipe({

@@ -1,6 +1,6 @@
 import { Transform } from 'class-transformer';
 import { IsUrl, Length, Validate } from 'class-validator';
-import { CheckIdForBlog } from '../../../common/customValidator/check.id.for.blog';
+import { CheckIdForBlog } from '../../../../common/customValidator/check.id.for.blog';
 
 export class CreateBlogDto {
   @Transform(({ value }) => value.trim())

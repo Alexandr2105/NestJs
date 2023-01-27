@@ -1,4 +1,4 @@
-import { BlogsRepository } from '../../../public/blogs/blogs.repository';
+import { BlogsRepository } from '../../../../public/blogs/blogs.repository';
 import { CommandHandler } from '@nestjs/cqrs';
 import { UpdateBlogDto } from '../../dto/blogger.dto';
 import { ForbiddenException, NotFoundException } from '@nestjs/common';

@@ -5,6 +5,8 @@ import {
   UserQueryType,
   CommentsType,
   BlogsQueryTypeSA,
+  AllCommentsForAllPostsCurrentUserBlogs,
+  BanUsersInfoForBlog,
 } from '../../../common/helper/allTypes';
 import { QueryCount } from '../../../common/helper/query.count';
 import { InjectModel } from '@nestjs/mongoose';
@@ -423,6 +425,96 @@ export class QueryRepository {
               isBanned: banInfo?.isBanned || false,
               banDate: banInfo?.banDate || null,
               banReason: banInfo?.banReason || null,
+            },
+          };
+        }),
+      ),
+    };
+  }
+
+  async getQueryAllInfoForBlog(
+    query: any,
+    userId: string,
+  ): Promise<AllCommentsForAllPostsCurrentUserBlogs> {
+    const arrayPosts = await this.postsCollection.find({ userId: userId });
+    const totalCount = await this.commentsCollection.countDocuments({
+      idPost: arrayPosts.map((a) => {
+        return a.id;
+      }),
+    });
+    const sortArrayComments = await this.commentsCollection
+      .find({
+        idPost: arrayPosts.map((a) => {
+          return a.id;
+        }),
+      })
+      .sort({ [query.sortBy]: query.sortDirection })
+      .skip(this.queryCount.skipHelper(query.pageNumber, query.pageSize))
+      .limit(query.pageSize);
+    return {
+      pagesCount: this.queryCount.pagesCountHelper(totalCount, query.pageSize),
+      page: query.pageNumber,
+      pageSize: query.pageSize,
+      totalCount: totalCount,
+      items: sortArrayComments.map((a) => {
+        const post = arrayPosts.find((b) => b.userId === a.userId);
+        return {
+          id: a.id.toString(),
+          content: a.content,
+          commentatorInfo: {
+            userId: a.userId,
+            userLogin: a.userLogin,
+          },
+          createdAt: a.createdAt,
+          postInfo: {
+            id: post.id,
+            title: post.title,
+            blogId: post.blogId,
+            blogName: post.blogName,
+          },
+        };
+      }),
+    };
+  }
+
+  async getQueryAllBannedUsersForBlog(
+    query: any,
+    blogId: string,
+  ): Promise<BanUsersInfoForBlog> {
+    const blog = await this.blogsCollection.findOne({
+      id: blogId,
+    });
+    const totalCount = await this.usersCollection.countDocuments({
+      id: blog.banUsers.map((a) => {
+        return a.userId;
+      }),
+      login: query.searchLoginTerm,
+    });
+    const banUsersArraySort = await this.usersCollection
+      .find({
+        id: blog.banUsers.map((a) => {
+          return a.userId;
+        }),
+        login: query.searchLoginTerm,
+      })
+      .sort({ [query.sortBy]: query.sortDirection })
+      .skip(this.queryCount.skipHelper(query.pageNumber, query.pageSize))
+      .limit(query.pageSize);
+    return {
+      pagesCount: this.queryCount.pagesCountHelper(totalCount, query.pageSize),
+      page: query.pageNumber,
+      pageSize: query.pageSize,
+      totalCount: totalCount,
+      items: await Promise.all(
+        banUsersArraySort.map(async (a) => {
+          const banInfo = await this.banUsers.findOne({ userId: a.id });
+          return {
+            id: a.id,
+            login: a.login,
+            banInfo: {
+              isBanned: banInfo.isBanned,
+              banDate: banInfo.banDate,
+              banReason: banInfo.banReason,
             },
           };
         }),

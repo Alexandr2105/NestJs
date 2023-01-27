@@ -54,7 +54,7 @@ type PostNotUserId = {
   createdAt: string;
 };
 
-export type BanInfo = {
+type BanInfo = {
   isBanned: boolean | undefined;
   banDate: string | undefined;
   banReason: string | undefined;
@@ -76,7 +76,7 @@ export type UserQueryType = {
   items: ItemsUsers[];
 };
 
-export type InfoLikesType = {
+type InfoLikesType = {
   likesCount: number | undefined;
   dislikesCount: number | undefined;
   myStatus: string | undefined;
@@ -97,4 +97,46 @@ export type CommentsType = {
   pageSize: number;
   totalCount: number;
   items: ItemsComments[];
+};
+
+export type AllCommentsForAllPostsCurrentUserBlogs = {
+  pagesCount: number;
+  page: number;
+  pageSize: number;
+  totalCount: number;
+  items: InfoComments[];
+};
+
+type InfoComments = {
+  id: string;
+  content: string;
+  commentatorInfo: CommentatorInfo;
+  createdAt: string;
+  postInfo: PostInfo;
+};
+
+type CommentatorInfo = {
+  userId: string;
+  userLogin: string;
+};
+
+type PostInfo = {
+  id: string;
+  title: string;
+  blogId: string;
+  blogName: string;
+};
+
+export type BanUsersInfoForBlog = {
+  pagesCount: number;
+  page: number;
+  pageSize: number;
+  totalCount: number;
+  items: BanUsers[];
+};
+
+type BanUsers = {
+  id: string;
+  login: string;
+  banInfo: BanInfo;
 };

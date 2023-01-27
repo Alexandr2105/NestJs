@@ -1,4 +1,4 @@
-import { BlogsRepository } from '../../../public/blogs/blogs.repository';
+import { BlogsRepository } from '../../../../public/blogs/blogs.repository';
 import { CommandHandler } from '@nestjs/cqrs';
 import { ForbiddenException, NotFoundException } from '@nestjs/common';
 
