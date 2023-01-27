@@ -76,6 +76,7 @@ import { UpdateInfoAboutDeviceUserUseCase } from './features/public/securityDevi
 import { SaveInfoAboutDevicesUserUseCase } from './features/public/securityDevices/application/useCase/save.info.about.devices.user.use.case';
 import { GetNewConfirmationCodeUseCase } from './features/public/auth/application/useCase/get.new.confirmation.code.use.case';
 import { CreateEmailConfirmationUseCae } from './features/public/auth/application/useCase/create.email.confirmation.use.cae';
+import { UsersControllerBlogger } from './features/blogger/users/users.controller.blogger';
 
 const Strategies = [LocalStrategy, JwtStrategy, BasicStrategy, RefreshStrategy];
 const Validators = [
@@ -159,6 +160,7 @@ const UseCases = [
     SecurityDevicesController,
     BlogsControllerBlogger,
     BlogsControllerSa,
+    UsersControllerBlogger,
   ],
   providers: [
     QueryCount,
