@@ -27,7 +27,7 @@ export class UsersControllerBlogger {
     protected commandBus: CommandBus,
   ) {}
 
-  // @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard)
   @Get('blog/:id')
   async getAllBannedUsersForBlog(
     @Query() queryData,

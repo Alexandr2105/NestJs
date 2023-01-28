@@ -24,6 +24,7 @@ export class CreateBlogUseCase {
     newBlog.id = +new Date() + '';
     newBlog.createdAt = new Date().toISOString();
     newBlog.userId = command.userId;
+    newBlog.banStatus = false;
     await this.blogsRepository.save(newBlog);
     return newBlog;
   }

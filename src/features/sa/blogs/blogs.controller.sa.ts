@@ -1,10 +1,24 @@
-import { Controller, Get, Param, Put, Query, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  HttpCode,
+  Param,
+  Put,
+  Query,
+  UseGuards,
+} from '@nestjs/common';
 import { QueryRepository } from '../../public/queryReposytories/query.repository';
 import { BasicAuthGuard } from '../../../common/guard/basic.auth.guard';
 import { QueryCount } from '../../../common/helper/query.count';
-import { BlogsSaDto } from './dto/blogs.sa.dto';
+import {
+  BanStatusForBlogDto,
+  BlogsSaDto,
+  CheckBlogIdDto,
+} from './dto/blogs.sa.dto';
 import { CommandBus } from '@nestjs/cqrs';
 import { UpdateBlogOwnerCommand } from './aplication/useCase/update.blog.owner.use.case';
+import { UpdateBanStatusForBlogSaCommand } from './aplication/useCase/update.ban.status.for.blog.sa.use.case';
 
 @Controller('sa/blogs')
 export class BlogsControllerSa {
@@ -21,17 +35,22 @@ export class BlogsControllerSa {
     return this.queryRepository.getQueryBlogsSA(query);
   }
 
+  @HttpCode(204)
   @UseGuards(BasicAuthGuard)
   @Put('/:id/bind-with-user/:userId')
   async updateBlogOwner(@Param() param: BlogsSaDto) {
     await this.commandBus.execute(new UpdateBlogOwnerCommand(param));
   }
 
-  // @Put(':id/ban')
-  // async updateBanStatusForBlog(
-  //   @Body() body: BanStatusForBlogDto,
-  //   @Param() param: CheckBlogIdDto,
-  // ) {
-  //
-  // }
+  @HttpCode(204)
+  @UseGuards(BasicAuthGuard)
+  @Put(':id/ban')
+  async updateBanStatusForBlog(
+    @Body() body: BanStatusForBlogDto,
+    @Param() param: CheckBlogIdDto,
+  ) {
+    await this.commandBus.execute(
+      new UpdateBanStatusForBlogSaCommand(body.isBanned, param.id),
+    );
+  }
 }

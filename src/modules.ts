@@ -78,6 +78,7 @@ import { GetNewConfirmationCodeUseCase } from './features/public/auth/applicatio
 import { CreateEmailConfirmationUseCae } from './features/public/auth/application/useCase/create.email.confirmation.use.cae';
 import { UsersControllerBlogger } from './features/blogger/users/users.controller.blogger';
 import { UpdateBanStatusForBlogUseCase } from './features/blogger/users/application/useCases/update.ban.status.for.blog.use.case';
+import { UpdateBanStatusForBlogSaUseCase } from './features/sa/blogs/aplication/useCase/update.ban.status.for.blog.sa.use.case';
 
 const Strategies = [LocalStrategy, JwtStrategy, BasicStrategy, RefreshStrategy];
 const Validators = [
@@ -117,6 +118,7 @@ const UseCases = [
   GetNewConfirmationCodeUseCase,
   CreateEmailConfirmationUseCae,
   UpdateBanStatusForBlogUseCase,
+  UpdateBanStatusForBlogSaUseCase,
 ];
 
 @Module({
