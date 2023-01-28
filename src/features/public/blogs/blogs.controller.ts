@@ -32,7 +32,7 @@ export class BlogsController {
   @Get(':id')
   async getBlog(@Param('id') blogId: string) {
     const blog = await this.commandBus.execute(new GetBlogIdCommand(blogId));
-    if (blog) {
+    if (blog && blog.banStatus == false) {
       return blog;
     } else {
       throw new NotFoundException();

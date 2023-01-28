@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import {
   BlogsQueryType,
   PostQueryType,
@@ -39,16 +39,31 @@ export class QueryRepository {
   ) {}
 
   async getQueryBlogs(query: any): Promise<BlogsQueryType> {
-    const blogsArrays = await this.getQueryBlogsHelper(query);
+    const totalCount = await this.blogsCollection.countDocuments({
+      name: {
+        $regex: query.searchNameTerm,
+        $options: 'i',
+      },
+      banStatus: false,
+    });
+    const sortedBlogsArray = await this.blogsCollection
+      .find({
+        name: {
+          $regex: query.searchNameTerm,
+          $options: 'i',
+        },
+        banStatus: false,
+      })
+      .sort({ [query.sortBy]: query.sortDirection })
+      .skip(this.queryCount.skipHelper(query.pageNumber, query.pageSize))
+      .limit(query.pageSize);
+    // const blogsArrays = await this.getQueryBlogsHelper(query);
     return {
-      pagesCount: this.queryCount.pagesCountHelper(
-        blogsArrays.totalCount,
-        query.pageSize,
-      ),
+      pagesCount: this.queryCount.pagesCountHelper(totalCount, query.pageSize),
       page: query.pageNumber,
       pageSize: query.pageSize,
-      totalCount: blogsArrays.totalCount,
-      items: blogsArrays.sortedBlogsArray.map((a) => {
+      totalCount: totalCount,
+      items: sortedBlogsArray.map((a) => {
         return {
           id: a.id,
           name: a.name,
@@ -365,35 +380,6 @@ export class QueryRepository {
   }
 
   async getQueryBlogsSA(query: any): Promise<BlogsQueryTypeSA> {
-    const blogsArrays = await this.getQueryBlogsHelper(query);
-    return {
-      pagesCount: this.queryCount.pagesCountHelper(
-        blogsArrays.totalCount,
-        query.pageSize,
-      ),
-      page: query.pageNumber,
-      pageSize: query.pageSize,
-      totalCount: blogsArrays.totalCount,
-      items: await Promise.all(
-        blogsArrays.sortedBlogsArray.map(async (a) => {
-          const user: any = await this.usersRepository.getUserId(a.userId);
-          return {
-            id: a.id,
-            name: a.name,
-            description: a.description,
-            websiteUrl: a.websiteUrl,
-            createdAt: a.createdAt,
-            blogOwnerInfo: {
-              userId: user.id,
-              userLogin: user.login,
-            },
-          };
-        }),
-      ),
-    };
-  }
-
-  async getQueryBlogsHelper(query: any) {
     const totalCount = await this.blogsCollection.countDocuments({
       name: {
         $regex: query.searchNameTerm,
@@ -410,7 +396,29 @@ export class QueryRepository {
       .sort({ [query.sortBy]: query.sortDirection })
       .skip(this.queryCount.skipHelper(query.pageNumber, query.pageSize))
       .limit(query.pageSize);
-    return { totalCount, sortedBlogsArray };
+    // const blogsArrays = await this.getQueryBlogsHelper(query);
+    return {
+      pagesCount: this.queryCount.pagesCountHelper(totalCount, query.pageSize),
+      page: query.pageNumber,
+      pageSize: query.pageSize,
+      totalCount: totalCount,
+      items: await Promise.all(
+        sortedBlogsArray.map(async (a) => {
+          const user: any = await this.usersRepository.getUserId(a.userId);
+          return {
+            id: a.id,
+            name: a.name,
+            description: a.description,
+            websiteUrl: a.websiteUrl,
+            createdAt: a.createdAt,
+            blogOwnerInfo: {
+              userId: user.id,
+              userLogin: user.login,
+            },
+          };
+        }),
+      ),
+    };
   }
 
   async returnObject(query, totalCount, sortArrayUsers) {
@@ -490,6 +498,7 @@ export class QueryRepository {
     const blog = await this.blogsCollection.findOne({
       id: blogId,
     });
+    if (!blog) throw new NotFoundException();
     const totalCount = await this.usersCollection.countDocuments({
       id: blog.banUsers.map((a) => {
         return a.userId;
