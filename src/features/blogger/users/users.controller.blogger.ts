@@ -38,6 +38,7 @@ export class UsersControllerBlogger {
     return await this.queryRepository.getQueryAllBannedUsersForBlog(
       query,
       param.id,
+      req.user.id,
     );
   }
 

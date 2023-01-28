@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  ForbiddenException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import {
   BlogsQueryType,
   PostQueryType,
@@ -494,11 +498,13 @@ export class QueryRepository {
   async getQueryAllBannedUsersForBlog(
     query: any,
     blogId: string,
+    ownerId: string,
   ): Promise<BanUsersInfoForBlog> {
     const blog = await this.blogsCollection.findOne({
       id: blogId,
     });
     if (!blog) throw new NotFoundException();
+    if (blog.userId !== ownerId) throw new ForbiddenException();
     const totalCount = await this.usersCollection.countDocuments({
       id: blog.banUsers.map((a) => {
         return a.userId;
