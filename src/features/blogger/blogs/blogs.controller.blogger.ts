@@ -15,11 +15,11 @@ import {
 import { QueryRepository } from '../../public/queryReposytories/query.repository';
 import { QueryCount } from '../../../common/helper/query.count';
 import { JwtAuthGuard } from '../../../common/guard/jwt.auth.guard';
-import { CreateBlogCommand } from './application/useCase/create.blog.use.case';
+import { CreateBlogCommand } from './application/useCases/create.blog.use.case';
 import { GetBlogIdCommand } from '../../public/blogs/aplication/useCases/get.blog.id.use.case';
 import { CommandBus } from '@nestjs/cqrs';
-import { UpdateBlogCommand } from './application/useCase/update.blog.use.case';
-import { DeleteBlogCommand } from './application/useCase/delete.blog.use.case';
+import { UpdateBlogCommand } from './application/useCases/update.blog.use.case';
+import { DeleteBlogCommand } from './application/useCases/delete.blog.use.case';
 import {
   CheckBlogId,
   CreateBlogDto,
@@ -27,10 +27,10 @@ import {
   UpdateBlogDto,
   UpdatePostByIdDto,
 } from './dto/blogger.dto';
-import { UpdatePostByIdCommand } from './application/useCase/update.post.by.id.use.case';
-import { DeletePostByIdCommand } from './application/useCase/delete.post.by.id.use.case';
+import { UpdatePostByIdCommand } from './application/useCases/update.post.by.id.use.case';
+import { DeletePostByIdCommand } from './application/useCases/delete.post.by.id.use.case';
 import { GetPostIdCommand } from '../../public/posts/application/useCase/get.post.id.use.case';
-import { CreatePostByIdCommand } from './application/useCase/create.post.by.id.use.case';
+import { CreatePostByIdCommand } from './application/useCases/create.post.by.id.use.case';
 
 @Controller('blogger/blogs')
 export class BlogsControllerBlogger {

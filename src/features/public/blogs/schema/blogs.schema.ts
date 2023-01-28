@@ -18,6 +18,8 @@ export class Blog {
   @Prop({ required: true })
   public userId: string;
   @Prop({ required: true })
-  public banUsers: [{ userId: string }];
+  public banUsers: [
+    { userId: string; isBanned: boolean; banReason: string; banDate: string },
+  ];
 }
 export const BlogSchema = SchemaFactory.createForClass(Blog);

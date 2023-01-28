@@ -8,6 +8,7 @@ export class BlogsRepository {
   constructor(
     @InjectModel('blogs') protected blogsCollection: Model<BlogDocument>,
   ) {}
+
   async getBlogIdSpecial(id: string): Promise<BlogDocument | false> {
     const blog = await this.blogsCollection
       .findOne({ id: id })

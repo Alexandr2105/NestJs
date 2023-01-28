@@ -26,4 +26,12 @@ export class BlogsControllerSa {
   async updateBlogOwner(@Param() param: BlogsSaDto) {
     await this.commandBus.execute(new UpdateBlogOwnerCommand(param));
   }
+
+  // @Put(':id/ban')
+  // async updateBanStatusForBlog(
+  //   @Body() body: BanStatusForBlogDto,
+  //   @Param() param: CheckBlogIdDto,
+  // ) {
+  //
+  // }
 }

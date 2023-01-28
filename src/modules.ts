@@ -50,17 +50,17 @@ import { CheckOriginalLogin } from './common/customValidator/check.original.logi
 import { CheckIdForBlog } from './common/customValidator/check.id.for.blog';
 import { CountAttemptGuard } from './common/guard/count.attempt.guard';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { CreateBlogUseCase } from './features/blogger/blogs/application/useCase/create.blog.use.case';
-import { DeleteBlogUseCase } from './features/blogger/blogs/application/useCase/delete.blog.use.case';
+import { CreateBlogUseCase } from './features/blogger/blogs/application/useCases/create.blog.use.case';
+import { DeleteBlogUseCase } from './features/blogger/blogs/application/useCases/delete.blog.use.case';
 import { GetBlogIdUseCase } from './features/public/blogs/aplication/useCases/get.blog.id.use.case';
-import { UpdateBlogUseCase } from './features/blogger/blogs/application/useCase/update.blog.use.case';
+import { UpdateBlogUseCase } from './features/blogger/blogs/application/useCases/update.blog.use.case';
 import { CreateUserUseCase } from './features/sa/users/application/useCases/create.user.use.case';
 import { BlogsControllerBlogger } from './features/blogger/blogs/blogs.controller.blogger';
 import { CqrsModule } from '@nestjs/cqrs';
-import { UpdatePostByIdUseCase } from './features/blogger/blogs/application/useCase/update.post.by.id.use.case';
-import { DeletePostByIdUseCase } from './features/blogger/blogs/application/useCase/delete.post.by.id.use.case';
+import { UpdatePostByIdUseCase } from './features/blogger/blogs/application/useCases/update.post.by.id.use.case';
+import { DeletePostByIdUseCase } from './features/blogger/blogs/application/useCases/delete.post.by.id.use.case';
 import { GetPostIdUseCase } from './features/public/posts/application/useCase/get.post.id.use.case';
-import { CreatePostByIdUseCase } from './features/blogger/blogs/application/useCase/create.post.by.id.use.case';
+import { CreatePostByIdUseCase } from './features/blogger/blogs/application/useCases/create.post.by.id.use.case';
 import { CreateCommentByPostUseCase } from './features/public/posts/application/useCase/create.comment.by.post.use.case';
 import { CreateLikeStatusForPostsUseCase } from './features/public/posts/application/useCase/create.like.status.for.posts.use.case';
 import { BunUserSchema } from './features/sa/users/schema/banUser';
@@ -77,6 +77,7 @@ import { SaveInfoAboutDevicesUserUseCase } from './features/public/securityDevic
 import { GetNewConfirmationCodeUseCase } from './features/public/auth/application/useCase/get.new.confirmation.code.use.case';
 import { CreateEmailConfirmationUseCae } from './features/public/auth/application/useCase/create.email.confirmation.use.cae';
 import { UsersControllerBlogger } from './features/blogger/users/users.controller.blogger';
+import { UpdateBanStatusForBlogUseCase } from './features/blogger/users/application/useCases/update.ban.status.for.blog.use.case';
 
 const Strategies = [LocalStrategy, JwtStrategy, BasicStrategy, RefreshStrategy];
 const Validators = [
@@ -115,6 +116,7 @@ const UseCases = [
   SaveInfoAboutDevicesUserUseCase,
   GetNewConfirmationCodeUseCase,
   CreateEmailConfirmationUseCae,
+  UpdateBanStatusForBlogUseCase,
 ];
 
 @Module({

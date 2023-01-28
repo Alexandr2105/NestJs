@@ -25,10 +25,12 @@ import { GetPostIdCommand } from './application/useCase/get.post.id.use.case';
 import { CreateCommentByPostCommand } from './application/useCase/create.comment.by.post.use.case';
 import { CreateLikeStatusForPostsCommand } from './application/useCase/create.like.status.for.posts.use.case';
 import { GetLikesInfoCommand } from '../comments/application/useCase/get.likes.Info.use.case';
+import { BlogsRepository } from '../blogs/blogs.repository';
 
 @Controller('posts')
 export class PostsController {
   constructor(
+    protected blogsRepository: BlogsRepository,
     protected queryCount: QueryCount,
     protected usersRepository: UsersRepository,
     protected postsRepository: PostsRepository,
@@ -101,15 +103,18 @@ export class PostsController {
     @Req() req,
   ) {
     const user: any = await this.usersRepository.getUserId(req.user.id);
-    const post = await this.commandBus.execute(
+    const post = await this.postsRepository.getPostId(postId);
+    const blog: any = await this.blogsRepository.getBlogId(post.blogId);
+    if (blog.banUsers.find((a) => a.userId === user.id)) return;
+    const comment = await this.commandBus.execute(
       new CreateCommentByPostCommand(postId, body.content, user.id, user.login),
     );
     const userId: any = await this.jwtService.getUserIdByToken(
       headers.authorization.split(' ')[1],
     );
-    if (post) {
+    if (comment) {
       return await this.commandBus.execute(
-        new GetLikesInfoCommand(post.id, userId),
+        new GetLikesInfoCommand(comment.id, userId),
       );
     } else {
       throw new NotFoundException();

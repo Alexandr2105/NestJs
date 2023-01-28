@@ -488,14 +488,14 @@ export class QueryRepository {
       id: blog.banUsers.map((a) => {
         return a.userId;
       }),
-      login: query.searchLoginTerm,
+      login: { $regex: query.searchLoginTerm, $options: 'i' },
     });
     const banUsersArraySort = await this.usersCollection
       .find({
         id: blog.banUsers.map((a) => {
           return a.userId;
         }),
-        login: query.searchLoginTerm,
+        login: { $regex: query.searchLoginTerm, $options: 'i' },
       })
       .sort({ [query.sortBy]: query.sortDirection })
       .skip(this.queryCount.skipHelper(query.pageNumber, query.pageSize))
@@ -505,20 +505,18 @@ export class QueryRepository {
       page: query.pageNumber,
       pageSize: query.pageSize,
       totalCount: totalCount,
-      items: await Promise.all(
-        banUsersArraySort.map(async (a) => {
-          const banInfo = await this.banUsers.findOne({ userId: a.id });
-          return {
-            id: a.id,
-            login: a.login,
-            banInfo: {
-              isBanned: banInfo.isBanned,
-              banDate: banInfo.banDate,
-              banReason: banInfo.banReason,
-            },
-          };
-        }),
-      ),
+      items: banUsersArraySort.map((a) => {
+        const banInfo = blog.banUsers.find((b) => a.id === b.userId);
+        return {
+          id: a.id,
+          login: a.login,
+          banInfo: {
+            isBanned: banInfo.isBanned,
+            banDate: banInfo.banDate,
+            banReason: banInfo.banReason,
+          },
+        };
+      }),
     };
   }
 }
