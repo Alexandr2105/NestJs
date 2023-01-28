@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  ForbiddenException,
   Get,
   Headers,
   HttpCode,
@@ -109,7 +110,8 @@ export class PostsController {
     const user: any = await this.usersRepository.getUserId(req.user.id);
     const post = await this.postsRepository.getPostId(postId);
     const blog: any = await this.blogsRepository.getBlogId(post.blogId);
-    if (blog.banUsers.find((a) => a.userId === user.id)) return;
+    if (blog.banUsers.find((a) => a.userId === user.id))
+      throw new ForbiddenException();
     const comment = await this.commandBus.execute(
       new CreateCommentByPostCommand(postId, body.content, user.id, user.login),
     );

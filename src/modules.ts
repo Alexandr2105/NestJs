@@ -32,7 +32,6 @@ import { LikesTypeSchema } from './common/schemas/like.type.schema';
 import { AuthRepository } from './features/public/auth/auth.repository';
 import { CheckBlogIdForBlog } from './common/customValidator/check.blog.id.for.blog';
 import { CheckLikeStatus } from './common/customValidator/check.like.status';
-import { CheckIdComment } from './common/customValidator/check.id.comment';
 import { BasicStrategy } from './common/strategies/basic.strategy';
 import { JwtModule } from '@nestjs/jwt';
 import { LocalStrategy } from './common/strategies/local.strategy';
@@ -84,7 +83,6 @@ const Strategies = [LocalStrategy, JwtStrategy, BasicStrategy, RefreshStrategy];
 const Validators = [
   CheckBlogIdForBlog,
   CheckLikeStatus,
-  CheckIdComment,
   CheckUserForComments,
   CheckUserSecurityDevice,
   CheckCode,

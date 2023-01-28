@@ -2,7 +2,7 @@ import {
   ValidatorConstraint,
   ValidatorConstraintInterface,
 } from 'class-validator';
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { UsersRepository } from '../../features/sa/users/users.repository';
 
 @ValidatorConstraint({ name: 'blog', async: true })
@@ -12,10 +12,7 @@ export class CheckUserIdSa implements ValidatorConstraintInterface {
 
   async validate(userId: any): Promise<boolean> {
     const user = await this.usersRepository.getUserId(userId);
-    return !!user;
-  }
-
-  defaultMessage(): string {
-    return 'Нет такого пользователя';
+    if (!user) throw new NotFoundException();
+    return true;
   }
 }

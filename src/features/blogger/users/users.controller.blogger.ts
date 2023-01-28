@@ -47,9 +47,10 @@ export class UsersControllerBlogger {
   async updateBanUser(
     @Body() body: BanUsersForBlogDto,
     @Param() param: UserIdForBlogDto,
+    @Req() req,
   ) {
     await this.commandBus.execute(
-      new UpdateBanStatusForBlogCommand(body, param.id),
+      new UpdateBanStatusForBlogCommand(body, param.id, req.user.id),
     );
   }
 }
