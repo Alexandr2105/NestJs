@@ -11,7 +11,7 @@ export class UpdateBanStatusForBlogSaUseCase {
 
   async execute(command: UpdateBanStatusForBlogSaCommand) {
     const blog: any = await this.blogRepository.getBlogId(command.blogId);
-    if (blog.banStatus === false) {
+    if (command.banStatus === false) {
       blog.banStatus = command.banStatus;
       blog.banDate = null;
       await this.blogRepository.save(blog);
