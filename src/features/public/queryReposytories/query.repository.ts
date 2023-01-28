@@ -414,7 +414,7 @@ export class QueryRepository {
               userId: user.id,
               userLogin: user.login,
             },
-            banInfo: { isBanned: a.banStatus, banDate: a.banDate },
+            banInfo: { isBanned: a.banStatus, banDate: a.banDate || null },
           };
         }),
       ),

@@ -56,6 +56,10 @@ export class PostsController {
 
   @Get(':id')
   async getPost(@Param('id') postId: string, @Headers() headers) {
+    const postInfo = await this.postsRepository.getPostId(postId);
+    if (!postInfo) throw new NotFoundException();
+    const blog = await this.blogsRepository.getBlogId(postInfo.blogId);
+    if (!blog || blog.banStatus === true) throw new NotFoundException();
     const banUsers = await this.usersRepository.getBunUsers();
     let post;
     if (headers.authorization) {
