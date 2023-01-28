@@ -34,6 +34,10 @@ export class BlogsRepository {
     return result.deletedCount === 1;
   }
 
+  async getBanBlogs(idBlog: string) {
+    return this.blogsCollection.findOne({ id: idBlog, banStatus: true });
+  }
+
   async save(blog: BlogDocument) {
     await blog.save();
   }

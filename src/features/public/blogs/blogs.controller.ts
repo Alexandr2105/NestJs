@@ -11,6 +11,7 @@ import { QueryRepository } from '../queryReposytories/query.repository';
 import { Jwt } from '../auth/jwt';
 import { CommandBus } from '@nestjs/cqrs';
 import { GetBlogIdCommand } from './aplication/useCases/get.blog.id.use.case';
+import { BlogsRepository } from './blogs.repository';
 
 @Controller('blogs')
 export class BlogsController {
@@ -19,6 +20,7 @@ export class BlogsController {
     protected queryRepository: QueryRepository,
     protected jwtService: Jwt,
     protected commandBus: CommandBus,
+    protected blogsRepository: BlogsRepository,
   ) {}
 
   @Get()
@@ -43,6 +45,10 @@ export class BlogsController {
     @Query() dataQuery,
     @Headers() header,
   ) {
+    const banBlog = await this.blogsRepository.getBanBlogs(blogId);
+    if (banBlog) {
+      throw new NotFoundException();
+    }
     const query = this.queryCount.queryCheckHelper(dataQuery);
     if (header.authorization?.split(' ')[1]) {
       const info: any = this.jwtService.getUserIdByToken(

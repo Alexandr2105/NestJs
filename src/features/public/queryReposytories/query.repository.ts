@@ -62,10 +62,16 @@ export class QueryRepository {
 
   async getQueryPosts(query: any, userId: string): Promise<PostQueryType> {
     const banUsers = await this.usersRepository.getBunUsers();
+    const banBlogs = await this.blogsCollection.find({ banStatus: true });
     const sortPostsArray = await this.postsCollection
       .find({
         userId: {
           $nin: banUsers.map((a) => {
+            return a.id;
+          }),
+        },
+        blogId: {
+          $nin: banBlogs.map((a) => {
             return a.id;
           }),
         },
