@@ -396,7 +396,6 @@ export class QueryRepository {
       .sort({ [query.sortBy]: query.sortDirection })
       .skip(this.queryCount.skipHelper(query.pageNumber, query.pageSize))
       .limit(query.pageSize);
-    // const blogsArrays = await this.getQueryBlogsHelper(query);
     return {
       pagesCount: this.queryCount.pagesCountHelper(totalCount, query.pageSize),
       page: query.pageNumber,
@@ -415,6 +414,7 @@ export class QueryRepository {
               userId: user.id,
               userLogin: user.login,
             },
+            banInfo: { isBanned: a.banStatus, banDate: a.banDate || null },
           };
         }),
       ),

@@ -29,11 +29,17 @@ type BlogNotUserIdSA = {
   websiteUrl: string;
   createdAt: string;
   blogOwnerInfo: BlogOwnerInfoSA;
+  banInfo: BanInfoSa;
 };
 
 type BlogOwnerInfoSA = {
   userId: string;
   userLogin: string;
+};
+
+type BanInfoSa = {
+  isBanned: boolean;
+  banDate: string;
 };
 
 export type PostQueryType = {
