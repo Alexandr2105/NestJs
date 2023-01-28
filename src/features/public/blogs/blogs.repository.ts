@@ -12,7 +12,7 @@ export class BlogsRepository {
   async getBlogIdSpecial(id: string): Promise<BlogDocument | false> {
     const blog = await this.blogsCollection
       .findOne({ id: id })
-      .select('-__v -_id -userId -banUsers -banStatus');
+      .select('-__v -_id -userId -banUsers -banStatus -banDate');
     if (blog) {
       return blog;
     } else {
