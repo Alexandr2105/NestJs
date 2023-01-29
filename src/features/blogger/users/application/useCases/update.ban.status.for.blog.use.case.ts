@@ -20,6 +20,7 @@ export class UpdateBanStatusForBlogUseCase {
     if (!blog) throw new NotFoundException();
     if (blog.userId !== command.ownerBlogId) throw new ForbiddenException();
     const banUser = blog.banUsers.find((a) => a.userId === command.userId);
+    if (!banUser && command.body.isBanned === false) return;
     if (banUser) {
       banUser.isBanned = command.body.isBanned;
       banUser.banDate = new Date().toISOString();
