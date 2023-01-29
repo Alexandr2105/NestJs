@@ -21,13 +21,12 @@ export class UpdateBanStatusForBlogUseCase {
     if (blog.userId !== command.ownerBlogId) throw new ForbiddenException();
     const banUser = blog.banUsers.find((a) => a.userId === command.userId);
     if (!banUser && command.body.isBanned === false) return;
-    if (banUser) {
+    if (banUser && command.body.isBanned === true) {
       banUser.isBanned = command.body.isBanned;
       banUser.banDate = new Date().toISOString();
       banUser.banReason = command.body.banReason;
       await this.blogsRepository.save(blog);
-    }
-    if (banUser && command.body.isBanned === false) {
+    } else if (banUser && command.body.isBanned === false) {
       const index = blog.banUsers.findIndex((a) => a.userId === command.userId);
       blog.banUsers.splice(index, 1);
       await this.blogsRepository.save(blog);
