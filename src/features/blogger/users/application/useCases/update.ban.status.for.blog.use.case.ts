@@ -25,7 +25,8 @@ export class UpdateBanStatusForBlogUseCase {
       banUser.banDate = new Date().toISOString();
       banUser.banReason = command.body.banReason;
       await this.blogsRepository.save(blog);
-    } else if (banUser && command.body.isBanned === false) {
+    }
+    if (banUser && command.body.isBanned === false) {
       const index = blog.banUsers.findIndex((a) => a.userId === command.userId);
       blog.banUsers.splice(index, 1);
       await this.blogsRepository.save(blog);
