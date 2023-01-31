@@ -475,24 +475,39 @@ export class QueryRepository {
       page: query.pageNumber,
       pageSize: query.pageSize,
       totalCount: totalCount,
-      items: sortArrayComments.map((a) => {
-        const comment = arrayPosts.find((b) => a.idPost === b.id);
-        return {
-          id: a.id,
-          content: a.content,
-          commentatorInfo: {
-            userId: a.userId,
-            userLogin: a.userLogin,
-          },
-          createdAt: a.createdAt,
-          postInfo: {
-            id: comment.id,
-            title: comment.title,
-            blogId: comment.blogId,
-            blogName: comment.blogName,
-          },
-        };
-      }),
+      items: await Promise.all(
+        sortArrayComments.map(async (a) => {
+          const comment = arrayPosts.find((b) => a.idPost === b.id);
+          const likeInfo = await this.commentsRepository.getLikesInfo(a.userId);
+          const dislikeInfo = await this.commentsRepository.getDislikeInfo(
+            a.userId,
+          );
+          const myStatus = await this.commentsRepository.getMyStatus(
+            a.userId,
+            a.id,
+          );
+          return {
+            id: a.id,
+            content: a.content,
+            commentatorInfo: {
+              userId: a.userId,
+              userLogin: a.userLogin,
+            },
+            createdAt: a.createdAt,
+            postInfo: {
+              id: comment.id,
+              title: comment.title,
+              blogId: comment.blogId,
+              blogName: comment.blogName,
+            },
+            likesInfo: {
+              likesCount: likeInfo,
+              dislikesCount: dislikeInfo,
+              myStatus: myStatus,
+            },
+          };
+        }),
+      ),
     };
   }
 

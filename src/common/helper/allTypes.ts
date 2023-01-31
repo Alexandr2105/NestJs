@@ -119,6 +119,7 @@ type InfoComments = {
   commentatorInfo: CommentatorInfo;
   createdAt: string;
   postInfo: PostInfo;
+  likesInfo: InfoLikesType;
 };
 
 type CommentatorInfo = {
