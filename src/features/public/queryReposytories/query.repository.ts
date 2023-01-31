@@ -476,8 +476,7 @@ export class QueryRepository {
       pageSize: query.pageSize,
       totalCount: totalCount,
       items: sortArrayComments.map((a) => {
-        const post = arrayPosts.find((b) => a.userId === b.userId);
-        // if (post) throw new NotFoundException();
+        const comment = arrayPosts.find((b) => a.idPost === b.id);
         return {
           id: a.id,
           content: a.content,
@@ -487,10 +486,10 @@ export class QueryRepository {
           },
           createdAt: a.createdAt,
           postInfo: {
-            id: post?.id || null,
-            title: post?.title || null,
-            blogId: post?.blogId || null,
-            blogName: post?.blogName || undefined,
+            id: comment.id,
+            title: comment.title,
+            blogId: comment.blogId,
+            blogName: comment.blogName,
           },
         };
       }),
