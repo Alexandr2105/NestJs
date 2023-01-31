@@ -487,10 +487,10 @@ export class QueryRepository {
           },
           createdAt: a.createdAt,
           postInfo: {
-            id: post.id || undefined,
-            title: post.title || undefined,
-            blogId: post.blogId || undefined,
-            blogName: post.blogName || undefined,
+            id: post?.id || null,
+            title: post?.title || null,
+            blogId: post?.blogId || null,
+            blogName: post?.blogName || undefined,
           },
         };
       }),
