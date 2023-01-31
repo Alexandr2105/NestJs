@@ -61,7 +61,6 @@ export class QueryRepository {
       .sort({ [query.sortBy]: query.sortDirection })
       .skip(this.queryCount.skipHelper(query.pageNumber, query.pageSize))
       .limit(query.pageSize);
-    // const blogsArrays = await this.getQueryBlogsHelper(query);
     return {
       pagesCount: this.queryCount.pagesCountHelper(totalCount, query.pageSize),
       page: query.pageNumber,
@@ -454,16 +453,18 @@ export class QueryRepository {
     query: any,
     userId: string,
   ): Promise<AllCommentsForAllPostsCurrentUserBlogs> {
-    const arrayPosts = await this.postsCollection.find({ userId: userId });
+    const arrayPosts: any = await this.postsCollection.find({
+      userId: userId,
+    });
     const totalCount = await this.commentsCollection.countDocuments({
       idPost: arrayPosts.map((a) => {
-        return a?.id;
+        return a.id;
       }),
     });
     const sortArrayComments = await this.commentsCollection
       .find({
         idPost: arrayPosts.map((a) => {
-          return a?.id;
+          return a.id;
         }),
       })
       .sort({ [query.sortBy]: query.sortDirection })
@@ -475,15 +476,15 @@ export class QueryRepository {
       pageSize: query.pageSize,
       totalCount: totalCount,
       items: sortArrayComments.map((a) => {
-        const post = arrayPosts.find((b) => a?.userId === b.userId);
+        const post = arrayPosts.find((b) => a.userId === b.userId);
         return {
-          id: a?.id,
-          content: a?.content,
+          id: a.id,
+          content: a.content,
           commentatorInfo: {
-            userId: a?.userId,
-            userLogin: a?.userLogin,
+            userId: a.userId,
+            userLogin: a.userLogin,
           },
-          createdAt: a?.createdAt,
+          createdAt: a.createdAt,
           postInfo: {
             id: post.id,
             title: post.title,
