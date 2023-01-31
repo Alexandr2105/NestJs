@@ -453,7 +453,7 @@ export class QueryRepository {
     query: any,
     userId: string,
   ): Promise<AllCommentsForAllPostsCurrentUserBlogs> {
-    const arrayPosts: any = await this.postsCollection.find({
+    const arrayPosts = await this.postsCollection.find({
       userId: userId,
     });
     const totalCount = await this.commentsCollection.countDocuments({
@@ -477,6 +477,7 @@ export class QueryRepository {
       totalCount: totalCount,
       items: sortArrayComments.map((a) => {
         const post = arrayPosts.find((b) => a.userId === b.userId);
+        // if (post) throw new NotFoundException();
         return {
           id: a.id,
           content: a.content,
@@ -486,10 +487,10 @@ export class QueryRepository {
           },
           createdAt: a.createdAt,
           postInfo: {
-            id: post.id,
-            title: post.title,
-            blogId: post.blogId,
-            blogName: post.blogName,
+            id: post.id || undefined,
+            title: post.title || undefined,
+            blogId: post.blogId || undefined,
+            blogName: post.blogName || undefined,
           },
         };
       }),
