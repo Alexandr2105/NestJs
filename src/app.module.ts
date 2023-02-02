@@ -20,9 +20,35 @@ const mongoUri = process.env.MONGO_URL || 'mongodb://0.0.0.0:27017/tube';
 
 @Module({
   imports: [
-    ConfigModule.forRoot(),
+    ConfigModule.forRoot({
+      isGlobal: true,
+    }),
     MongooseModule.forRoot(mongoUri),
     Modules,
+    // TypeOrmModule.forRootAsync({
+    //   imports: [ConfigModule],
+    //   useFactory: async (configService: ConfigService) => ({
+    //     type: 'postgres',
+    //     host: configService.get('POSTGRES_HOST'),
+    //     port: configService.get('POSTGRES_PORT'),
+    //     username: configService.get('POSTGRES_USERNAME'),
+    //     password: configService.get('POSTGRES_PASSWORD'),
+    //     database: configService.get('POSTGRES_DATABASE'),
+    //     entities: [
+    //       Blog,
+    //       Post,
+    //       User,
+    //       Comment,
+    //       LikesModel,
+    //       EmailConfirmation,
+    //       RefreshTokenData,
+    //       CountAttempt,
+    //       BanUser,
+    //     ],
+    //     synchronize: false,
+    //   }),
+    //   inject: [ConfigService],
+    // }),
     TypeOrmModule.forFeature([
       Blog,
       Post,

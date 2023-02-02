@@ -4,7 +4,7 @@ import { Model } from 'mongoose';
 import { BlogDocument } from './schema/blogs.schema';
 
 @Injectable()
-export class BlogsRepository {
+export class BlogsRepository /* implements IBlogsRepository*/ {
   constructor(
     @InjectModel('blogs') protected blogsCollection: Model<BlogDocument>,
   ) {}
