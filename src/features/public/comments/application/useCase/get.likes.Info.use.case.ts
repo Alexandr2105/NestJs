@@ -30,8 +30,10 @@ export class GetLikesInfoUseCase {
       return {
         id: comment.id,
         content: comment.content,
-        userId: comment.userId,
-        userLogin: comment.userLogin,
+        commentatorInfo: {
+          userId: comment.userId,
+          userLogin: comment.userLogin,
+        },
         createdAt: comment.createdAt,
         likesInfo: {
           likesCount: likeStatus,

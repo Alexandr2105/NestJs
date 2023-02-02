@@ -329,8 +329,7 @@ export class QueryRepository {
           return {
             id: a.id,
             content: a.content,
-            userId: a.userId,
-            userLogin: a.userLogin,
+            commentatorInfo: { userId: a.userId, userLogin: a.userLogin },
             createdAt: a.createdAt,
             likesInfo: {
               likesCount: likeInfo,

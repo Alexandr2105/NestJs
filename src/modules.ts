@@ -20,15 +20,27 @@ import { EmailManager } from './common/manager/email-manager';
 import { EmailAdapter } from './common/adapters/email-adapter';
 import { SecurityDevicesService } from './features/public/securityDevices/application/security-devices.service';
 import { SecurityDevicesRepository } from './features/public/securityDevices/security.devices.repository';
-import { BlogSchema } from './features/public/blogs/schema/blogs.schema';
-import { PostSchema } from './features/public/posts/schema/posts.schema';
-import { CommentSchema } from './features/public/comments/schema/comment.schema';
-import { UserSchema } from './features/sa/users/schema/user';
+import { Blog, BlogSchema } from './features/public/blogs/schema/blogs.schema';
+import { Post, PostSchema } from './features/public/posts/schema/posts.schema';
+import {
+  Comment,
+  CommentSchema,
+} from './features/public/comments/schema/comment.schema';
+import { User, UserSchema } from './features/sa/users/schema/user';
 import { SecurityDevicesController } from './features/public/securityDevices/security.devices.controller';
-import { RefreshTokenSchema } from './common/schemas/refresh.token.data.schema';
-import { EmailConfirmationSchema } from './common/schemas/email.confirmation.schema';
-import { CountAttemptSchema } from './common/schemas/count.attempt.schema';
-import { LikesTypeSchema } from './common/schemas/like.type.schema';
+import {
+  RefreshTokenData,
+  RefreshTokenSchema,
+} from './common/schemas/refresh.token.data.schema';
+import {
+  EmailConfirmation,
+  EmailConfirmationSchema,
+} from './common/schemas/email.confirmation.schema';
+import {
+  CountAttempt,
+  CountAttemptSchema,
+} from './common/schemas/count.attempt.schema';
+import { LikesModel, LikesTypeSchema } from './common/schemas/like.type.schema';
 import { AuthRepository } from './features/public/auth/auth.repository';
 import { CheckBlogIdForBlog } from './common/customValidator/check.blog.id.for.blog';
 import { CheckLikeStatus } from './common/customValidator/check.like.status';
@@ -62,7 +74,7 @@ import { GetPostIdUseCase } from './features/public/posts/application/useCase/ge
 import { CreatePostByIdUseCase } from './features/blogger/blogs/application/useCases/create.post.by.id.use.case';
 import { CreateCommentByPostUseCase } from './features/public/posts/application/useCase/create.comment.by.post.use.case';
 import { CreateLikeStatusForPostsUseCase } from './features/public/posts/application/useCase/create.like.status.for.posts.use.case';
-import { BunUserSchema } from './features/sa/users/schema/banUser';
+import { BanUser, BunUserSchema } from './features/sa/users/schema/banUser';
 import { UpdateBanUserUseCase } from './features/sa/users/application/useCases/update.ban.user.use.case';
 import { BlogsControllerSa } from './features/sa/blogs/blogs.controller.sa';
 import { CheckUserIdSa } from './common/customValidator/check.user.id.sa';
@@ -78,6 +90,7 @@ import { CreateEmailConfirmationUseCae } from './features/public/auth/applicatio
 import { UsersControllerBlogger } from './features/blogger/users/users.controller.blogger';
 import { UpdateBanStatusForBlogUseCase } from './features/blogger/users/application/useCases/update.ban.status.for.blog.use.case';
 import { UpdateBanStatusForBlogSaUseCase } from './features/sa/blogs/aplication/useCase/update.ban.status.for.blog.sa.use.case';
+import { TypeOrmModule } from '@nestjs/typeorm';
 
 const Strategies = [LocalStrategy, JwtStrategy, BasicStrategy, RefreshStrategy];
 const Validators = [
@@ -150,6 +163,26 @@ const UseCases = [
         },
       }),
       inject: [ConfigService],
+    }),
+    TypeOrmModule.forRoot({
+      type: 'postgres',
+      host: 'localhost',
+      port: 5432,
+      username: 'alex',
+      password: 'alex',
+      database: 'tube',
+      entities: [
+        Blog,
+        Post,
+        User,
+        Comment,
+        LikesModel,
+        EmailConfirmation,
+        RefreshTokenData,
+        CountAttempt,
+        BanUser,
+      ],
+      synchronize: false,
     }),
   ],
   controllers: [

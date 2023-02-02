@@ -91,8 +91,7 @@ type InfoLikesType = {
 export type ItemsComments = {
   id: string;
   content: string;
-  userId: string;
-  userLogin: string;
+  commentatorInfo: CommentatorInfo;
   createdAt: string;
   likesInfo: InfoLikesType;
 };
