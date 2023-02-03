@@ -2,9 +2,10 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { BlogDocument } from './schema/blogs.schema';
+// import { IBlogsRepository } from '../../blogger/blogs/application/useCases/delete.blog.use.case';
 
 @Injectable()
-export class BlogsRepository /* implements IBlogsRepository*/ {
+export class BlogsRepository /*implements IBlogsRepository*/ {
   constructor(
     @InjectModel('blogs') protected blogsCollection: Model<BlogDocument>,
   ) {}

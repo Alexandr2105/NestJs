@@ -8,7 +8,7 @@ export class DeleteBlogCommand {
 }
 //
 // export interface IBlogsRepository {
-//   getBlogId(id: string): Promise<BlogDocument>;
+//   getBlogId(id: string): Promise<BlogDocument | false>;
 //   deleteBlogId(id: string): Promise<boolean>;
 // }
 
