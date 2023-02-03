@@ -6,16 +6,16 @@ import { ForbiddenException, NotFoundException } from '@nestjs/common';
 export class DeleteBlogCommand {
   constructor(public id: string, public userId: string) {}
 }
-//
-// export interface IBlogsRepository {
-//   getBlogId(id: string): Promise<BlogDocument | false>;
-//   deleteBlogId(id: string): Promise<boolean>;
+
+// export abstract class IBlogsRepository {
+//   abstract getBlogId(id: string): Promise<BlogDocument | false>;
+//   abstract deleteBlogId(id: string): Promise<boolean>;
 // }
 
 @CommandHandler(DeleteBlogCommand)
 export class DeleteBlogUseCase {
   constructor(
-    protected blogsRepository: BlogsRepository /*: IBlogsRepository*/,
+    protected blogsRepository: BlogsRepository /*IBlogsRepository*/,
   ) {}
   async execute(command: DeleteBlogCommand): Promise<boolean> {
     const blog = await this.blogsRepository.getBlogId(command.id);

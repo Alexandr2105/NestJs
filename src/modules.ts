@@ -206,7 +206,7 @@ const UseCases = [
     // {
     //   provide: IBlogsRepository,
     //   useClass: BlogsRepository,
-    // }
+    // },
     BlogsRepository,
     QueryRepository,
     PostsRepository,
