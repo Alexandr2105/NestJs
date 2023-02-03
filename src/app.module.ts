@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 
@@ -25,30 +25,30 @@ const mongoUri = process.env.MONGO_URL || 'mongodb://0.0.0.0:27017/tube';
     }),
     MongooseModule.forRoot(mongoUri),
     Modules,
-    // TypeOrmModule.forRootAsync({
-    //   imports: [ConfigModule],
-    //   useFactory: async (configService: ConfigService) => ({
-    //     type: 'postgres',
-    //     host: configService.get('POSTGRES_HOST'),
-    //     port: configService.get('POSTGRES_PORT'),
-    //     username: configService.get('POSTGRES_USERNAME'),
-    //     password: configService.get('POSTGRES_PASSWORD'),
-    //     database: configService.get('POSTGRES_DATABASE'),
-    //     entities: [
-    //       Blog,
-    //       Post,
-    //       User,
-    //       Comment,
-    //       LikesModel,
-    //       EmailConfirmation,
-    //       RefreshTokenData,
-    //       CountAttempt,
-    //       BanUser,
-    //     ],
-    //     synchronize: false,
-    //   }),
-    //   inject: [ConfigService],
-    // }),
+    TypeOrmModule.forRootAsync({
+      imports: [ConfigModule],
+      useFactory: async (configService: ConfigService) => ({
+        type: 'postgres',
+        host: configService.get('POSTGRES_HOST') || 'localhost',
+        port: configService.get('POSTGRES_PORT') || 5432,
+        username: configService.get('POSTGRES_USERNAME') || 'alex',
+        password: configService.get('POSTGRES_PASSWORD') || 'sa',
+        database: configService.get('POSTGRES_DATABASE') || 'tube',
+        entities: [
+          Blog,
+          Post,
+          User,
+          Comment,
+          LikesModel,
+          EmailConfirmation,
+          RefreshTokenData,
+          CountAttempt,
+          BanUser,
+        ],
+        synchronize: false,
+      }),
+      inject: [ConfigService],
+    }),
     TypeOrmModule.forFeature([
       Blog,
       Post,
