@@ -91,6 +91,7 @@ import { UsersControllerBlogger } from './features/blogger/users/users.controlle
 import { UpdateBanStatusForBlogUseCase } from './features/blogger/users/application/useCases/update.ban.status.for.blog.use.case';
 import { UpdateBanStatusForBlogSaUseCase } from './features/sa/blogs/aplication/useCase/update.ban.status.for.blog.sa.use.case';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { BanUsersForBlogSchema } from './features/public/blogs/schema/ban.users.for.blog.schema';
 
 const Strategies = [LocalStrategy, JwtStrategy, BasicStrategy, RefreshStrategy];
 const Validators = [
@@ -146,6 +147,7 @@ const UseCases = [
       { name: 'refreshTokenData', schema: RefreshTokenSchema },
       { name: 'countAttempts', schema: CountAttemptSchema },
       { name: 'banUsers', schema: BunUserSchema },
+      { name: 'banUsersForBlogs', schema: BanUsersForBlogSchema },
     ]),
     JwtModule.register({}),
     MailerModule.forRootAsync({

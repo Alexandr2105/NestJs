@@ -2,6 +2,9 @@ import { CommandHandler } from '@nestjs/cqrs';
 import { BlogsRepository } from '../../../../public/blogs/blogs.repository';
 import { BanUsersForBlogDto } from '../../dto/users.for.blogger.dto';
 import { ForbiddenException, NotFoundException } from '@nestjs/common';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
+import { BanUsersForBlogDocument } from '../../../../public/blogs/schema/ban.users.for.blog.schema';
 
 export class UpdateBanStatusForBlogCommand {
   constructor(
@@ -13,30 +16,33 @@ export class UpdateBanStatusForBlogCommand {
 
 @CommandHandler(UpdateBanStatusForBlogCommand)
 export class UpdateBanStatusForBlogUseCase {
-  constructor(protected blogsRepository: BlogsRepository) {}
+  constructor(
+    @InjectModel('banUsersForBlogs')
+    protected banUsersForBlogsCollection: Model<BanUsersForBlogDocument>,
+    protected blogsRepository: BlogsRepository,
+  ) {}
 
   async execute(command: UpdateBanStatusForBlogCommand) {
     const blog = await this.blogsRepository.getBlogId(command.body.blogId);
     if (!blog) throw new NotFoundException();
     if (blog.userId !== command.ownerBlogId) throw new ForbiddenException();
-    const banUser = blog.banUsers.find((a) => a.userId === command.userId);
+    const banUsers = await this.blogsRepository.getBanUsersForBlogs(blog.id);
+    const banUser = banUsers.find((a) => a.userId === command.userId);
     if (!banUser && command.body.isBanned === false) return;
     if (banUser && command.body.isBanned === true) {
       banUser.isBanned = command.body.isBanned;
       banUser.banDate = new Date().toISOString();
       banUser.banReason = command.body.banReason;
-      await this.blogsRepository.save(blog);
+      await this.blogsRepository.saveBanUser(banUser);
     } else if (banUser && command.body.isBanned === false) {
-      const index = blog.banUsers.findIndex((a) => a.userId === command.userId);
-      blog.banUsers.splice(index, 1);
-      await this.blogsRepository.save(blog);
+      await this.blogsRepository.deleteBanUsers(banUser.userId);
     } else {
-      blog.banUsers.push({
-        userId: command.userId,
-        isBanned: command.body.isBanned,
-        banDate: new Date().toISOString(),
-        banReason: command.body.banReason,
-      });
+      const banUser = new this.banUsersForBlogsCollection();
+      banUser.blogId = command.body.blogId;
+      banUser.userId = command.userId;
+      banUser.isBanned = command.body.isBanned;
+      banUser.banDate = new Date().toISOString();
+      banUser.banReason = command.body.banReason;
       await this.blogsRepository.save(blog);
     }
   }

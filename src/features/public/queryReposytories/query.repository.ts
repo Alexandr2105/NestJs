@@ -24,6 +24,7 @@ import { User } from '../../sa/users/schema/user';
 import { LikesModelDocument } from '../../../common/schemas/like.type.schema';
 import { BanUser } from '../../sa/users/schema/banUser';
 import { UsersRepository } from '../../sa/users/users.repository';
+import { BanUsersForBlogDocument } from '../blogs/schema/ban.users.for.blog.schema';
 
 @Injectable()
 export class QueryRepository {
@@ -37,6 +38,8 @@ export class QueryRepository {
     protected likeInfoCollection: Model<LikesModelDocument>,
     @InjectModel('banUsers') protected banUsers: Model<BanUser>,
     protected queryCount: QueryCount,
+    @InjectModel('banUsersForBlogs')
+    protected banUsersForBlogsCollection: Model<BanUsersForBlogDocument>,
     protected commentsRepository: CommentsRepository,
     protected postsRepository: PostsRepository,
     protected usersRepository: UsersRepository,
@@ -520,15 +523,18 @@ export class QueryRepository {
     });
     if (!blog) throw new NotFoundException();
     if (blog.userId !== ownerId) throw new ForbiddenException();
+    const banUsers = await this.banUsersForBlogsCollection.find({
+      blogId: blog.id,
+    });
     const totalCount = await this.usersCollection.countDocuments({
-      id: blog.banUsers.map((a) => {
+      id: banUsers.map((a) => {
         return a.userId;
       }),
       login: { $regex: query.searchLoginTerm, $options: 'i' },
     });
     const banUsersArraySort = await this.usersCollection
       .find({
-        id: blog.banUsers.map((a) => {
+        id: banUsers.map((a) => {
           return a.userId;
         }),
         login: { $regex: query.searchLoginTerm, $options: 'i' },
@@ -542,7 +548,7 @@ export class QueryRepository {
       pageSize: query.pageSize,
       totalCount: totalCount,
       items: banUsersArraySort.map((a) => {
-        const banInfo = blog.banUsers.find((b) => a.id === b.userId);
+        const banInfo = banUsers.find((b) => a.id === b.userId);
         return {
           id: a.id,
           login: a.login,

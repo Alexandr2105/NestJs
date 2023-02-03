@@ -18,10 +18,6 @@ export class Blog {
   @Prop({ required: true })
   public userId: string;
   @Prop({ required: true })
-  public banUsers: [
-    { userId: string; isBanned: boolean; banReason: string; banDate: string },
-  ];
-  @Prop({ required: true })
   public banStatus: boolean;
   @Prop({ required: false })
   public banDate: string;

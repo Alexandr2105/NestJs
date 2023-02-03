@@ -2,12 +2,15 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { BlogDocument } from './schema/blogs.schema';
+import { BanUsersForBlogDocument } from './schema/ban.users.for.blog.schema';
 // import { IBlogsRepository } from '../../blogger/blogs/application/useCases/delete.blog.use.case';
 
 @Injectable()
 export class BlogsRepository /*implements IBlogsRepository*/ {
   constructor(
     @InjectModel('blogs') protected blogsCollection: Model<BlogDocument>,
+    @InjectModel('banUsersForBlogs')
+    protected banUsersForBlogsCollection: Model<BanUsersForBlogDocument>,
   ) {}
 
   async getBlogIdSpecial(id: string): Promise<BlogDocument | false> {
@@ -37,6 +40,20 @@ export class BlogsRepository /*implements IBlogsRepository*/ {
 
   async getBanBlogs(idBlog: string) {
     return this.blogsCollection.findOne({ id: idBlog, banStatus: true });
+  }
+
+  async getBanUsersForBlogs(
+    blogId: string,
+  ): Promise<BanUsersForBlogDocument[]> {
+    return this.banUsersForBlogsCollection.find({ blogId: blogId });
+  }
+
+  async deleteBanUsers(userId: string) {
+    await this.banUsersForBlogsCollection.deleteOne({ userId: userId });
+  }
+
+  async saveBanUser(banUser: BanUsersForBlogDocument) {
+    await banUser.save();
   }
 
   async save(blog: BlogDocument) {
