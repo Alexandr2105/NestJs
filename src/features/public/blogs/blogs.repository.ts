@@ -16,7 +16,7 @@ export class BlogsRepository /*implements IBlogsRepository*/ {
   async getBlogIdSpecial(id: string): Promise<BlogDocument | false> {
     const blog = await this.blogsCollection
       .findOne({ id: id })
-      .select('-__v -_id -userId -banUsers -banStatus -banDate');
+      .select('-__v -_id -userId -banStatus -banDate');
     if (blog) {
       return blog;
     } else {
