@@ -41,7 +41,7 @@ import {
   CountAttemptSchema,
 } from './common/schemas/count.attempt.schema';
 import { LikesModel, LikesTypeSchema } from './common/schemas/like.type.schema';
-import { AuthRepository } from './features/public/auth/auth.repository';
+import { AuthRepositoryMongo } from './features/public/auth/auth.repository.mongo';
 import { CheckBlogIdForBlog } from './common/customValidator/check.blog.id.for.blog';
 import { CheckLikeStatus } from './common/customValidator/check.like.status';
 import { BasicStrategy } from './common/strategies/basic.strategy';
@@ -86,12 +86,16 @@ import { UpdateCommentByIdUseCase } from './features/public/comments/application
 import { UpdateInfoAboutDeviceUserUseCase } from './features/public/securityDevices/application/useCase/update.info.about.device.user.use.case';
 import { SaveInfoAboutDevicesUserUseCase } from './features/public/securityDevices/application/useCase/save.info.about.devices.user.use.case';
 import { GetNewConfirmationCodeUseCase } from './features/public/auth/application/useCase/get.new.confirmation.code.use.case';
-import { CreateEmailConfirmationUseCae } from './features/public/auth/application/useCase/create.email.confirmation.use.cae';
+import {
+  CreateEmailConfirmationUseCae,
+  IAuthRepository,
+} from './features/public/auth/application/useCase/create.email.confirmation.use.cae';
 import { UsersControllerBlogger } from './features/blogger/users/users.controller.blogger';
 import { UpdateBanStatusForBlogUseCase } from './features/blogger/users/application/useCases/update.ban.status.for.blog.use.case';
 import { UpdateBanStatusForBlogSaUseCase } from './features/sa/blogs/aplication/useCase/update.ban.status.for.blog.sa.use.case';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { BanUsersForBlogSchema } from './features/public/blogs/schema/ban.users.for.blog.schema';
+import { AuthRepositorySql } from './features/public/auth/auth.repository.sql';
 
 const Strategies = [LocalStrategy, JwtStrategy, BasicStrategy, RefreshStrategy];
 const Validators = [
@@ -132,6 +136,8 @@ const UseCases = [
   UpdateBanStatusForBlogUseCase,
   UpdateBanStatusForBlogSaUseCase,
 ];
+const MongoRepositories = [AuthRepositoryMongo];
+const SqlRepositories = [AuthRepositorySql];
 
 @Module({
   imports: [
@@ -187,6 +193,7 @@ const UseCases = [
           BanUser,
         ],
         synchronize: false,
+        extra: { poolSize: 4 },
       }),
       inject: [ConfigService],
     }),
@@ -209,6 +216,10 @@ const UseCases = [
     //   provide: IBlogsRepository,
     //   useClass: BlogsRepository,
     // },
+    {
+      provide: IAuthRepository,
+      useClass: AuthRepositorySql,
+    },
     BlogsRepository,
     QueryRepository,
     PostsRepository,
@@ -222,11 +233,12 @@ const UseCases = [
     EmailAdapter,
     SecurityDevicesService,
     SecurityDevicesRepository,
-    AuthRepository,
     ...Strategies,
     ...Validators,
     CountAttemptGuard,
     ...UseCases,
+    ...SqlRepositories,
+    ...MongoRepositories,
   ],
 })
 export class Modules {}

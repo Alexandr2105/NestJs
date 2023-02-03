@@ -36,10 +36,6 @@ export class UsersRepository {
     return user;
   }
 
-  async createEmailConfirmation(emailConf: EmailConfirmationDocument) {
-    await this.registrationUsersCollection.create(emailConf);
-  }
-
   async updateEmailConfirmation(id: string): Promise<boolean> {
     const result = await this.registrationUsersCollection.updateOne(
       { userId: id },

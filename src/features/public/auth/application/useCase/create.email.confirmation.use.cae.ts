@@ -7,7 +7,10 @@ import { Model } from 'mongoose';
 import { v4 as uuid4 } from 'uuid';
 import { EmailManager } from '../../../../../common/manager/email-manager';
 import { UsersRepository } from '../../../../sa/users/users.repository';
-import { AuthRepository } from '../../auth.repository';
+
+export abstract class IAuthRepository {
+  abstract save(emailConf: EmailConfirmationDocument);
+}
 
 export class CreateEmailConfirmationCommand {
   constructor(public id: string, public body: CreateUserDto) {}
@@ -18,7 +21,7 @@ export class CreateEmailConfirmationUseCae {
   constructor(
     protected emailManager: EmailManager,
     protected usersRepository: UsersRepository,
-    protected authRepository: AuthRepository,
+    private readonly authRepository: IAuthRepository,
     @InjectModel('emailConfirmations')
     protected registrationUsersCollection: Model<EmailConfirmationDocument>,
   ) {}
@@ -34,7 +37,6 @@ export class CreateEmailConfirmationUseCae {
     });
     emailConfirmation.isConfirmed = false;
     await this.authRepository.save(emailConfirmation);
-    await this.usersRepository.createEmailConfirmation(emailConfirmation);
     try {
       await this.emailManager.sendEmailAndConfirm(
         command.body,

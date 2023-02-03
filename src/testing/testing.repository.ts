@@ -10,6 +10,7 @@ import { EmailConfirmationDocument } from '../common/schemas/email.confirmation.
 import { CountAttemptDocument } from '../common/schemas/count.attempt.schema';
 import { LikesModelDocument } from '../common/schemas/like.type.schema';
 import { BanUserDocument } from '../features/sa/users/schema/banUser';
+import { BanUsersForBlogDocument } from '../features/public/blogs/schema/ban.users.for.blog.schema';
 
 @Injectable()
 export class TestingRepository {
@@ -28,6 +29,8 @@ export class TestingRepository {
     @InjectModel('posts') protected postsCollection: Model<PostDocument>,
     @InjectModel('blogs') protected blogsCollection: Model<BlogDocument>,
     @InjectModel('banUsers') protected banUsers: Model<BanUserDocument>,
+    @InjectModel('banUsersForBlogs')
+    protected banUsersForBlogsCollection: Model<BanUsersForBlogDocument>,
   ) {}
   async deleteAllCollection() {
     await this.blogsCollection.deleteMany({});
@@ -39,5 +42,6 @@ export class TestingRepository {
     await this.countAttemptCollection.deleteMany({});
     await this.likeInfoCollection.deleteMany({});
     await this.banUsers.deleteMany({});
+    await this.banUsersForBlogsCollection.deleteMany({});
   }
 }
