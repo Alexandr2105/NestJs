@@ -3,22 +3,16 @@ import {
   ValidatorConstraintInterface,
 } from 'class-validator';
 import { Injectable } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
-import { UserDocument } from '../../features/sa/users/schema/user';
+import { IUsersRepository } from '../../features/sa/users/i.users.repository';
 
 @ValidatorConstraint({ name: '', async: true })
 @Injectable()
 export class CheckOriginalEmail implements ValidatorConstraintInterface {
-  constructor(
-    @InjectModel('users') protected usersCollection: Model<UserDocument>,
-  ) {}
+  constructor(private readonly usersRepository: IUsersRepository) {}
 
   async validate(email: string): Promise<boolean> {
-    const user = await this.usersCollection.findOne({
-      $or: [{ login: email }, { email: email }],
-    });
-    return user === null;
+    const user = await this.usersRepository.findLoginOrEmail(email);
+    return user === undefined || user === null;
   }
 
   defaultMessage(): string {

@@ -73,7 +73,7 @@ export class UsersRepositorySql implements IUsersRepository {
 
   async save(user: UserDocument) {
     await this.dataSource.query(
-      `SELECT * FROM public."Users"
+      `INSERT INTO public."Users"
            ("id", "login", "password", "email", "createdAt", "ban")
             VALUES ($1, $2, $3, $4, $5, $6)`,
       [
@@ -89,7 +89,7 @@ export class UsersRepositorySql implements IUsersRepository {
 
   async saveBan(banInfo: BanUsersDocument) {
     await this.dataSource.query(
-      `SELECT * FROM public."BanUsers"
+      `INSERT INTO public."BanUsers"
            ("userId", "isBanned", "banReason", "banDate")
             VALUES ($1, $2, $3, $4)`,
       [banInfo.userId, banInfo.isBanned, banInfo.banReason, banInfo.banDate],
@@ -105,22 +105,22 @@ export class UsersRepositorySql implements IUsersRepository {
     const checkUserEmailConfirmation = await this.dataSource.query(
       `SELECT * FROM public."EmailConfirmations"
             WHERE "userId"=$1`,
-      [user?.id],
+      [user[0]?.id],
     );
-    if (checkUserEmailConfirmation) {
+    if (checkUserEmailConfirmation[0]) {
       const result = await this.dataSource.query(
         `UPDATE public."EmailConfirmations"
             SET "confirmationCode"=$1
             WHERE "userId"=$2`,
-        [newCode, user?.id],
+        [newCode, user[0]?.id],
       );
       return result.matchedCount === 1;
     } else {
       await this.dataSource.query(
-        `SELECT * FROM public."EmailConfirmations"
+        `INSERT INTO public."EmailConfirmations"
             ("userId","confirmationCode","expirationDate","isConfirmed")
             VALUES($1,$2,$3,$4)`,
-        [user?.id, newCode, add(new Date(), { hours: 1 }), false],
+        [user[0]?.id, newCode, add(new Date(), { hours: 1 }), false],
       );
       return true;
     }
