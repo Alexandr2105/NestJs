@@ -1,20 +1,20 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { ItemsUsers } from '../../../common/helper/allTypes';
 import { add } from 'date-fns';
 import { User, UserDocument } from './schema/user';
 import { EmailConfirmationDocument } from '../../../common/schemas/email.confirmation.schema';
 import { EmailResending } from '../../public/auth/dto/auth.dto';
-import { BanUserDocument } from './schema/banUser';
+import { BanUsersDocument } from './schema/banUsers';
+import { IUsersRepository } from './i.users.repository';
 
 @Injectable()
-export class UsersRepository {
+export class UsersRepositoryMongo implements IUsersRepository {
   constructor(
-    @InjectModel('users') protected usersCollection: Model<User>,
+    @InjectModel('users') private readonly usersCollection: Model<User>,
     @InjectModel('emailConfirmations')
-    protected registrationUsersCollection: Model<EmailConfirmationDocument>,
-    @InjectModel('banUsers') protected banUsers: Model<BanUserDocument>,
+    private readonly registrationUsersCollection: Model<EmailConfirmationDocument>,
+    @InjectModel('banUsers') private readonly banUsers: Model<BanUsersDocument>,
   ) {}
 
   async deleteUser(id: string): Promise<boolean> {
@@ -22,7 +22,7 @@ export class UsersRepository {
     return result.deletedCount === 1;
   }
 
-  async findLoginOrEmail(logOrEmail: string): Promise<ItemsUsers | null> {
+  async findLoginOrEmail(logOrEmail: string): Promise<UserDocument> {
     return this.usersCollection.findOne({
       $or: [{ login: logOrEmail }, { email: logOrEmail }],
     });
@@ -45,12 +45,9 @@ export class UsersRepository {
   }
 
   async getUserByCode(code: string): Promise<EmailConfirmationDocument> {
-    const idUser = await this.registrationUsersCollection.findOne({
+    return this.registrationUsersCollection.findOne({
       confirmationCode: code,
     });
-    if (idUser) {
-      return idUser;
-    }
   }
 
   async setConfirm(body: EmailResending, newCode: string): Promise<boolean> {
@@ -92,7 +89,7 @@ export class UsersRepository {
     await user.save();
   }
 
-  async saveBan(banInfo: BanUserDocument) {
+  async saveBan(banInfo: BanUsersDocument) {
     await banInfo.save();
   }
 }

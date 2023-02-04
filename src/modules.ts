@@ -8,7 +8,7 @@ import { PostsController } from './features/public/posts/posts.controller';
 import { PostsRepository } from './features/public/posts/posts.repository';
 import { UsersController } from './features/sa/users/users.controller';
 import { UsersService } from './features/sa/users/application/users.service';
-import { UsersRepository } from './features/sa/users/users.repository';
+import { UsersRepositoryMongo } from './features/sa/users/users.repository.mongo';
 import { CommentsController } from './features/public/comments/comments.controller';
 import { CommentsService } from './features/public/comments/application/comments.service';
 import { CommentsRepository } from './features/public/comments/comments.repostitory';
@@ -74,7 +74,7 @@ import { GetPostIdUseCase } from './features/public/posts/application/useCase/ge
 import { CreatePostByIdUseCase } from './features/blogger/blogs/application/useCases/create.post.by.id.use.case';
 import { CreateCommentByPostUseCase } from './features/public/posts/application/useCase/create.comment.by.post.use.case';
 import { CreateLikeStatusForPostsUseCase } from './features/public/posts/application/useCase/create.like.status.for.posts.use.case';
-import { BanUser, BunUserSchema } from './features/sa/users/schema/banUser';
+import { BanUsers, BunUserSchema } from './features/sa/users/schema/banUsers';
 import { UpdateBanUserUseCase } from './features/sa/users/application/useCases/update.ban.user.use.case';
 import { BlogsControllerSa } from './features/sa/blogs/blogs.controller.sa';
 import { CheckUserIdSa } from './common/customValidator/check.user.id.sa';
@@ -99,6 +99,8 @@ import { TestingRepositorySql } from './testing/testing.repository.sql';
 import { ISecurityDevicesRepository } from './features/public/securityDevices/i.security.devices.repository';
 import { SecurityDevicesRepositorySql } from './features/public/securityDevices/security.devices.repository.sql';
 import { IAuthRepository } from './features/public/auth/i.auth.repository';
+import { UsersRepositorySql } from './features/sa/users/users.repository.sql';
+import { IUsersRepository } from './features/sa/users/i.users.repository';
 
 const Strategies = [LocalStrategy, JwtStrategy, BasicStrategy, RefreshStrategy];
 const Validators = [
@@ -144,11 +146,13 @@ const MongoRepositories = [
   BlogsRepositoryMongo,
   TestingRepositoryMongo,
   SecurityDevicesRepositoryMongo,
+  UsersRepositoryMongo,
 ];
 const SqlRepositories = [
   AuthRepositorySql,
   TestingRepositorySql,
   SecurityDevicesRepositorySql,
+  UsersRepositorySql,
 ];
 const AbstractClasses = [
   {
@@ -161,12 +165,13 @@ const AbstractClasses = [
   },
   {
     provide: ITestingRepository,
-    useClass: TestingRepositoryMongo,
+    useClass: TestingRepositorySql,
   },
   {
     provide: ISecurityDevicesRepository,
     useClass: SecurityDevicesRepositorySql,
   },
+  { provide: IUsersRepository, useClass: UsersRepositorySql },
 ];
 
 @Module({
@@ -220,7 +225,7 @@ const AbstractClasses = [
           EmailConfirmation,
           RefreshTokenData,
           CountAttempt,
-          BanUser,
+          BanUsers,
         ],
         synchronize: false,
         extra: { poolSize: 4 },
@@ -245,7 +250,6 @@ const AbstractClasses = [
     QueryRepository,
     PostsRepository,
     UsersService,
-    UsersRepository,
     CommentsService,
     CommentsRepository,
     Jwt,

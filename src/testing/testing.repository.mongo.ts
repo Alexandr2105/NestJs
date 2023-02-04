@@ -9,7 +9,7 @@ import { RefreshTokenDocument } from '../common/schemas/refresh.token.data.schem
 import { EmailConfirmationDocument } from '../common/schemas/email.confirmation.schema';
 import { CountAttemptDocument } from '../common/schemas/count.attempt.schema';
 import { LikesModelDocument } from '../common/schemas/like.type.schema';
-import { BanUserDocument } from '../features/sa/users/schema/banUser';
+import { BanUsersDocument } from '../features/sa/users/schema/banUsers';
 import { BanUsersForBlogDocument } from '../features/public/blogs/schema/ban.users.for.blog.schema';
 import { ITestingRepository } from './i.testing.repository';
 
@@ -29,7 +29,7 @@ export class TestingRepositoryMongo implements ITestingRepository {
     @InjectModel('users') private readonly usersCollection: Model<UserDocument>,
     @InjectModel('posts') private readonly postsCollection: Model<PostDocument>,
     @InjectModel('blogs') private readonly blogsCollection: Model<BlogDocument>,
-    @InjectModel('banUsers') private readonly banUsers: Model<BanUserDocument>,
+    @InjectModel('banUsers') private readonly banUsers: Model<BanUsersDocument>,
     @InjectModel('banUsersForBlogs')
     private readonly banUsersForBlogsCollection: Model<BanUsersForBlogDocument>,
   ) {}

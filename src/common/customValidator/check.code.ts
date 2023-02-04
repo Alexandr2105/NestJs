@@ -4,12 +4,12 @@ import {
 } from 'class-validator';
 import { Injectable } from '@nestjs/common';
 import { EmailConfirmationDocument } from '../schemas/email.confirmation.schema';
-import { UsersRepository } from '../../features/sa/users/users.repository';
+import { IUsersRepository } from '../../features/sa/users/i.users.repository';
 
 @ValidatorConstraint({ name: '', async: true })
 @Injectable()
 export class CheckCode implements ValidatorConstraintInterface {
-  constructor(protected usersRepository: UsersRepository) {}
+  constructor(private readonly usersRepository: IUsersRepository) {}
 
   async validate(code: string): Promise<boolean> {
     const user: EmailConfirmationDocument =

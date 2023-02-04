@@ -1,7 +1,7 @@
 import { CommandHandler } from '@nestjs/cqrs';
 import { EmailResending } from '../../dto/auth.dto';
 import { v4 as uuid4 } from 'uuid';
-import { UsersRepository } from '../../../../sa/users/users.repository';
+import { IUsersRepository } from '../../../../sa/users/i.users.repository';
 
 export class GetNewConfirmationCodeCommand {
   constructor(public body: EmailResending) {}
@@ -9,7 +9,7 @@ export class GetNewConfirmationCodeCommand {
 
 @CommandHandler(GetNewConfirmationCodeCommand)
 export class GetNewConfirmationCodeUseCase {
-  constructor(protected usersRepository: UsersRepository) {}
+  constructor(private readonly usersRepository: IUsersRepository) {}
 
   async execute(command: GetNewConfirmationCodeCommand) {
     const newCode = uuid4();

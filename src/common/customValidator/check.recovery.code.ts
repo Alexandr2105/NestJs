@@ -3,12 +3,12 @@ import {
   ValidatorConstraintInterface,
 } from 'class-validator';
 import { Injectable } from '@nestjs/common';
-import { UsersRepository } from '../../features/sa/users/users.repository';
+import { IUsersRepository } from '../../features/sa/users/i.users.repository';
 
 @ValidatorConstraint({ name: '', async: true })
 @Injectable()
 export class CheckRecoveryCode implements ValidatorConstraintInterface {
-  constructor(protected usersRepository: UsersRepository) {}
+  constructor(private readonly usersRepository: IUsersRepository) {}
 
   async validate(code: string): Promise<boolean> {
     const user = await this.usersRepository.getUserByCode(code);

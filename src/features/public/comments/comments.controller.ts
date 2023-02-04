@@ -14,7 +14,6 @@ import {
 } from '@nestjs/common';
 import { CommentsService } from './application/comments.service';
 import { CommentsRepository } from './comments.repostitory';
-import { UsersRepository } from '../../sa/users/users.repository';
 import { Jwt } from '../auth/jwt';
 import { CheckUserId, UpdateCommentDto } from './dto/comment.dto';
 import { LikeStatusDto } from '../posts/dto/like.status.dto';
@@ -23,15 +22,16 @@ import { CommandBus } from '@nestjs/cqrs';
 import { UpdateCommentByIdCommand } from './application/useCase/update.comment.by.id.use.case';
 import { GetLikesInfoCommand } from './application/useCase/get.likes.Info.use.case';
 import { CreateLikeStatusForCommentsCommand } from './application/useCase/create.like.status.for.comments.use.case';
+import { IUsersRepository } from '../../sa/users/i.users.repository';
 
 @Controller('comments')
 export class CommentsController {
   constructor(
-    protected commentsService: CommentsService,
-    protected commentsRepository: CommentsRepository,
-    protected usersRepository: UsersRepository,
-    protected jwtService: Jwt,
-    protected commandBus: CommandBus,
+    private readonly commentsService: CommentsService,
+    private readonly commentsRepository: CommentsRepository,
+    private readonly usersRepository: IUsersRepository,
+    private readonly jwtService: Jwt,
+    private readonly commandBus: CommandBus,
   ) {}
 
   @Get(':id')

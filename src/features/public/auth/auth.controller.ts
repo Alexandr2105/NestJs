@@ -9,7 +9,6 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { UsersService } from '../../sa/users/application/users.service';
-import { UsersRepository } from '../../sa/users/users.repository';
 import { Jwt } from './jwt';
 import { EmailManager } from '../../../common/manager/email-manager';
 import { SecurityDevicesService } from '../securityDevices/application/security-devices.service';
@@ -30,16 +29,17 @@ import { UpdateInfoAboutDevicesUserCommand } from '../securityDevices/applicatio
 import { SaveInfoAboutDevicesUserCommand } from '../securityDevices/application/useCase/save.info.about.devices.user.use.case';
 import { CreateEmailConfirmationCommand } from './application/useCase/create.email.confirmation.use.cae';
 import { GetNewConfirmationCodeCommand } from './application/useCase/get.new.confirmation.code.use.case';
+import { IUsersRepository } from '../../sa/users/i.users.repository';
 
 @Controller('auth')
 export class AuthController {
   constructor(
-    protected usersService: UsersService,
-    protected usersRepository: UsersRepository,
-    protected devicesService: SecurityDevicesService,
-    protected emailManager: EmailManager,
-    protected jwtService: Jwt,
-    protected commandBus: CommandBus,
+    private readonly usersService: UsersService,
+    private readonly usersRepository: IUsersRepository,
+    private readonly devicesService: SecurityDevicesService,
+    private readonly emailManager: EmailManager,
+    private readonly jwtService: Jwt,
+    private readonly commandBus: CommandBus,
   ) {}
 
   @UseGuards(LocalAuthGuard)

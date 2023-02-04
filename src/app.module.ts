@@ -11,7 +11,7 @@ import { EmailConfirmation } from './common/schemas/email.confirmation.schema';
 import { RefreshTokenData } from './common/schemas/refresh.token.data.schema';
 import { Post } from './features/public/posts/schema/posts.schema';
 import { CountAttempt } from './common/schemas/count.attempt.schema';
-import { BanUser } from './features/sa/users/schema/banUser';
+import { BanUsers } from './features/sa/users/schema/banUsers';
 import { Comment } from './features/public/comments/schema/comment.schema';
 import { MongooseModule } from '@nestjs/mongoose';
 
@@ -33,7 +33,7 @@ const mongoUri = process.env.MONGO_URL || 'mongodb://0.0.0.0:27017/tube';
       EmailConfirmation,
       RefreshTokenData,
       CountAttempt,
-      BanUser,
+      BanUsers,
     ]),
   ],
   controllers: [AppController],

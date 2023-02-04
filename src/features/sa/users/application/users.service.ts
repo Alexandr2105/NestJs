@@ -1,12 +1,12 @@
 import * as bcrypt from 'bcrypt';
 import { Injectable } from '@nestjs/common';
-import { UsersRepository } from '../users.repository';
 import { User, UserDocument } from '../schema/user';
 import { LoginDto } from '../../../public/auth/dto/auth.dto';
+import { IUsersRepository } from '../i.users.repository';
 
 @Injectable()
 export class UsersService {
-  constructor(protected usersRepository: UsersRepository) {}
+  constructor(private readonly usersRepository: IUsersRepository) {}
 
   async checkUserOrLogin(body: LoginDto): Promise<User | false> {
     const user: any = await this.usersRepository.findLoginOrEmail(

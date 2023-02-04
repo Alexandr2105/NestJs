@@ -1,11 +1,11 @@
 import { CommandHandler } from '@nestjs/cqrs';
-import { UsersRepository } from '../../users.repository';
 import { BanUserDto } from '../../dto/user.dto';
 import { NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { BanUser } from '../../schema/banUser';
+import { BanUsers } from '../../schema/banUsers';
 import { ISecurityDevicesRepository } from '../../../../public/securityDevices/i.security.devices.repository';
+import { IUsersRepository } from '../../i.users.repository';
 
 export class BanUserCommand {
   constructor(public userId: string, public body: BanUserDto) {}
@@ -15,8 +15,8 @@ export class BanUserCommand {
 export class UpdateBanUserUseCase {
   constructor(
     private readonly securityDevicesRepository: ISecurityDevicesRepository,
-    private readonly userRepository: UsersRepository,
-    @InjectModel('banUsers') protected banUsers: Model<BanUser>,
+    private readonly userRepository: IUsersRepository,
+    @InjectModel('banUsers') protected banUsers: Model<BanUsers>,
   ) {}
   async execute(command: BanUserCommand) {
     const user = await this.userRepository.getUserByIdAll(command.userId);

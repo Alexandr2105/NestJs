@@ -17,7 +17,6 @@ import { PostsRepository } from './posts.repository';
 import { QueryRepository } from '../queryReposytories/query.repository';
 import { QueryCount } from '../../../common/helper/query.count';
 import { Jwt } from '../auth/jwt';
-import { UsersRepository } from '../../sa/users/users.repository';
 import { CreateCommentDto } from '../comments/dto/comment.dto';
 import { LikeStatusDto } from './dto/like.status.dto';
 import { JwtAuthGuard } from '../../../common/guard/jwt.auth.guard';
@@ -27,17 +26,18 @@ import { CreateCommentByPostCommand } from './application/useCase/create.comment
 import { CreateLikeStatusForPostsCommand } from './application/useCase/create.like.status.for.posts.use.case';
 import { GetLikesInfoCommand } from '../comments/application/useCase/get.likes.Info.use.case';
 import { BlogsRepositoryMongo } from '../blogs/blogs.repository.mongo';
+import { IUsersRepository } from '../../sa/users/i.users.repository';
 
 @Controller('posts')
 export class PostsController {
   constructor(
-    protected blogsRepository: BlogsRepositoryMongo,
-    protected queryCount: QueryCount,
-    protected usersRepository: UsersRepository,
-    protected postsRepository: PostsRepository,
-    protected queryRepository: QueryRepository,
-    protected jwtService: Jwt,
-    protected commandBus: CommandBus,
+    private readonly blogsRepository: BlogsRepositoryMongo,
+    private readonly queryCount: QueryCount,
+    private readonly usersRepository: IUsersRepository,
+    private readonly postsRepository: PostsRepository,
+    private readonly queryRepository: QueryRepository,
+    private readonly jwtService: Jwt,
+    private readonly commandBus: CommandBus,
   ) {}
 
   @Get()

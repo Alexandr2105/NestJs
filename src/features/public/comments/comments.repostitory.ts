@@ -6,16 +6,16 @@ import {
   LikesModel,
   LikesModelDocument,
 } from '../../../common/schemas/like.type.schema';
-import { UsersRepository } from '../../sa/users/users.repository';
+import { IUsersRepository } from '../../sa/users/i.users.repository';
 
 @Injectable()
 export class CommentsRepository {
   constructor(
-    protected usersRepository: UsersRepository,
+    private readonly usersRepository: IUsersRepository,
     @InjectModel('comments')
-    protected commentsCollection: Model<CommentDocument>,
+    private readonly commentsCollection: Model<CommentDocument>,
     @InjectModel('likeStatuses')
-    protected likeInfoCollection: Model<LikesModelDocument>,
+    private readonly likeInfoCollection: Model<LikesModelDocument>,
   ) {}
 
   async getCommentById(id: string): Promise<CommentDocument | null> {

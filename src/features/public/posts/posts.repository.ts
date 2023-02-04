@@ -3,12 +3,12 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { PostDocument } from './schema/posts.schema';
 import { LikesModelDocument } from '../../../common/schemas/like.type.schema';
-import { UsersRepository } from '../../sa/users/users.repository';
+import { IUsersRepository } from '../../sa/users/i.users.repository';
 
 @Injectable()
 export class PostsRepository {
   constructor(
-    protected usersRepository: UsersRepository,
+    protected usersRepository: IUsersRepository,
     @InjectModel('posts') protected postsCollection: Model<PostDocument>,
     @InjectModel('likeStatuses')
     protected likeInfoCollection: Model<LikesModelDocument>,

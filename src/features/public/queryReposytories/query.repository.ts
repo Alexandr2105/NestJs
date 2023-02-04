@@ -22,9 +22,9 @@ import { PostDocument } from '../posts/schema/posts.schema';
 import { CommentDocument } from '../comments/schema/comment.schema';
 import { User } from '../../sa/users/schema/user';
 import { LikesModelDocument } from '../../../common/schemas/like.type.schema';
-import { BanUser } from '../../sa/users/schema/banUser';
-import { UsersRepository } from '../../sa/users/users.repository';
+import { BanUsers } from '../../sa/users/schema/banUsers';
 import { BanUsersForBlogDocument } from '../blogs/schema/ban.users.for.blog.schema';
+import { IUsersRepository } from '../../sa/users/i.users.repository';
 
 @Injectable()
 export class QueryRepository {
@@ -36,13 +36,13 @@ export class QueryRepository {
     protected commentsCollection: Model<CommentDocument>,
     @InjectModel('likeStatuses')
     protected likeInfoCollection: Model<LikesModelDocument>,
-    @InjectModel('banUsers') protected banUsers: Model<BanUser>,
+    @InjectModel('banUsers') protected banUsers: Model<BanUsers>,
     protected queryCount: QueryCount,
     @InjectModel('banUsersForBlogs')
     protected banUsersForBlogsCollection: Model<BanUsersForBlogDocument>,
     protected commentsRepository: CommentsRepository,
     protected postsRepository: PostsRepository,
-    protected usersRepository: UsersRepository,
+    protected usersRepository: IUsersRepository,
   ) {}
 
   async getQueryBlogs(query: any): Promise<BlogsQueryType> {
