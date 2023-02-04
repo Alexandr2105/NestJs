@@ -43,7 +43,7 @@ export class UpdateBanStatusForBlogUseCase {
       banUser.isBanned = command.body.isBanned;
       banUser.banDate = new Date().toISOString();
       banUser.banReason = command.body.banReason;
-      await this.blogsRepository.save(blog);
+      await this.blogsRepository.saveBanUser(banUser);
     }
   }
 }
