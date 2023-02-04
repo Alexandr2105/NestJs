@@ -1,22 +1,14 @@
-import { BlogsRepository } from '../../../../public/blogs/blogs.repository';
 import { CommandHandler } from '@nestjs/cqrs';
 import { ForbiddenException, NotFoundException } from '@nestjs/common';
-// import { BlogDocument } from '../../../../public/blogs/schema/blogs.schema';
+import { IBlogsRepository } from '../../../../public/blogs/IBlogRepository';
 
 export class DeleteBlogCommand {
   constructor(public id: string, public userId: string) {}
 }
 
-// export abstract class IBlogsRepository {
-//   abstract getBlogId(id: string): Promise<BlogDocument | false>;
-//   abstract deleteBlogId(id: string): Promise<boolean>;
-// }
-
 @CommandHandler(DeleteBlogCommand)
 export class DeleteBlogUseCase {
-  constructor(
-    protected blogsRepository: BlogsRepository /*IBlogsRepository*/,
-  ) {}
+  constructor(protected blogsRepository: IBlogsRepository) {}
   async execute(command: DeleteBlogCommand): Promise<boolean> {
     const blog = await this.blogsRepository.getBlogId(command.id);
     if (!blog) throw new NotFoundException();

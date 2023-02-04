@@ -26,12 +26,12 @@ import { GetPostIdCommand } from './application/useCase/get.post.id.use.case';
 import { CreateCommentByPostCommand } from './application/useCase/create.comment.by.post.use.case';
 import { CreateLikeStatusForPostsCommand } from './application/useCase/create.like.status.for.posts.use.case';
 import { GetLikesInfoCommand } from '../comments/application/useCase/get.likes.Info.use.case';
-import { BlogsRepository } from '../blogs/blogs.repository';
+import { BlogsRepositoryMongo } from '../blogs/blogs.repository.mongo';
 
 @Controller('posts')
 export class PostsController {
   constructor(
-    protected blogsRepository: BlogsRepository,
+    protected blogsRepository: BlogsRepositoryMongo,
     protected queryCount: QueryCount,
     protected usersRepository: UsersRepository,
     protected postsRepository: PostsRepository,

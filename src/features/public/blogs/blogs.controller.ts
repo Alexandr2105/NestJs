@@ -11,7 +11,7 @@ import { QueryRepository } from '../queryReposytories/query.repository';
 import { Jwt } from '../auth/jwt';
 import { CommandBus } from '@nestjs/cqrs';
 import { GetBlogIdCommand } from './aplication/useCases/get.blog.id.use.case';
-import { BlogsRepository } from './blogs.repository';
+import { BlogsRepositoryMongo } from './blogs.repository.mongo';
 
 @Controller('blogs')
 export class BlogsController {
@@ -20,7 +20,7 @@ export class BlogsController {
     protected queryRepository: QueryRepository,
     protected jwtService: Jwt,
     protected commandBus: CommandBus,
-    protected blogsRepository: BlogsRepository,
+    protected blogsRepository: BlogsRepositoryMongo,
   ) {}
 
   @Get()

@@ -2,7 +2,7 @@ import {
   Blog,
   BlogDocument,
 } from '../../../../public/blogs/schema/blogs.schema';
-import { BlogsRepository } from '../../../../public/blogs/blogs.repository';
+import { BlogsRepositoryMongo } from '../../../../public/blogs/blogs.repository.mongo';
 import { Model } from 'mongoose';
 import { CommandHandler } from '@nestjs/cqrs';
 import { InjectModel } from '@nestjs/mongoose';
@@ -15,7 +15,7 @@ export class CreateBlogCommand {
 @CommandHandler(CreateBlogCommand)
 export class CreateBlogUseCase {
   constructor(
-    protected blogsRepository: BlogsRepository,
+    protected blogsRepository: BlogsRepositoryMongo,
     @InjectModel('blogs') protected blogsCollection: Model<BlogDocument>,
   ) {}
 

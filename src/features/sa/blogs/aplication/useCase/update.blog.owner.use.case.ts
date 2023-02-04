@@ -1,5 +1,5 @@
 import { CommandHandler } from '@nestjs/cqrs';
-import { BlogsRepository } from '../../../../public/blogs/blogs.repository';
+import { BlogsRepositoryMongo } from '../../../../public/blogs/blogs.repository.mongo';
 import { BlogsSaDto } from '../../dto/blogs.sa.dto';
 
 export class UpdateBlogOwnerCommand {
@@ -8,7 +8,7 @@ export class UpdateBlogOwnerCommand {
 
 @CommandHandler(UpdateBlogOwnerCommand)
 export class UpdateBlogOwnerUseCase {
-  constructor(protected blogsRepository: BlogsRepository) {}
+  constructor(protected blogsRepository: BlogsRepositoryMongo) {}
 
   async execute(command: UpdateBlogOwnerCommand) {
     const blog: any = await this.blogsRepository.getBlogId(

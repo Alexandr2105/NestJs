@@ -1,5 +1,5 @@
 import { BlogDocument } from '../../schema/blogs.schema';
-import { BlogsRepository } from '../../blogs.repository';
+import { BlogsRepositoryMongo } from '../../blogs.repository.mongo';
 import { CommandHandler } from '@nestjs/cqrs';
 
 export class GetBlogIdCommand {
@@ -8,7 +8,7 @@ export class GetBlogIdCommand {
 
 @CommandHandler(GetBlogIdCommand)
 export class GetBlogIdUseCase {
-  constructor(protected blogsRepository: BlogsRepository) {}
+  constructor(protected blogsRepository: BlogsRepositoryMongo) {}
 
   async execute(command: GetBlogIdCommand): Promise<BlogDocument | false> {
     const blog = await this.blogsRepository.getBlogIdSpecial(command.id);

@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { BlogsController } from './features/public/blogs/blogs.controller';
 import { QueryRepository } from './features/public/queryReposytories/query.repository';
-import { BlogsRepository } from './features/public/blogs/blogs.repository';
+import { BlogsRepositoryMongo } from './features/public/blogs/blogs.repository.mongo';
 import { QueryCount } from './common/helper/query.count';
 import { PostsController } from './features/public/posts/posts.controller';
 import { PostsRepository } from './features/public/posts/posts.repository';
@@ -96,6 +96,7 @@ import { UpdateBanStatusForBlogSaUseCase } from './features/sa/blogs/aplication/
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { BanUsersForBlogSchema } from './features/public/blogs/schema/ban.users.for.blog.schema';
 import { AuthRepositorySql } from './features/public/auth/auth.repository.sql';
+import { IBlogsRepository } from './features/public/blogs/IBlogRepository';
 
 const Strategies = [LocalStrategy, JwtStrategy, BasicStrategy, RefreshStrategy];
 const Validators = [
@@ -136,8 +137,18 @@ const UseCases = [
   UpdateBanStatusForBlogUseCase,
   UpdateBanStatusForBlogSaUseCase,
 ];
-const MongoRepositories = [AuthRepositoryMongo];
+const MongoRepositories = [AuthRepositoryMongo, BlogsRepositoryMongo];
 const SqlRepositories = [AuthRepositorySql];
+const AbstractClasses = [
+  {
+    provide: IBlogsRepository,
+    useClass: BlogsRepositoryMongo,
+  },
+  {
+    provide: IAuthRepository,
+    useClass: AuthRepositorySql,
+  },
+];
 
 @Module({
   imports: [
@@ -212,15 +223,6 @@ const SqlRepositories = [AuthRepositorySql];
   ],
   providers: [
     QueryCount,
-    // {
-    //   provide: IBlogsRepository,
-    //   useClass: BlogsRepository,
-    // },
-    {
-      provide: IAuthRepository,
-      useClass: AuthRepositorySql,
-    },
-    BlogsRepository,
     QueryRepository,
     PostsRepository,
     UsersService,
@@ -239,6 +241,7 @@ const SqlRepositories = [AuthRepositorySql];
     ...UseCases,
     ...SqlRepositories,
     ...MongoRepositories,
+    ...AbstractClasses,
   ],
 })
 export class Modules {}
