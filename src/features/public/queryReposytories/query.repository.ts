@@ -76,6 +76,7 @@ export class QueryRepository {
           description: a.description,
           websiteUrl: a.websiteUrl,
           createdAt: a.createdAt,
+          isMembership: a.isMembership,
         };
       }),
     };
@@ -379,6 +380,7 @@ export class QueryRepository {
           description: a.description,
           websiteUrl: a.websiteUrl,
           createdAt: a.createdAt,
+          isMembership: a.isMembership,
         };
       }),
     };
