@@ -8,7 +8,7 @@ import { IAuthRepository } from './i.auth.repository';
 export class AuthRepositoryMongo implements IAuthRepository {
   constructor(
     @InjectModel('emailConfirmations')
-    protected registrationUsersCollection: Model<EmailConfirmationDocument>,
+    private readonly registrationUsersCollection: Model<EmailConfirmationDocument>,
   ) {}
   async save(emailConfirmationDocument: EmailConfirmationDocument) {
     return await emailConfirmationDocument.save();

@@ -16,11 +16,11 @@ export class CreateEmailConfirmationCommand {
 @CommandHandler(CreateEmailConfirmationCommand)
 export class CreateEmailConfirmationUseCae {
   constructor(
-    protected emailManager: EmailManager,
-    protected usersRepository: UsersRepository,
+    private readonly emailManager: EmailManager,
+    private readonly usersRepository: UsersRepository,
     private readonly authRepository: IAuthRepository,
     @InjectModel('emailConfirmations')
-    protected registrationUsersCollection: Model<EmailConfirmationDocument>,
+    private readonly registrationUsersCollection: Model<EmailConfirmationDocument>,
   ) {}
 
   async execute(command: CreateEmailConfirmationCommand) {

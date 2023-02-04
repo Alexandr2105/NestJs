@@ -11,7 +11,7 @@ export class SecurityDevicesRepositoryMongo
 {
   constructor(
     @InjectModel('refreshTokenData')
-    protected refreshTokenDataCollection: Model<RefreshTokenDocument>,
+    private readonly refreshTokenDataCollection: Model<RefreshTokenDocument>,
   ) {}
 
   async save(infoRefreshToken: RefreshTokenDocument) {

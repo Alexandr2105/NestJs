@@ -17,9 +17,9 @@ import { ISecurityDevicesRepository } from './i.security.devices.repository';
 @Controller('security/devices')
 export class SecurityDevicesController {
   constructor(
-    protected devicesService: SecurityDevicesService,
-    protected securityDevicesRepository: ISecurityDevicesRepository,
-    protected jwtService: Jwt,
+    private readonly devicesService: SecurityDevicesService,
+    private readonly securityDevicesRepository: ISecurityDevicesRepository,
+    private readonly jwtService: Jwt,
   ) {}
 
   @UseGuards(RefreshAuthGuard)
