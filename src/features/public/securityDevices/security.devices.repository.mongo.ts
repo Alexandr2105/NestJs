@@ -3,9 +3,12 @@ import { Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
 import { RefreshTokenDocument } from '../../../common/schemas/refresh.token.data.schema';
 import { DeviceInfoDto } from './dto/device.info.dto';
+import { ISecurityDevicesRepository } from './i.security.devices.repository';
 
 @Injectable()
-export class SecurityDevicesRepository {
+export class SecurityDevicesRepositoryMongo
+  implements ISecurityDevicesRepository
+{
   constructor(
     @InjectModel('refreshTokenData')
     protected refreshTokenDataCollection: Model<RefreshTokenDocument>,

@@ -3,9 +3,7 @@ import { ExtractJwt, Strategy } from 'passport-jwt';
 import { Injectable } from '@nestjs/common';
 import { settings } from '../../settings';
 import { Request } from 'express';
-import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
-import { RefreshTokenDocument } from '../schemas/refresh.token.data.schema';
+import { ISecurityDevicesRepository } from '../../features/public/securityDevices/i.security.devices.repository';
 
 @Injectable()
 export class RefreshStrategy extends PassportStrategy(
@@ -13,8 +11,7 @@ export class RefreshStrategy extends PassportStrategy(
   'refreshToken',
 ) {
   constructor(
-    @InjectModel('refreshTokenData')
-    protected refreshTokenDataCollection: Model<RefreshTokenDocument>,
+    private readonly securityDevicesRepository: ISecurityDevicesRepository,
   ) {
     super({
       jwtFromRequest: ExtractJwt.fromExtractors([
@@ -28,10 +25,11 @@ export class RefreshStrategy extends PassportStrategy(
   }
 
   async validate(payload) {
-    const device = await this.refreshTokenDataCollection.findOne({
-      $and: [{ deviceId: payload.deviceId }, { userId: payload.userId }],
-    });
-    if (device?.iat !== payload.iat) {
+    const device = await this.securityDevicesRepository.getInfoAboutDeviceUser(
+      payload.userId,
+      payload.deviceId,
+    );
+    if (device.iat !== payload.iat) {
       return false;
     }
     return { userId: payload.userId, deviceId: payload.deviceId };

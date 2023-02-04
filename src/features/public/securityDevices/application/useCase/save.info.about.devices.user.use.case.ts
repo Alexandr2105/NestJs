@@ -5,7 +5,7 @@ import {
 import { CommandHandler } from '@nestjs/cqrs';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { SecurityDevicesRepository } from '../../security.devices.repository';
+import { ISecurityDevicesRepository } from '../../i.security.devices.repository';
 
 export class SaveInfoAboutDevicesUserCommand {
   constructor(public infoDevice: RefreshTokenData) {}
@@ -14,7 +14,7 @@ export class SaveInfoAboutDevicesUserCommand {
 @CommandHandler(SaveInfoAboutDevicesUserCommand)
 export class SaveInfoAboutDevicesUserUseCase {
   constructor(
-    protected securityDevicesRepository: SecurityDevicesRepository,
+    protected securityDevicesRepository: ISecurityDevicesRepository,
     @InjectModel('refreshTokenData')
     protected refreshTokenDataCollection: Model<RefreshTokenDocument>,
   ) {}

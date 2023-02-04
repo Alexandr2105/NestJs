@@ -9,16 +9,16 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { SecurityDevicesService } from './application/security-devices.service';
-import { SecurityDevicesRepository } from './security.devices.repository';
 import { Jwt } from '../auth/jwt';
 import { CheckDeviceId } from './dto/device.info.dto';
 import { RefreshAuthGuard } from '../../../common/guard/refresh.auth.guard';
+import { ISecurityDevicesRepository } from './i.security.devices.repository';
 
 @Controller('security/devices')
 export class SecurityDevicesController {
   constructor(
     protected devicesService: SecurityDevicesService,
-    protected securityDevicesRepository: SecurityDevicesRepository,
+    protected securityDevicesRepository: ISecurityDevicesRepository,
     protected jwtService: Jwt,
   ) {}
 

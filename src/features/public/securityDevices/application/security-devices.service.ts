@@ -1,9 +1,11 @@
 import { Injectable } from '@nestjs/common';
-import { SecurityDevicesRepository } from '../security.devices.repository';
+import { ISecurityDevicesRepository } from '../i.security.devices.repository';
 
 @Injectable()
 export class SecurityDevicesService {
-  constructor(protected securityDevicesRepository: SecurityDevicesRepository) {}
+  constructor(
+    protected securityDevicesRepository: ISecurityDevicesRepository,
+  ) {}
 
   createDeviceId() {
     return +new Date() + '';

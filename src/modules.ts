@@ -19,7 +19,7 @@ import { Jwt } from './features/public/auth/jwt';
 import { EmailManager } from './common/manager/email-manager';
 import { EmailAdapter } from './common/adapters/email-adapter';
 import { SecurityDevicesService } from './features/public/securityDevices/application/security-devices.service';
-import { SecurityDevicesRepository } from './features/public/securityDevices/security.devices.repository';
+import { SecurityDevicesRepositoryMongo } from './features/public/securityDevices/security.devices.repository.mongo';
 import { Blog, BlogSchema } from './features/public/blogs/schema/blogs.schema';
 import { Post, PostSchema } from './features/public/posts/schema/posts.schema';
 import {
@@ -86,10 +86,7 @@ import { UpdateCommentByIdUseCase } from './features/public/comments/application
 import { UpdateInfoAboutDeviceUserUseCase } from './features/public/securityDevices/application/useCase/update.info.about.device.user.use.case';
 import { SaveInfoAboutDevicesUserUseCase } from './features/public/securityDevices/application/useCase/save.info.about.devices.user.use.case';
 import { GetNewConfirmationCodeUseCase } from './features/public/auth/application/useCase/get.new.confirmation.code.use.case';
-import {
-  CreateEmailConfirmationUseCae,
-  IAuthRepository,
-} from './features/public/auth/application/useCase/create.email.confirmation.use.cae';
+import { CreateEmailConfirmationUseCae } from './features/public/auth/application/useCase/create.email.confirmation.use.cae';
 import { UsersControllerBlogger } from './features/blogger/users/users.controller.blogger';
 import { UpdateBanStatusForBlogUseCase } from './features/blogger/users/application/useCases/update.ban.status.for.blog.use.case';
 import { UpdateBanStatusForBlogSaUseCase } from './features/sa/blogs/aplication/useCase/update.ban.status.for.blog.sa.use.case';
@@ -98,6 +95,10 @@ import { BanUsersForBlogSchema } from './features/public/blogs/schema/ban.users.
 import { AuthRepositorySql } from './features/public/auth/auth.repository.sql';
 import { IBlogsRepository } from './features/public/blogs/i.blog.repository';
 import { ITestingRepository } from './testing/i.testing.repository';
+import { TestingRepositorySql } from './testing/testing.repository.sql';
+import { ISecurityDevicesRepository } from './features/public/securityDevices/i.security.devices.repository';
+import { SecurityDevicesRepositorySql } from './features/public/securityDevices/security.devices.repository.sql';
+import { IAuthRepository } from './features/public/auth/i.auth.repository';
 
 const Strategies = [LocalStrategy, JwtStrategy, BasicStrategy, RefreshStrategy];
 const Validators = [
@@ -138,8 +139,17 @@ const UseCases = [
   UpdateBanStatusForBlogUseCase,
   UpdateBanStatusForBlogSaUseCase,
 ];
-const MongoRepositories = [AuthRepositoryMongo, BlogsRepositoryMongo];
-const SqlRepositories = [AuthRepositorySql];
+const MongoRepositories = [
+  AuthRepositoryMongo,
+  BlogsRepositoryMongo,
+  TestingRepositoryMongo,
+  SecurityDevicesRepositoryMongo,
+];
+const SqlRepositories = [
+  AuthRepositorySql,
+  TestingRepositorySql,
+  SecurityDevicesRepositorySql,
+];
 const AbstractClasses = [
   {
     provide: IBlogsRepository,
@@ -152,6 +162,10 @@ const AbstractClasses = [
   {
     provide: ITestingRepository,
     useClass: TestingRepositoryMongo,
+  },
+  {
+    provide: ISecurityDevicesRepository,
+    useClass: SecurityDevicesRepositorySql,
   },
 ];
 
@@ -234,12 +248,10 @@ const AbstractClasses = [
     UsersRepository,
     CommentsService,
     CommentsRepository,
-    TestingRepositoryMongo,
     Jwt,
     EmailManager,
     EmailAdapter,
     SecurityDevicesService,
-    SecurityDevicesRepository,
     ...Strategies,
     ...Validators,
     CountAttemptGuard,

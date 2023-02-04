@@ -5,7 +5,7 @@ import { NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { BanUser } from '../../schema/banUser';
-import { SecurityDevicesRepository } from '../../../../public/securityDevices/security.devices.repository';
+import { ISecurityDevicesRepository } from '../../../../public/securityDevices/i.security.devices.repository';
 
 export class BanUserCommand {
   constructor(public userId: string, public body: BanUserDto) {}
@@ -14,8 +14,8 @@ export class BanUserCommand {
 @CommandHandler(BanUserCommand)
 export class UpdateBanUserUseCase {
   constructor(
-    protected securityDevicesRepository: SecurityDevicesRepository,
-    protected userRepository: UsersRepository,
+    private readonly securityDevicesRepository: ISecurityDevicesRepository,
+    private readonly userRepository: UsersRepository,
     @InjectModel('banUsers') protected banUsers: Model<BanUser>,
   ) {}
   async execute(command: BanUserCommand) {

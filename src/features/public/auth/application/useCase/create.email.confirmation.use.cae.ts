@@ -7,10 +7,7 @@ import { Model } from 'mongoose';
 import { v4 as uuid4 } from 'uuid';
 import { EmailManager } from '../../../../../common/manager/email-manager';
 import { UsersRepository } from '../../../../sa/users/users.repository';
-
-export abstract class IAuthRepository {
-  abstract save(emailConf: EmailConfirmationDocument);
-}
+import { IAuthRepository } from '../../i.auth.repository';
 
 export class CreateEmailConfirmationCommand {
   constructor(public id: string, public body: CreateUserDto) {}

@@ -1,6 +1,6 @@
 import { RefreshTokenData } from '../../../../../common/schemas/refresh.token.data.schema';
 import { CommandHandler } from '@nestjs/cqrs';
-import { SecurityDevicesRepository } from '../../security.devices.repository';
+import { ISecurityDevicesRepository } from '../../i.security.devices.repository';
 
 export class UpdateInfoAboutDevicesUserCommand {
   constructor(public infoDevice: RefreshTokenData) {}
@@ -8,7 +8,9 @@ export class UpdateInfoAboutDevicesUserCommand {
 
 @CommandHandler(UpdateInfoAboutDevicesUserCommand)
 export class UpdateInfoAboutDeviceUserUseCase {
-  constructor(protected securityDevicesRepository: SecurityDevicesRepository) {}
+  constructor(
+    protected securityDevicesRepository: ISecurityDevicesRepository,
+  ) {}
 
   async execute(command: UpdateInfoAboutDevicesUserCommand) {
     const deviceInfo =

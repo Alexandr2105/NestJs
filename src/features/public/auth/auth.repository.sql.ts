@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { EmailConfirmationDocument } from '../../../common/schemas/email.confirmation.schema';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
-import { IAuthRepository } from './application/useCase/create.email.confirmation.use.cae';
+import { IAuthRepository } from './i.auth.repository';
 
 @Injectable()
 export class AuthRepositorySql implements IAuthRepository {

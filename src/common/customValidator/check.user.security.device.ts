@@ -3,22 +3,17 @@ import {
   ValidatorConstraintInterface,
 } from 'class-validator';
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
-import { RefreshTokenData } from '../schemas/refresh.token.data.schema';
+import { ISecurityDevicesRepository } from '../../features/public/securityDevices/i.security.devices.repository';
 
 @ValidatorConstraint({ name: 'comment', async: true })
 @Injectable()
 export class CheckUserSecurityDevice implements ValidatorConstraintInterface {
   constructor(
-    @InjectModel('refreshTokenData')
-    protected refreshTokenDataCollection: Model<RefreshTokenData>,
+    private readonly securityDeviceRepository: ISecurityDevicesRepository,
   ) {}
 
   async validate(id: string): Promise<boolean> {
-    const deviceId = await this.refreshTokenDataCollection.findOne({
-      deviceId: id,
-    });
+    const deviceId = this.securityDeviceRepository.getDevice(id);
     if (!deviceId) {
       throw new NotFoundException();
     } else {
