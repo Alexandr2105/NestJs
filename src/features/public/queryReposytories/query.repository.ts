@@ -417,6 +417,7 @@ export class QueryRepository {
             description: a.description,
             websiteUrl: a.websiteUrl,
             createdAt: a.createdAt,
+            isMembership: true,
             blogOwnerInfo: {
               userId: user.id,
               userLogin: user.login,

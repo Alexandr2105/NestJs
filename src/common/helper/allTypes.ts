@@ -29,6 +29,7 @@ type BlogNotUserIdSA = {
   description: string;
   websiteUrl: string;
   createdAt: string;
+  isMembership: boolean;
   blogOwnerInfo: BlogOwnerInfoSA;
   banInfo: BanInfoSa;
 };
