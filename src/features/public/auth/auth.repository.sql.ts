@@ -6,7 +6,7 @@ import { IAuthRepository } from './application/useCase/create.email.confirmation
 
 @Injectable()
 export class AuthRepositorySql implements IAuthRepository {
-  constructor(@InjectDataSource() private dataSource: DataSource) {}
+  constructor(@InjectDataSource() private readonly dataSource: DataSource) {}
   async save(emailConfirmationDocument: EmailConfirmationDocument) {
     return this.dataSource.query(
       `INSERT INTO public."EmailConfirmations"

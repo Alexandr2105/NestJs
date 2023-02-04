@@ -3,7 +3,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { BlogDocument } from './schema/blogs.schema';
 import { BanUsersForBlogDocument } from './schema/ban.users.for.blog.schema';
-import { IBlogsRepository } from './IBlogRepository';
+import { IBlogsRepository } from './i.blog.repository';
 
 @Injectable()
 export class BlogsRepositoryMongo implements IBlogsRepository {

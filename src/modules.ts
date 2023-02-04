@@ -13,7 +13,7 @@ import { CommentsController } from './features/public/comments/comments.controll
 import { CommentsService } from './features/public/comments/application/comments.service';
 import { CommentsRepository } from './features/public/comments/comments.repostitory';
 import { TestingController } from './testing/testing.controller';
-import { TestingRepository } from './testing/testing.repository';
+import { TestingRepositoryMongo } from './testing/testing.repository.mongo';
 import { AuthController } from './features/public/auth/auth.controller';
 import { Jwt } from './features/public/auth/jwt';
 import { EmailManager } from './common/manager/email-manager';
@@ -96,7 +96,8 @@ import { UpdateBanStatusForBlogSaUseCase } from './features/sa/blogs/aplication/
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { BanUsersForBlogSchema } from './features/public/blogs/schema/ban.users.for.blog.schema';
 import { AuthRepositorySql } from './features/public/auth/auth.repository.sql';
-import { IBlogsRepository } from './features/public/blogs/IBlogRepository';
+import { IBlogsRepository } from './features/public/blogs/i.blog.repository';
+import { ITestingRepository } from './testing/i.testing.repository';
 
 const Strategies = [LocalStrategy, JwtStrategy, BasicStrategy, RefreshStrategy];
 const Validators = [
@@ -147,6 +148,10 @@ const AbstractClasses = [
   {
     provide: IAuthRepository,
     useClass: AuthRepositorySql,
+  },
+  {
+    provide: ITestingRepository,
+    useClass: TestingRepositoryMongo,
   },
 ];
 
@@ -229,7 +234,7 @@ const AbstractClasses = [
     UsersRepository,
     CommentsService,
     CommentsRepository,
-    TestingRepository,
+    TestingRepositoryMongo,
     Jwt,
     EmailManager,
     EmailAdapter,

@@ -11,26 +11,27 @@ import { CountAttemptDocument } from '../common/schemas/count.attempt.schema';
 import { LikesModelDocument } from '../common/schemas/like.type.schema';
 import { BanUserDocument } from '../features/sa/users/schema/banUser';
 import { BanUsersForBlogDocument } from '../features/public/blogs/schema/ban.users.for.blog.schema';
+import { ITestingRepository } from './i.testing.repository';
 
 @Injectable()
-export class TestingRepository {
+export class TestingRepositoryMongo implements ITestingRepository {
   constructor(
     @InjectModel('comments')
-    protected commentsCollection: Model<CommentDocument>,
+    private readonly commentsCollection: Model<CommentDocument>,
     @InjectModel('emailConfirmations')
-    protected registrationUsersCollection: Model<EmailConfirmationDocument>,
+    private readonly registrationUsersCollection: Model<EmailConfirmationDocument>,
     @InjectModel('refreshTokenData')
-    protected refreshTokenDataCollection: Model<RefreshTokenDocument>,
+    private readonly refreshTokenDataCollection: Model<RefreshTokenDocument>,
     @InjectModel('countAttempts')
-    protected countAttemptCollection: Model<CountAttemptDocument>,
+    private readonly countAttemptCollection: Model<CountAttemptDocument>,
     @InjectModel('likeStatuses')
-    protected likeInfoCollection: Model<LikesModelDocument>,
-    @InjectModel('users') protected usersCollection: Model<UserDocument>,
-    @InjectModel('posts') protected postsCollection: Model<PostDocument>,
-    @InjectModel('blogs') protected blogsCollection: Model<BlogDocument>,
-    @InjectModel('banUsers') protected banUsers: Model<BanUserDocument>,
+    private readonly likeInfoCollection: Model<LikesModelDocument>,
+    @InjectModel('users') private readonly usersCollection: Model<UserDocument>,
+    @InjectModel('posts') private readonly postsCollection: Model<PostDocument>,
+    @InjectModel('blogs') private readonly blogsCollection: Model<BlogDocument>,
+    @InjectModel('banUsers') private readonly banUsers: Model<BanUserDocument>,
     @InjectModel('banUsersForBlogs')
-    protected banUsersForBlogsCollection: Model<BanUsersForBlogDocument>,
+    private readonly banUsersForBlogsCollection: Model<BanUsersForBlogDocument>,
   ) {}
   async deleteAllCollection() {
     await this.blogsCollection.deleteMany({});
