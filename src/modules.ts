@@ -102,6 +102,7 @@ import { IAuthRepository } from './features/public/auth/i.auth.repository';
 import { UsersRepositorySql } from './features/sa/users/users.repository.sql';
 import { IUsersRepository } from './features/sa/users/i.users.repository';
 import { QueryRepositorySql } from './features/public/queryReposytories/query.repository.sql';
+import { IQueryRepository } from './features/public/queryReposytories/i.query.repository';
 
 const Strategies = [LocalStrategy, JwtStrategy, BasicStrategy, RefreshStrategy];
 const Validators = [
@@ -175,6 +176,7 @@ const AbstractClasses = [
     useClass: SecurityDevicesRepositorySql,
   },
   { provide: IUsersRepository, useClass: UsersRepositorySql },
+  { provide: IQueryRepository, useClass: QueryRepositorySql },
 ];
 
 @Module({
@@ -214,6 +216,7 @@ const AbstractClasses = [
       imports: [ConfigModule],
       useFactory: async (configService: ConfigService) => ({
         type: 'postgres',
+        ssl: true,
         host: configService.get('POSTGRES_HOST') || 'localhost',
         port: configService.get('POSTGRES_PORT') || 5432,
         username: configService.get('POSTGRES_USERNAME') || 'postgres',
@@ -231,7 +234,6 @@ const AbstractClasses = [
           BanUsers,
         ],
         synchronize: false,
-        extra: { poolSize: 4 },
       }),
       inject: [ConfigService],
     }),

@@ -9,7 +9,6 @@ import {
   Req,
   UseGuards,
 } from '@nestjs/common';
-import { QueryRepositoryMongo } from '../../public/queryReposytories/query.repository.mongo';
 import { QueryCount } from '../../../common/helper/query.count';
 import { JwtAuthGuard } from '../../../common/guard/jwt.auth.guard';
 import {
@@ -18,13 +17,14 @@ import {
 } from './dto/users.for.blogger.dto';
 import { CommandBus } from '@nestjs/cqrs';
 import { UpdateBanStatusForBlogCommand } from './application/useCases/update.ban.status.for.blog.use.case';
+import { QueryRepositorySql } from '../../public/queryReposytories/query.repository.sql';
 
 @Controller('blogger/users')
 export class UsersControllerBlogger {
   constructor(
-    protected queryRepository: QueryRepositoryMongo,
-    protected query: QueryCount,
-    protected commandBus: CommandBus,
+    private readonly queryRepository: QueryRepositorySql,
+    private readonly query: QueryCount,
+    private readonly commandBus: CommandBus,
   ) {}
 
   @UseGuards(JwtAuthGuard)

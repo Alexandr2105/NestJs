@@ -7,17 +7,17 @@ import {
   Query,
 } from '@nestjs/common';
 import { QueryCount } from '../../../common/helper/query.count';
-import { QueryRepositoryMongo } from '../queryReposytories/query.repository.mongo';
 import { Jwt } from '../auth/jwt';
 import { CommandBus } from '@nestjs/cqrs';
 import { GetBlogIdCommand } from './aplication/useCases/get.blog.id.use.case';
 import { BlogsRepositoryMongo } from './blogs.repository.mongo';
+import { QueryRepositorySql } from '../queryReposytories/query.repository.sql';
 
 @Controller('blogs')
 export class BlogsController {
   constructor(
     protected queryCount: QueryCount,
-    protected queryRepository: QueryRepositoryMongo,
+    protected queryRepository: QueryRepositorySql,
     protected jwtService: Jwt,
     protected commandBus: CommandBus,
     protected blogsRepository: BlogsRepositoryMongo,

@@ -30,20 +30,20 @@ import { IQueryRepository } from './i.query.repository';
 @Injectable()
 export class QueryRepositoryMongo extends IQueryRepository {
   constructor(
-    @InjectModel('blogs') protected blogsCollection: Model<BlogDocument>,
-    @InjectModel('posts') protected postsCollection: Model<PostDocument>,
-    @InjectModel('users') protected usersCollection: Model<User>,
+    @InjectModel('blogs') private readonly blogsCollection: Model<BlogDocument>,
+    @InjectModel('posts') private readonly postsCollection: Model<PostDocument>,
+    @InjectModel('users') private readonly usersCollection: Model<User>,
     @InjectModel('comments')
-    protected commentsCollection: Model<CommentDocument>,
+    private readonly commentsCollection: Model<CommentDocument>,
     @InjectModel('likeStatuses')
-    protected likeInfoCollection: Model<LikesModelDocument>,
+    private readonly likeInfoCollection: Model<LikesModelDocument>,
     @InjectModel('banUsers') protected banUsers: Model<BanUsers>,
-    protected queryCount: QueryCount,
+    private readonly queryCount: QueryCount,
     @InjectModel('banUsersForBlogs')
-    protected banUsersForBlogsCollection: Model<BanUsersForBlogDocument>,
-    protected commentsRepository: CommentsRepository,
-    protected postsRepository: PostsRepository,
-    protected usersRepository: IUsersRepository,
+    private readonly banUsersForBlogsCollection: Model<BanUsersForBlogDocument>,
+    private readonly commentsRepository: CommentsRepository,
+    private readonly postsRepository: PostsRepository,
+    private readonly usersRepository: IUsersRepository,
   ) {
     super();
   }

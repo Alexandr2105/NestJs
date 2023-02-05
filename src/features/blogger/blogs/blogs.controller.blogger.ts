@@ -12,7 +12,6 @@ import {
   Req,
   UseGuards,
 } from '@nestjs/common';
-import { QueryRepositoryMongo } from '../../public/queryReposytories/query.repository.mongo';
 import { QueryCount } from '../../../common/helper/query.count';
 import { JwtAuthGuard } from '../../../common/guard/jwt.auth.guard';
 import { CreateBlogCommand } from './application/useCases/create.blog.use.case';
@@ -31,13 +30,14 @@ import { UpdatePostByIdCommand } from './application/useCases/update.post.by.id.
 import { DeletePostByIdCommand } from './application/useCases/delete.post.by.id.use.case';
 import { GetPostIdCommand } from '../../public/posts/application/useCase/get.post.id.use.case';
 import { CreatePostByIdCommand } from './application/useCases/create.post.by.id.use.case';
+import { QueryRepositorySql } from '../../public/queryReposytories/query.repository.sql';
 
 @Controller('blogger/blogs')
 export class BlogsControllerBlogger {
   constructor(
-    protected queryCount: QueryCount,
-    protected queryRepository: QueryRepositoryMongo,
-    protected commandBus: CommandBus,
+    private readonly queryCount: QueryCount,
+    private readonly queryRepository: QueryRepositorySql,
+    private readonly commandBus: CommandBus,
   ) {}
 
   @UseGuards(JwtAuthGuard)

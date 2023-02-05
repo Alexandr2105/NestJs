@@ -8,7 +8,6 @@ import {
   Query,
   UseGuards,
 } from '@nestjs/common';
-import { QueryRepositoryMongo } from '../../public/queryReposytories/query.repository.mongo';
 import { BasicAuthGuard } from '../../../common/guard/basic.auth.guard';
 import { QueryCount } from '../../../common/helper/query.count';
 import {
@@ -19,13 +18,14 @@ import {
 import { CommandBus } from '@nestjs/cqrs';
 import { UpdateBlogOwnerCommand } from './aplication/useCase/update.blog.owner.use.case';
 import { UpdateBanStatusForBlogSaCommand } from './aplication/useCase/update.ban.status.for.blog.sa.use.case';
+import { QueryRepositorySql } from '../../public/queryReposytories/query.repository.sql';
 
 @Controller('sa/blogs')
 export class BlogsControllerSa {
   constructor(
-    protected queryRepository: QueryRepositoryMongo,
-    protected queryCount: QueryCount,
-    protected commandBus: CommandBus,
+    private readonly queryRepository: QueryRepositorySql,
+    private readonly queryCount: QueryCount,
+    private readonly commandBus: CommandBus,
   ) {}
 
   @UseGuards(BasicAuthGuard)

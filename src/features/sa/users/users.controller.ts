@@ -12,21 +12,21 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { UsersService } from './application/users.service';
-import { QueryRepositoryMongo } from '../../public/queryReposytories/query.repository.mongo';
 import { QueryCount } from '../../../common/helper/query.count';
 import { BanUserDto, CreateUserDto } from './dto/user.dto';
 import { BasicAuthGuard } from '../../../common/guard/basic.auth.guard';
 import { CreateUserCommand } from './application/useCases/create.user.use.case';
 import { CommandBus } from '@nestjs/cqrs';
 import { BanUserCommand } from './application/useCases/update.ban.user.use.case';
+import { QueryRepositorySql } from '../../public/queryReposytories/query.repository.sql';
 
 @Controller('sa/users')
 export class UsersController {
   constructor(
-    protected usersService: UsersService,
-    protected queryRepository: QueryRepositoryMongo,
-    protected queryCount: QueryCount,
-    protected commandBus: CommandBus,
+    private readonly usersService: UsersService,
+    private readonly queryRepository: QueryRepositorySql,
+    private readonly queryCount: QueryCount,
+    private readonly commandBus: CommandBus,
   ) {}
 
   @UseGuards(BasicAuthGuard)
