@@ -8,7 +8,7 @@ import {
   Query,
   UseGuards,
 } from '@nestjs/common';
-import { QueryRepository } from '../../public/queryReposytories/query.repository';
+import { QueryRepositoryMongo } from '../../public/queryReposytories/query.repository.mongo';
 import { BasicAuthGuard } from '../../../common/guard/basic.auth.guard';
 import { QueryCount } from '../../../common/helper/query.count';
 import {
@@ -23,7 +23,7 @@ import { UpdateBanStatusForBlogSaCommand } from './aplication/useCase/update.ban
 @Controller('sa/blogs')
 export class BlogsControllerSa {
   constructor(
-    protected queryRepository: QueryRepository,
+    protected queryRepository: QueryRepositoryMongo,
     protected queryCount: QueryCount,
     protected commandBus: CommandBus,
   ) {}

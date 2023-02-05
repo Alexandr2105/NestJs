@@ -5,11 +5,13 @@ import { EmailConfirmationDocument } from '../../../common/schemas/email.confirm
 import { IAuthRepository } from './i.auth.repository';
 
 @Injectable()
-export class AuthRepositoryMongo implements IAuthRepository {
+export class AuthRepositoryMongo extends IAuthRepository {
   constructor(
     @InjectModel('emailConfirmations')
     private readonly registrationUsersCollection: Model<EmailConfirmationDocument>,
-  ) {}
+  ) {
+    super();
+  }
   async save(emailConfirmationDocument: EmailConfirmationDocument) {
     return await emailConfirmationDocument.save();
   }

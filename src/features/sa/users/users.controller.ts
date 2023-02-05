@@ -12,7 +12,7 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { UsersService } from './application/users.service';
-import { QueryRepository } from '../../public/queryReposytories/query.repository';
+import { QueryRepositoryMongo } from '../../public/queryReposytories/query.repository.mongo';
 import { QueryCount } from '../../../common/helper/query.count';
 import { BanUserDto, CreateUserDto } from './dto/user.dto';
 import { BasicAuthGuard } from '../../../common/guard/basic.auth.guard';
@@ -24,7 +24,7 @@ import { BanUserCommand } from './application/useCases/update.ban.user.use.case'
 export class UsersController {
   constructor(
     protected usersService: UsersService,
-    protected queryRepository: QueryRepository,
+    protected queryRepository: QueryRepositoryMongo,
     protected queryCount: QueryCount,
     protected commandBus: CommandBus,
   ) {}

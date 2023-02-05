@@ -5,8 +5,10 @@ import { DataSource } from 'typeorm';
 import { IAuthRepository } from './i.auth.repository';
 
 @Injectable()
-export class AuthRepositorySql implements IAuthRepository {
-  constructor(@InjectDataSource() private readonly dataSource: DataSource) {}
+export class AuthRepositorySql extends IAuthRepository {
+  constructor(@InjectDataSource() private readonly dataSource: DataSource) {
+    super();
+  }
   async save(emailConfirmationDocument: EmailConfirmationDocument) {
     return this.dataSource.query(
       `INSERT INTO public."EmailConfirmations"

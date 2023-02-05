@@ -9,13 +9,15 @@ import { BanUsersDocument } from './schema/banUsers';
 import { IUsersRepository } from './i.users.repository';
 
 @Injectable()
-export class UsersRepositoryMongo implements IUsersRepository {
+export class UsersRepositoryMongo extends IUsersRepository {
   constructor(
     @InjectModel('users') private readonly usersCollection: Model<User>,
     @InjectModel('emailConfirmations')
     private readonly registrationUsersCollection: Model<EmailConfirmationDocument>,
     @InjectModel('banUsers') private readonly banUsers: Model<BanUsersDocument>,
-  ) {}
+  ) {
+    super();
+  }
 
   async deleteUser(id: string): Promise<boolean> {
     const result = await this.usersCollection.deleteOne({ id: id });

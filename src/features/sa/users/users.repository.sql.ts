@@ -7,8 +7,10 @@ import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
 import { add } from 'date-fns';
 
-export class UsersRepositorySql implements IUsersRepository {
-  constructor(@InjectDataSource() private readonly dataSource: DataSource) {}
+export class UsersRepositorySql extends IUsersRepository {
+  constructor(@InjectDataSource() private readonly dataSource: DataSource) {
+    super();
+  }
 
   async deleteBanUsers(userId: string) {
     await this.dataSource.query(

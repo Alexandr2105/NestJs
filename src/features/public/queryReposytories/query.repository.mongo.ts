@@ -25,9 +25,10 @@ import { LikesModelDocument } from '../../../common/schemas/like.type.schema';
 import { BanUsers } from '../../sa/users/schema/banUsers';
 import { BanUsersForBlogDocument } from '../blogs/schema/ban.users.for.blog.schema';
 import { IUsersRepository } from '../../sa/users/i.users.repository';
+import { IQueryRepository } from './i.query.repository';
 
 @Injectable()
-export class QueryRepository {
+export class QueryRepositoryMongo extends IQueryRepository {
   constructor(
     @InjectModel('blogs') protected blogsCollection: Model<BlogDocument>,
     @InjectModel('posts') protected postsCollection: Model<PostDocument>,
@@ -43,7 +44,9 @@ export class QueryRepository {
     protected commentsRepository: CommentsRepository,
     protected postsRepository: PostsRepository,
     protected usersRepository: IUsersRepository,
-  ) {}
+  ) {
+    super();
+  }
 
   async getQueryBlogs(query: any): Promise<BlogsQueryType> {
     const totalCount = await this.blogsCollection.countDocuments({

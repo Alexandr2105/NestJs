@@ -9,7 +9,7 @@ import {
   Req,
   UseGuards,
 } from '@nestjs/common';
-import { QueryRepository } from '../../public/queryReposytories/query.repository';
+import { QueryRepositoryMongo } from '../../public/queryReposytories/query.repository.mongo';
 import { QueryCount } from '../../../common/helper/query.count';
 import { JwtAuthGuard } from '../../../common/guard/jwt.auth.guard';
 import {
@@ -22,7 +22,7 @@ import { UpdateBanStatusForBlogCommand } from './application/useCases/update.ban
 @Controller('blogger/users')
 export class UsersControllerBlogger {
   constructor(
-    protected queryRepository: QueryRepository,
+    protected queryRepository: QueryRepositoryMongo,
     protected query: QueryCount,
     protected commandBus: CommandBus,
   ) {}

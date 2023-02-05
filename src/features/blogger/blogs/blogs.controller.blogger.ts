@@ -12,7 +12,7 @@ import {
   Req,
   UseGuards,
 } from '@nestjs/common';
-import { QueryRepository } from '../../public/queryReposytories/query.repository';
+import { QueryRepositoryMongo } from '../../public/queryReposytories/query.repository.mongo';
 import { QueryCount } from '../../../common/helper/query.count';
 import { JwtAuthGuard } from '../../../common/guard/jwt.auth.guard';
 import { CreateBlogCommand } from './application/useCases/create.blog.use.case';
@@ -36,7 +36,7 @@ import { CreatePostByIdCommand } from './application/useCases/create.post.by.id.
 export class BlogsControllerBlogger {
   constructor(
     protected queryCount: QueryCount,
-    protected queryRepository: QueryRepository,
+    protected queryRepository: QueryRepositoryMongo,
     protected commandBus: CommandBus,
   ) {}
 

@@ -6,13 +6,13 @@ import { DeviceInfoDto } from './dto/device.info.dto';
 import { ISecurityDevicesRepository } from './i.security.devices.repository';
 
 @Injectable()
-export class SecurityDevicesRepositoryMongo
-  implements ISecurityDevicesRepository
-{
+export class SecurityDevicesRepositoryMongo extends ISecurityDevicesRepository {
   constructor(
     @InjectModel('refreshTokenData')
     private readonly refreshTokenDataCollection: Model<RefreshTokenDocument>,
-  ) {}
+  ) {
+    super();
+  }
 
   async save(infoRefreshToken: RefreshTokenDocument) {
     await infoRefreshToken.save();

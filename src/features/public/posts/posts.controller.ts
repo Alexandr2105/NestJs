@@ -14,7 +14,7 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { PostsRepository } from './posts.repository';
-import { QueryRepository } from '../queryReposytories/query.repository';
+import { QueryRepositoryMongo } from '../queryReposytories/query.repository.mongo';
 import { QueryCount } from '../../../common/helper/query.count';
 import { Jwt } from '../auth/jwt';
 import { CreateCommentDto } from '../comments/dto/comment.dto';
@@ -35,7 +35,7 @@ export class PostsController {
     private readonly queryCount: QueryCount,
     private readonly usersRepository: IUsersRepository,
     private readonly postsRepository: PostsRepository,
-    private readonly queryRepository: QueryRepository,
+    private readonly queryRepository: QueryRepositoryMongo,
     private readonly jwtService: Jwt,
     private readonly commandBus: CommandBus,
   ) {}

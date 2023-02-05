@@ -6,12 +6,14 @@ import { BanUsersForBlogDocument } from './schema/ban.users.for.blog.schema';
 import { IBlogsRepository } from './i.blog.repository';
 
 @Injectable()
-export class BlogsRepositoryMongo implements IBlogsRepository {
+export class BlogsRepositoryMongo extends IBlogsRepository {
   constructor(
     @InjectModel('blogs') protected blogsCollection: Model<BlogDocument>,
     @InjectModel('banUsersForBlogs')
     protected banUsersForBlogsCollection: Model<BanUsersForBlogDocument>,
-  ) {}
+  ) {
+    super();
+  }
 
   async getBlogIdSpecial(id: string): Promise<BlogDocument | false> {
     const blog = await this.blogsCollection

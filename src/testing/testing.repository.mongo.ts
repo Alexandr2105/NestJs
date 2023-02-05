@@ -14,7 +14,7 @@ import { BanUsersForBlogDocument } from '../features/public/blogs/schema/ban.use
 import { ITestingRepository } from './i.testing.repository';
 
 @Injectable()
-export class TestingRepositoryMongo implements ITestingRepository {
+export class TestingRepositoryMongo extends ITestingRepository {
   constructor(
     @InjectModel('comments')
     private readonly commentsCollection: Model<CommentDocument>,
@@ -32,7 +32,9 @@ export class TestingRepositoryMongo implements ITestingRepository {
     @InjectModel('banUsers') private readonly banUsers: Model<BanUsersDocument>,
     @InjectModel('banUsersForBlogs')
     private readonly banUsersForBlogsCollection: Model<BanUsersForBlogDocument>,
-  ) {}
+  ) {
+    super();
+  }
   async deleteAllCollection() {
     await this.blogsCollection.deleteMany({});
     await this.postsCollection.deleteMany({});

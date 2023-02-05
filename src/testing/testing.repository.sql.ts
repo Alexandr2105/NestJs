@@ -4,8 +4,10 @@ import { Injectable } from '@nestjs/common';
 import { ITestingRepository } from './i.testing.repository';
 
 @Injectable()
-export class TestingRepositorySql implements ITestingRepository {
-  constructor(@InjectDataSource() private readonly dataSource: DataSource) {}
+export class TestingRepositorySql extends ITestingRepository {
+  constructor(@InjectDataSource() private readonly dataSource: DataSource) {
+    super();
+  }
   async deleteAllCollection() {
     await this.dataSource.query(`DELETE FROM public."EmailConfirmations"`);
     await this.dataSource.query(`DELETE FROM public."Blogs"`);

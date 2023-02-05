@@ -6,10 +6,10 @@ import { RefreshTokenDocument } from '../../../common/schemas/refresh.token.data
 import { Injectable } from '@nestjs/common';
 
 @Injectable()
-export class SecurityDevicesRepositorySql
-  implements ISecurityDevicesRepository
-{
-  constructor(@InjectDataSource() private readonly dataSource: DataSource) {}
+export class SecurityDevicesRepositorySql extends ISecurityDevicesRepository {
+  constructor(@InjectDataSource() private readonly dataSource: DataSource) {
+    super();
+  }
 
   async getAllDevicesUser(userId: string): Promise<DeviceInfoDto[]> {
     const deviceInfo = await this.dataSource.query(

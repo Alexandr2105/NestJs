@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { BlogsController } from './features/public/blogs/blogs.controller';
-import { QueryRepository } from './features/public/queryReposytories/query.repository';
+import { QueryRepositoryMongo } from './features/public/queryReposytories/query.repository.mongo';
 import { BlogsRepositoryMongo } from './features/public/blogs/blogs.repository.mongo';
 import { QueryCount } from './common/helper/query.count';
 import { PostsController } from './features/public/posts/posts.controller';
@@ -101,6 +101,7 @@ import { SecurityDevicesRepositorySql } from './features/public/securityDevices/
 import { IAuthRepository } from './features/public/auth/i.auth.repository';
 import { UsersRepositorySql } from './features/sa/users/users.repository.sql';
 import { IUsersRepository } from './features/sa/users/i.users.repository';
+import { QueryRepositorySql } from './features/public/queryReposytories/query.repository.sql';
 
 const Strategies = [LocalStrategy, JwtStrategy, BasicStrategy, RefreshStrategy];
 const Validators = [
@@ -147,12 +148,14 @@ const MongoRepositories = [
   TestingRepositoryMongo,
   SecurityDevicesRepositoryMongo,
   UsersRepositoryMongo,
+  QueryRepositoryMongo,
 ];
 const SqlRepositories = [
   AuthRepositorySql,
   TestingRepositorySql,
   SecurityDevicesRepositorySql,
   UsersRepositorySql,
+  QueryRepositorySql,
 ];
 const AbstractClasses = [
   {
@@ -213,7 +216,7 @@ const AbstractClasses = [
         type: 'postgres',
         host: configService.get('POSTGRES_HOST') || 'localhost',
         port: configService.get('POSTGRES_PORT') || 5432,
-        username: configService.get('POSTGRES_USERNAME') || 'alex',
+        username: configService.get('POSTGRES_USERNAME') || 'postgres',
         password: configService.get('POSTGRES_PASSWORD') || 'sa',
         database: configService.get('POSTGRES_DATABASE') || 'tube',
         entities: [
@@ -247,7 +250,6 @@ const AbstractClasses = [
   ],
   providers: [
     QueryCount,
-    QueryRepository,
     PostsRepository,
     UsersService,
     CommentsService,
