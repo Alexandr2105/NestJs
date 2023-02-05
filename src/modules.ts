@@ -165,18 +165,18 @@ const AbstractClasses = [
   },
   {
     provide: IAuthRepository,
-    useClass: AuthRepositoryMongo,
+    useClass: AuthRepositorySql,
   },
   {
     provide: ITestingRepository,
-    useClass: TestingRepositoryMongo,
+    useClass: TestingRepositorySql,
   },
   {
     provide: ISecurityDevicesRepository,
-    useClass: SecurityDevicesRepositoryMongo,
+    useClass: SecurityDevicesRepositorySql,
   },
-  { provide: IUsersRepository, useClass: UsersRepositoryMongo },
-  { provide: IQueryRepository, useClass: QueryRepositoryMongo },
+  { provide: IUsersRepository, useClass: UsersRepositorySql },
+  { provide: IQueryRepository, useClass: QueryRepositorySql },
 ];
 
 @Module({
