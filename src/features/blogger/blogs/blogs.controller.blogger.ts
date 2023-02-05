@@ -30,13 +30,13 @@ import { UpdatePostByIdCommand } from './application/useCases/update.post.by.id.
 import { DeletePostByIdCommand } from './application/useCases/delete.post.by.id.use.case';
 import { GetPostIdCommand } from '../../public/posts/application/useCase/get.post.id.use.case';
 import { CreatePostByIdCommand } from './application/useCases/create.post.by.id.use.case';
-import { QueryRepositorySql } from '../../public/queryReposytories/query.repository.sql';
+import { IQueryRepository } from '../../public/queryReposytories/i.query.repository';
 
 @Controller('blogger/blogs')
 export class BlogsControllerBlogger {
   constructor(
     private readonly queryCount: QueryCount,
-    private readonly queryRepository: QueryRepositorySql,
+    private readonly queryRepository: IQueryRepository,
     private readonly commandBus: CommandBus,
   ) {}
 

@@ -26,7 +26,7 @@ import { CreateLikeStatusForPostsCommand } from './application/useCase/create.li
 import { GetLikesInfoCommand } from '../comments/application/useCase/get.likes.Info.use.case';
 import { BlogsRepositoryMongo } from '../blogs/blogs.repository.mongo';
 import { IUsersRepository } from '../../sa/users/i.users.repository';
-import { QueryRepositorySql } from '../queryReposytories/query.repository.sql';
+import { IQueryRepository } from '../queryReposytories/i.query.repository';
 
 @Controller('posts')
 export class PostsController {
@@ -35,7 +35,7 @@ export class PostsController {
     private readonly queryCount: QueryCount,
     private readonly usersRepository: IUsersRepository,
     private readonly postsRepository: PostsRepository,
-    private readonly queryRepository: QueryRepositorySql,
+    private readonly queryRepository: IQueryRepository,
     private readonly jwtService: Jwt,
     private readonly commandBus: CommandBus,
   ) {}

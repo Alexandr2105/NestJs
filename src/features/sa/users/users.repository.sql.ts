@@ -6,7 +6,9 @@ import { EmailResending } from '../../public/auth/dto/auth.dto';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
 import { add } from 'date-fns';
+import { Injectable } from '@nestjs/common';
 
+@Injectable()
 export class UsersRepositorySql extends IUsersRepository {
   constructor(@InjectDataSource() private readonly dataSource: DataSource) {
     super();

@@ -17,12 +17,12 @@ import {
 } from './dto/users.for.blogger.dto';
 import { CommandBus } from '@nestjs/cqrs';
 import { UpdateBanStatusForBlogCommand } from './application/useCases/update.ban.status.for.blog.use.case';
-import { QueryRepositorySql } from '../../public/queryReposytories/query.repository.sql';
+import { IQueryRepository } from '../../public/queryReposytories/i.query.repository';
 
 @Controller('blogger/users')
 export class UsersControllerBlogger {
   constructor(
-    private readonly queryRepository: QueryRepositorySql,
+    private readonly queryRepository: IQueryRepository,
     private readonly query: QueryCount,
     private readonly commandBus: CommandBus,
   ) {}

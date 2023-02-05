@@ -11,7 +11,9 @@ import {
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
 import { QueryCount } from '../../../common/helper/query.count';
+import { Injectable } from '@nestjs/common';
 
+@Injectable()
 export class QueryRepositorySql extends IQueryRepository {
   constructor(
     @InjectDataSource() private readonly dataSource: DataSource,
@@ -23,13 +25,13 @@ export class QueryRepositorySql extends IQueryRepository {
   async getQueryAllUsers(query: any): Promise<UserQueryType> {
     const totalCount = await this.dataSource.query(
       `SELECT count(*) FROM public."Users"
-       WHERE "login" ILIKE $1 
+       WHERE "login" ILIKE $1
        OR "email" ILIKE $2`,
       [`%${query.searchLoginTerm}%`, `%${query.searchEmailTerm}%`],
     );
     const sortArrayUsers = await this.dataSource.query(
       `SELECT * FROM public."Users"
-            WHERE "login" ILIKE $1 
+            WHERE "login" ILIKE $1
             OR "email" ILIKE $2
             ORDER BY $3 ${query.sortDirection}
             LIMIT $4 OFFSET $5`,
@@ -48,7 +50,7 @@ export class QueryRepositorySql extends IQueryRepository {
     const totalCount = await this.dataSource.query(
       `SELECT count(*) FROM public."Users"
             WHERE ("login" ILIKE $1
-            OR "email" ILIKE $2) 
+            OR "email" ILIKE $2)
             AND "ban"= $3`,
       [
         `%${query.searchLoginTerm}%`,
@@ -58,8 +60,8 @@ export class QueryRepositorySql extends IQueryRepository {
     );
     const sortArrayUsers = await this.dataSource.query(
       `SELECT * FROM public."Users"
-            WHERE ("login" ILIKE $1 
-            OR "email" ILIKE $2) 
+            WHERE ("login" ILIKE $1
+            OR "email" ILIKE $2)
             AND "ban"=$6
             ORDER BY $3 ${query.sortDirection}
             LIMIT $4 OFFSET $5`,

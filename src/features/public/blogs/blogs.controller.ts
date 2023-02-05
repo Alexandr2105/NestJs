@@ -11,13 +11,13 @@ import { Jwt } from '../auth/jwt';
 import { CommandBus } from '@nestjs/cqrs';
 import { GetBlogIdCommand } from './aplication/useCases/get.blog.id.use.case';
 import { BlogsRepositoryMongo } from './blogs.repository.mongo';
-import { QueryRepositorySql } from '../queryReposytories/query.repository.sql';
+import { IQueryRepository } from '../queryReposytories/i.query.repository';
 
 @Controller('blogs')
 export class BlogsController {
   constructor(
     protected queryCount: QueryCount,
-    protected queryRepository: QueryRepositorySql,
+    protected queryRepository: IQueryRepository,
     protected jwtService: Jwt,
     protected commandBus: CommandBus,
     protected blogsRepository: BlogsRepositoryMongo,

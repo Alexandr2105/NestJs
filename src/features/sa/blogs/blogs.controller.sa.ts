@@ -18,12 +18,12 @@ import {
 import { CommandBus } from '@nestjs/cqrs';
 import { UpdateBlogOwnerCommand } from './aplication/useCase/update.blog.owner.use.case';
 import { UpdateBanStatusForBlogSaCommand } from './aplication/useCase/update.ban.status.for.blog.sa.use.case';
-import { QueryRepositorySql } from '../../public/queryReposytories/query.repository.sql';
+import { IQueryRepository } from '../../public/queryReposytories/i.query.repository';
 
 @Controller('sa/blogs')
 export class BlogsControllerSa {
   constructor(
-    private readonly queryRepository: QueryRepositorySql,
+    private readonly queryRepository: IQueryRepository,
     private readonly queryCount: QueryCount,
     private readonly commandBus: CommandBus,
   ) {}
