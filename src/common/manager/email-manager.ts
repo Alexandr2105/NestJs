@@ -4,7 +4,9 @@ import { EmailResending } from '../../features/public/auth/dto/auth.dto';
 
 @Injectable()
 export class EmailManager {
-  constructor(@Inject(EmailAdapter) protected emailAdapter: EmailAdapter) {}
+  constructor(
+    @Inject(EmailAdapter) private readonly emailAdapter: EmailAdapter,
+  ) {}
 
   async sendEmailAndConfirm(body: EmailResending, confirm: string) {
     return this.emailAdapter.sendEmailRegistration(body, confirm);
