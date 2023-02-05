@@ -12,7 +12,7 @@ export class CheckOriginalLogin implements ValidatorConstraintInterface {
 
   async validate(login: string): Promise<boolean> {
     const user = await this.usersRepository.findLoginOrEmail(login);
-    return user === undefined;
+    return user === undefined || user === null;
   }
 
   defaultMessage(): string {
