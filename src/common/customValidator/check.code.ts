@@ -15,7 +15,7 @@ export class CheckCode implements ValidatorConstraintInterface {
     const user: EmailConfirmationDocument =
       await this.usersRepository.getUserByCode(code);
     if (!user) return false;
-    if (user.isConfirmed) return false;
+    if (user.isConfirmed === true) return false;
     if (user.confirmationCode !== code) return false;
     if (user.expirationDate < new Date()) return false;
     return await this.usersRepository.updateEmailConfirmation(user.userId);

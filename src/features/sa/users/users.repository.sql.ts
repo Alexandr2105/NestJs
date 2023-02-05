@@ -28,7 +28,7 @@ export class UsersRepositorySql extends IUsersRepository {
             WHERE "id"=$1`,
       [id],
     );
-    return info.deletedCount === 1;
+    return info[1] === 1;
   }
 
   async findLoginOrEmail(logOrEmail: string): Promise<UserDocument> {
@@ -137,6 +137,6 @@ export class UsersRepositorySql extends IUsersRepository {
             WHERE "userId"=$2`,
       [true, id],
     );
-    return result.matchedCount === 1;
+    return result[1] === 1;
   }
 }
