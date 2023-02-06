@@ -7,7 +7,6 @@ import { Model } from 'mongoose';
 import { v4 as uuid4 } from 'uuid';
 import { EmailManager } from '../../../../../common/manager/email-manager';
 import { IAuthRepository } from '../../i.auth.repository';
-import { IUsersRepository } from '../../../../sa/users/i.users.repository';
 
 export class CreateEmailConfirmationCommand {
   constructor(public id: string, public body: CreateUserDto) {}
@@ -17,7 +16,6 @@ export class CreateEmailConfirmationCommand {
 export class CreateEmailConfirmationUseCae {
   constructor(
     private readonly emailManager: EmailManager,
-    private readonly usersRepository: IUsersRepository,
     private readonly authRepository: IAuthRepository,
     @InjectModel('emailConfirmations')
     private readonly registrationUsersCollection: Model<EmailConfirmationDocument>,

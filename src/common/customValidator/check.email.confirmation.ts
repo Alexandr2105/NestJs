@@ -5,26 +5,24 @@ import {
 } from 'class-validator';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { UserDocument } from '../../features/sa/users/schema/user';
 import { EmailConfirmationDocument } from '../schemas/email.confirmation.schema';
+import { IUsersRepository } from '../../features/sa/users/i.users.repository';
 
 @ValidatorConstraint({ name: '', async: true })
 @Injectable()
 export class CheckEmailConfirmation implements ValidatorConstraintInterface {
   constructor(
-    @InjectModel('users') protected usersCollection: Model<UserDocument>,
+    private readonly usersRepository: IUsersRepository,
     @InjectModel('emailConfirmations')
     protected registrationUsersCollection: Model<EmailConfirmationDocument>,
   ) {}
 
   async validate(email: string): Promise<boolean> {
-    const user = await this.usersCollection.findOne({ email: email });
-    if (user === null) {
+    const user = await this.usersRepository.getUserByEmail(email);
+    if (user === null || user === undefined) {
       return false;
     }
-    const conf = await this.registrationUsersCollection.findOne({
-      userId: user?.id,
-    });
+    const conf = await this.usersRepository.getConfByUserId(user.id);
     return !conf?.isConfirmed;
   }
 

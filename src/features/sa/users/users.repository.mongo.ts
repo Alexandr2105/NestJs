@@ -94,4 +94,14 @@ export class UsersRepositoryMongo extends IUsersRepository {
   async saveBan(banInfo: BanUsersDocument) {
     await banInfo.save();
   }
+
+  async getUserByEmail(email: string) {
+    return this.usersCollection
+      .findOne({ email: email })
+      .select('id login email createdAt -_id');
+  }
+
+  getConfByUserId(userId: string) {
+    return this.registrationUsersCollection.findOne({ userId: userId });
+  }
 }

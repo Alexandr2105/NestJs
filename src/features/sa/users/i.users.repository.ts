@@ -1,4 +1,4 @@
-import { UserDocument } from './schema/user';
+import { User, UserDocument } from './schema/user';
 import { EmailConfirmationDocument } from '../../../common/schemas/email.confirmation.schema';
 import { EmailResending } from '../../public/auth/dto/auth.dto';
 import { BanUsersDocument } from './schema/banUsers';
@@ -13,6 +13,8 @@ export abstract class IUsersRepository {
   abstract getUserByIdAll(id: string);
   abstract getBunUsers();
   abstract deleteBanUsers(userId: string);
-  abstract save(user: UserDocument);
+  abstract save(user: User);
   abstract saveBan(banInfo: BanUsersDocument);
+  abstract getUserByEmail(email: string);
+  abstract getConfByUserId(userId: string);
 }

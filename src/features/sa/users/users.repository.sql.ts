@@ -139,4 +139,22 @@ export class UsersRepositorySql extends IUsersRepository {
     );
     return result[1] === 1;
   }
+
+  async getUserByEmail(email: string) {
+    const user = await this.dataSource.query(
+      `SELECT "id" FROM public."Users"
+            WHERE "id"=$1`,
+      [email],
+    );
+    return user[0];
+  }
+
+  async getConfByUserId(userId: string) {
+    const conf = await this.dataSource.query(
+      `SELECT * FROM public."emailConfirmations"
+            WHERE "id"=$1`,
+      [userId],
+    );
+    return conf[0];
+  }
 }
