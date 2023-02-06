@@ -25,13 +25,11 @@ export class CreateUserUseCase {
       command.body.password,
       passwordSalt,
     );
-    const newUser = new User();
-    newUser.ban = false;
-    newUser.createdAt = new Date().toISOString();
+    const newUser = new this.usersCollection(command.body);
     newUser.id = +new Date() + '';
-    newUser.email = command.body.email;
     newUser.password = passwordHash;
-    newUser.login = command.body.login;
+    newUser.createdAt = new Date().toISOString();
+    newUser.ban = false;
     await this.usersRepository.save(newUser);
     return {
       id: newUser.id,
