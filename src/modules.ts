@@ -216,7 +216,7 @@ const AbstractClasses = [
       imports: [ConfigModule],
       useFactory: async (configService: ConfigService) => ({
         type: 'postgres',
-        // ssl: true,
+        ssl: true,
         host: configService.get('POSTGRES_HOST') || 'localhost',
         port: configService.get('POSTGRES_PORT') || 5432,
         username: configService.get('POSTGRES_USERNAME') || 'postgres',
