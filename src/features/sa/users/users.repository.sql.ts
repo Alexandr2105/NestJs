@@ -168,10 +168,11 @@ export class UsersRepositorySql extends IUsersRepository {
   }
 
   async getBanUser(userId: string) {
-    return await this.dataSource.query(
-      `SELECT * FROM public."Users"
-            WHERE "id"=$1`,
+    const banUser = await this.dataSource.query(
+      `SELECT * FROM public."BanUsers"
+            WHERE "userId"=$1`,
       [userId],
-    )[0];
+    );
+    return banUser[0];
   }
 }
