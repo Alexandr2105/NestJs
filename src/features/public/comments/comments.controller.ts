@@ -36,7 +36,7 @@ export class CommentsController {
 
   @Get(':id')
   async getComment(@Param('id') commentId: string, @Headers() headers) {
-    const banUser = await this.usersRepository.getBunUsers();
+    const banUser = await this.usersRepository.getBanUsers();
     let comment;
     if (headers.authorization) {
       const userId: any = this.jwtService.getUserIdByToken(

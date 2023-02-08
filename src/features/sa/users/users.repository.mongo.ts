@@ -79,7 +79,7 @@ export class UsersRepositoryMongo extends IUsersRepository {
     return this.usersCollection.findOne({ id: id });
   }
 
-  async getBunUsers() {
+  async getBanUsers() {
     return this.usersCollection.find({ ban: true });
   }
 
@@ -101,7 +101,11 @@ export class UsersRepositoryMongo extends IUsersRepository {
       .select('id login email createdAt -_id');
   }
 
-  getConfByUserId(userId: string) {
+  async getConfByUserId(userId: string) {
     return this.registrationUsersCollection.findOne({ userId: userId });
+  }
+
+  async getBanUser(userId: string) {
+    return this.banUsers.findOne({ userId: userId });
   }
 }

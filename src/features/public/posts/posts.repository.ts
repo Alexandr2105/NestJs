@@ -29,7 +29,7 @@ export class PostsRepository {
   }
 
   async getLikesInfo(idPost: string): Promise<number> {
-    const banUsers = await this.usersRepository.getBunUsers();
+    const banUsers = await this.usersRepository.getBanUsers();
     const allLikes = await this.likeInfoCollection.find({
       id: idPost,
       status: { $regex: 'Like' },
@@ -45,7 +45,7 @@ export class PostsRepository {
   }
 
   async getDislikeInfo(idPost: string): Promise<number | undefined> {
-    const banUsers = await this.usersRepository.getBunUsers();
+    const banUsers = await this.usersRepository.getBanUsers();
     const allDislikes = await this.likeInfoCollection.find({
       id: idPost,
       status: { $regex: 'Dislike' },
@@ -76,7 +76,7 @@ export class PostsRepository {
   }
 
   async getAllInfoLike(postId: string): Promise<LikesModelDocument[]> {
-    const banUsers = await this.usersRepository.getBunUsers();
+    const banUsers = await this.usersRepository.getBanUsers();
     return this.likeInfoCollection
       .find({
         id: postId,

@@ -86,7 +86,7 @@ export class QueryRepositoryMongo extends IQueryRepository {
   }
 
   async getQueryPosts(query: any, userId: string): Promise<PostQueryType> {
-    const banUsers = await this.usersRepository.getBunUsers();
+    const banUsers = await this.usersRepository.getBanUsers();
     const banBlogs = await this.blogsCollection.find({ banStatus: true });
     const sortPostsArray = await this.postsCollection
       .find({
@@ -159,7 +159,7 @@ export class QueryRepositoryMongo extends IQueryRepository {
     blogId: string,
     userId: string,
   ): Promise<PostQueryType> {
-    const banUsers = await this.usersRepository.getBunUsers();
+    const banUsers = await this.usersRepository.getBanUsers();
     const totalCount = await this.postsCollection.countDocuments({
       blogId: blogId,
       userId: {
@@ -294,7 +294,7 @@ export class QueryRepositoryMongo extends IQueryRepository {
     query: any,
     postId: string,
   ): Promise<CommentsType | boolean> {
-    const banUsers = await this.usersRepository.getBunUsers();
+    const banUsers = await this.usersRepository.getBanUsers();
     const totalCount = await this.commentsCollection.countDocuments({
       idPost: postId,
       userId: {

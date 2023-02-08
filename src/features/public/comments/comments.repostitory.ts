@@ -28,7 +28,7 @@ export class CommentsRepository {
   }
 
   async getLikesInfo(idComment: string): Promise<number> {
-    const banUsers = await this.usersRepository.getBunUsers();
+    const banUsers = await this.usersRepository.getBanUsers();
     const allLikes = await this.likeInfoCollection.find({
       id: idComment,
       status: { $regex: 'Like' },
@@ -46,7 +46,7 @@ export class CommentsRepository {
   }
 
   async getDislikeInfo(idComment: string): Promise<number | undefined> {
-    const banUsers = await this.usersRepository.getBunUsers();
+    const banUsers = await this.usersRepository.getBanUsers();
     const allDislikes = await this.likeInfoCollection.find({
       id: idComment,
       status: { $regex: 'Dislike' },

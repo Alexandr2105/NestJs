@@ -97,9 +97,9 @@ export class QueryRepositorySql extends IQueryRepository {
             email: a.email,
             createdAt: a.createdAt,
             banInfo: {
-              isBanned: banInfo?.isBanned || false,
-              banDate: banInfo?.banDate || null,
-              banReason: banInfo?.banReason || null,
+              isBanned: banInfo[0]?.isBanned || false,
+              banDate: banInfo[0]?.banDate || null,
+              banReason: banInfo[0]?.banReason || null,
             },
           };
         }),

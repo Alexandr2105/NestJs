@@ -61,7 +61,7 @@ export class PostsController {
     if (!postInfo) throw new NotFoundException();
     const blog = await this.blogsRepository.getBlogId(postInfo.blogId);
     if (!blog || blog.banStatus === true) throw new NotFoundException();
-    const banUsers = await this.usersRepository.getBunUsers();
+    const banUsers = await this.usersRepository.getBanUsers();
     let post;
     if (headers.authorization) {
       const userId: any = this.jwtService.getUserIdByToken(

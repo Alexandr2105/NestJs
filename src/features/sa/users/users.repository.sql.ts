@@ -40,7 +40,7 @@ export class UsersRepositorySql extends IUsersRepository {
     return loginOrEmail[0];
   }
 
-  async getBunUsers() {
+  async getBanUsers() {
     return await this.dataSource.query(
       `SELECT * FROM public."Users"
             WHERE "ban"=$1`,
@@ -76,19 +76,28 @@ export class UsersRepositorySql extends IUsersRepository {
   }
 
   async save(user: UserDocument) {
-    await this.dataSource.query(
-      `INSERT INTO public."Users"
+    try {
+      await this.dataSource.query(
+        `INSERT INTO public."Users"
            ("id", "login", "password", "email", "createdAt", "ban")
             VALUES ($1, $2, $3, $4, $5, $6)`,
-      [
-        user.id,
-        user.login,
-        user.password,
-        user.email,
-        user.createdAt,
-        user.ban,
-      ],
-    );
+        [
+          user.id,
+          user.login,
+          user.password,
+          user.email,
+          user.createdAt,
+          user.ban,
+        ],
+      );
+    } catch (ExceptionsHandler) {
+      await this.dataSource.query(
+        `UPDATE public."Users"
+              SET ban=$1
+        WHERE "id"=$2`,
+        [user.ban, user.id],
+      );
+    }
   }
 
   async saveBan(banInfo: BanUsersDocument) {
@@ -156,5 +165,13 @@ export class UsersRepositorySql extends IUsersRepository {
       [userId],
     );
     return conf[0];
+  }
+
+  async getBanUser(userId: string) {
+    return await this.dataSource.query(
+      `SELECT * FROM public."Users"
+            WHERE "id"=$1`,
+      [userId],
+    )[0];
   }
 }

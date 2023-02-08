@@ -11,10 +11,11 @@ export abstract class IUsersRepository {
   abstract getUserByCode(code: string): Promise<EmailConfirmationDocument>;
   abstract setConfirm(body: EmailResending, newCode: string): Promise<boolean>;
   abstract getUserByIdAll(id: string);
-  abstract getBunUsers();
+  abstract getBanUsers();
   abstract deleteBanUsers(userId: string);
   abstract save(user: User);
   abstract saveBan(banInfo: BanUsersDocument);
   abstract getUserByEmail(email: string);
   abstract getConfByUserId(userId: string);
+  abstract getBanUser(userId: string);
 }
