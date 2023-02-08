@@ -152,7 +152,7 @@ export class UsersRepositorySql extends IUsersRepository {
   async getUserByEmail(email: string) {
     const user = await this.dataSource.query(
       `SELECT "id" FROM public."Users"
-            WHERE "id"=$1`,
+            WHERE "email"=$1`,
       [email],
     );
     return user[0];
@@ -160,8 +160,8 @@ export class UsersRepositorySql extends IUsersRepository {
 
   async getConfByUserId(userId: string) {
     const conf = await this.dataSource.query(
-      `SELECT * FROM public."emailConfirmations"
-            WHERE "id"=$1`,
+      `SELECT * FROM public."EmailConfirmations"
+            WHERE "userId"=$1`,
       [userId],
     );
     return conf[0];

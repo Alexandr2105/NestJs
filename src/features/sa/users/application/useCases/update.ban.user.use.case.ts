@@ -23,7 +23,6 @@ export class UpdateBanUserUseCase {
     if (!user) throw new NotFoundException();
     user.ban = command.body.isBanned;
     await this.userRepository.save(user);
-    // const ban = await this.banUsers.findOne({ userId: user.id });
     const ban = await this.userRepository.getBanUser(user.id);
     if (!ban && user.ban === false) return;
     if (ban && user.ban === false) {
