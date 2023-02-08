@@ -33,12 +33,11 @@ export class QueryRepositorySql extends IQueryRepository {
       `SELECT * FROM public."Users"
             WHERE "login" ILIKE $1
             OR "email" ILIKE $2
-            ORDER BY $3 ${query.sortDirection}
-            LIMIT $4 OFFSET $5`,
+            ORDER BY ${query.sortBy} ${query.sortDirection}
+            LIMIT $3 OFFSET $4`,
       [
         `%${query.searchLoginTerm}%`,
         `%${query.searchEmailTerm}%`,
-        query.sortBy,
         query.pageSize,
         this.queryCount.skipHelper(query.pageNumber, query.pageSize),
       ],
@@ -62,13 +61,12 @@ export class QueryRepositorySql extends IQueryRepository {
       `SELECT * FROM public."Users"
             WHERE ("login" ILIKE $1
             OR "email" ILIKE $2)
-            AND "ban"=$6
-            ORDER BY $3 ${query.sortDirection}
-            LIMIT $4 OFFSET $5`,
+            AND "ban"=$5
+            ORDER BY ${query.sortBy} ${query.sortDirection}
+            LIMIT $3 OFFSET $4`,
       [
         `%${query.searchLoginTerm}%`,
         `%${query.searchEmailTerm}%`,
-        query.sortBy,
         query.pageSize,
         this.queryCount.skipHelper(query.pageNumber, query.pageSize),
         query.banStatus === 'banned',
