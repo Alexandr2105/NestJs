@@ -33,7 +33,7 @@ export class QueryRepositorySql extends IQueryRepository {
       `SELECT * FROM public."Users"
             WHERE "login" ILIKE $1
             OR "email" ILIKE $2
-            ORDER BY ${query.sortBy} ${query.sortDirection}
+            ORDER BY "${query.sortBy}" ${query.sortDirection}
             LIMIT $3 OFFSET $4`,
       [
         `%${query.searchLoginTerm}%`,
@@ -62,7 +62,7 @@ export class QueryRepositorySql extends IQueryRepository {
             WHERE ("login" ILIKE $1
             OR "email" ILIKE $2)
             AND "ban"=$5
-            ORDER BY ${query.sortBy} ${query.sortDirection}
+            ORDER BY "${query.sortBy}" ${query.sortDirection}
             LIMIT $3 OFFSET $4`,
       [
         `%${query.searchLoginTerm}%`,
