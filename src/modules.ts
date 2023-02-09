@@ -158,11 +158,11 @@ const SqlRepositories = [
   UsersRepositorySql,
   QueryRepositorySql,
 ];
-const AbstractClasses = [
-  {
-    provide: IBlogsRepository,
-    useClass: BlogsRepositoryMongo,
-  },
+const AbstractClassesSql = [
+  // {
+  //   provide: IBlogsRepository,
+  //   useClass: BlogsRepositoryMongo,
+  // },
   {
     provide: IAuthRepository,
     useClass: AuthRepositorySql,
@@ -177,6 +177,26 @@ const AbstractClasses = [
   },
   { provide: IUsersRepository, useClass: UsersRepositorySql },
   { provide: IQueryRepository, useClass: QueryRepositorySql },
+];
+const AbstractClassesMongo = [
+  {
+    provide: IBlogsRepository,
+    useClass: BlogsRepositoryMongo,
+  },
+  {
+    provide: IAuthRepository,
+    useClass: AuthRepositoryMongo,
+  },
+  {
+    provide: ITestingRepository,
+    useClass: TestingRepositoryMongo,
+  },
+  {
+    provide: ISecurityDevicesRepository,
+    useClass: SecurityDevicesRepositoryMongo,
+  },
+  { provide: IUsersRepository, useClass: UsersRepositoryMongo },
+  { provide: IQueryRepository, useClass: QueryRepositoryMongo },
 ];
 
 @Module({
@@ -266,7 +286,7 @@ const AbstractClasses = [
     ...UseCases,
     ...SqlRepositories,
     ...MongoRepositories,
-    ...AbstractClasses,
+    ...AbstractClassesSql,
   ],
 })
 export class Modules {}
