@@ -127,7 +127,7 @@ export class UsersRepositorySql extends IUsersRepository {
             WHERE "userId"=$2`,
         [newCode, user[0]?.id],
       );
-      return result.matchedCount === 1;
+      return result[1] === 1;
     } else {
       await this.dataSource.query(
         `INSERT INTO public."EmailConfirmations"
