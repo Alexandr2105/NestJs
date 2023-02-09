@@ -159,10 +159,10 @@ const SqlRepositories = [
   QueryRepositorySql,
 ];
 const AbstractClassesSql = [
-  // {
-  //   provide: IBlogsRepository,
-  //   useClass: BlogsRepositoryMongo,
-  // },
+  {
+    provide: IBlogsRepository,
+    useClass: BlogsRepositoryMongo,
+  },
   {
     provide: IAuthRepository,
     useClass: AuthRepositorySql,
