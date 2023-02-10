@@ -76,7 +76,7 @@ export class UsersRepositorySql extends IUsersRepository {
   }
 
   async save(user: UserDocument) {
-    try {
+    if (!(await this.getUserId(user.id))) {
       await this.dataSource.query(
         `INSERT INTO public."Users"
            ("id", "login", "password", "email", "createdAt", "ban")
@@ -90,7 +90,7 @@ export class UsersRepositorySql extends IUsersRepository {
           user.ban,
         ],
       );
-    } catch (ExceptionsHandler) {
+    } else {
       await this.dataSource.query(
         `UPDATE public."Users"
               SET ban=$1

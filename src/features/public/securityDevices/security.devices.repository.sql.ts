@@ -82,7 +82,12 @@ export class SecurityDevicesRepositorySql extends ISecurityDevicesRepository {
   }
 
   async save(infoRefreshToken: RefreshTokenDocument) {
-    try {
+    if (
+      !(await this.getInfoAboutDeviceUser(
+        infoRefreshToken.userId,
+        infoRefreshToken.deviceId,
+      ))
+    ) {
       await this.dataSource.query(
         `INSERT INTO public."RefreshTokenData"
             ("iat", "exp", "deviceId", "ip", "deviceName", "userId") 
@@ -96,7 +101,7 @@ export class SecurityDevicesRepositorySql extends ISecurityDevicesRepository {
           infoRefreshToken.userId,
         ],
       );
-    } catch (ExceptionsHandler) {
+    } else {
       await this.dataSource.query(
         `UPDATE public."RefreshTokenData"
               SET $1,$2,$3,$4
