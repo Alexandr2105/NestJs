@@ -29,7 +29,7 @@ export class RefreshStrategy extends PassportStrategy(
       payload.userId,
       payload.deviceId,
     );
-    if (device.iat !== payload.iat) {
+    if (device?.iat !== payload.iat) {
       return false;
     }
     return { userId: payload.userId, deviceId: payload.deviceId };
