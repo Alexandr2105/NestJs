@@ -13,6 +13,11 @@ export class TestingRepositorySql extends ITestingRepository {
     await this.dataSource.query(`DELETE FROM public."Blogs"`);
     await this.dataSource.query(`DELETE FROM public."RefreshTokenData"`);
     await this.dataSource.query(`DELETE FROM public."Users"`);
+    await this.dataSource.query(`DELETE FROM public."Comments"`);
+    await this.dataSource.query(`DELETE FROM public."CountAttempts"`);
+    await this.dataSource.query(`DELETE FROM public."LikeStatuses"`);
+    await this.dataSource.query(`DELETE FROM public."Posts"`);
     await this.dataSource.query(`DELETE FROM public."BanUsers"`);
+    await this.dataSource.query(`DELETE FROM public."BanUsersForBlogs"`);
   }
 }
