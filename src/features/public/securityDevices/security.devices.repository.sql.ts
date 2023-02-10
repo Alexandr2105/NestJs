@@ -104,8 +104,8 @@ export class SecurityDevicesRepositorySql extends ISecurityDevicesRepository {
     } else {
       await this.dataSource.query(
         `UPDATE public."RefreshTokenData"
-              SET "iat"=$1,"exp"=$2,"deviceId"=$3,"ip"=$4
-              WHERE "deviceName"=$5 AND "userId"=$6`,
+              SET "iat"=$1,"exp"=$2,"ip"=$3,"deviceName"=$4
+              WHERE "deviceId"=$5 AND "userId"=$6`,
         [
           infoRefreshToken.iat,
           infoRefreshToken.exp,
