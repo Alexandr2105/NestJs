@@ -15,8 +15,8 @@ import {
 import { QueryCount } from '../../../common/helper/query.count';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { CommentsRepository } from '../comments/comments.repostitory';
-import { PostsRepository } from '../posts/posts.repository';
+import { CommentsRepositoryMongo } from '../comments/comments.repostitory.mongo';
+import { PostsRepositoryMongo } from '../posts/posts.repository.mongo';
 import { BlogDocument } from '../blogs/schema/blogs.schema';
 import { PostDocument } from '../posts/schema/posts.schema';
 import { CommentDocument } from '../comments/schema/comment.schema';
@@ -41,8 +41,8 @@ export class QueryRepositoryMongo extends IQueryRepository {
     private readonly queryCount: QueryCount,
     @InjectModel('banUsersForBlogs')
     private readonly banUsersForBlogsCollection: Model<BanUsersForBlogDocument>,
-    private readonly commentsRepository: CommentsRepository,
-    private readonly postsRepository: PostsRepository,
+    private readonly commentsRepository: CommentsRepositoryMongo,
+    private readonly postsRepository: PostsRepositoryMongo,
     private readonly usersRepository: IUsersRepository,
   ) {
     super();

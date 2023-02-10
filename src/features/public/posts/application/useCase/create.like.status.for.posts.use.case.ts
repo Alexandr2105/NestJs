@@ -1,5 +1,5 @@
 import { CommandHandler } from '@nestjs/cqrs';
-import { PostsRepository } from '../../posts.repository';
+import { PostsRepositoryMongo } from '../../posts.repository.mongo';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { LikesModelDocument } from '../../../../../common/schemas/like.type.schema';
@@ -16,7 +16,7 @@ export class CreateLikeStatusForPostsCommand {
 @CommandHandler(CreateLikeStatusForPostsCommand)
 export class CreateLikeStatusForPostsUseCase {
   constructor(
-    protected postsRepository: PostsRepository,
+    protected postsRepository: PostsRepositoryMongo,
     @InjectModel('likeStatuses')
     protected likeInfoCollection: Model<LikesModelDocument>,
   ) {}

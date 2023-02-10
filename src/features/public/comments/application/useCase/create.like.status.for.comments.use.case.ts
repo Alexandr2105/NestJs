@@ -1,6 +1,6 @@
 import { CommandHandler } from '@nestjs/cqrs';
 import { LikesModel } from '../../../../../common/schemas/like.type.schema';
-import { CommentsRepository } from '../../comments.repostitory';
+import { CommentsRepositoryMongo } from '../../comments.repostitory.mongo';
 
 export class CreateLikeStatusForCommentsCommand {
   constructor(
@@ -13,7 +13,7 @@ export class CreateLikeStatusForCommentsCommand {
 
 @CommandHandler(CreateLikeStatusForCommentsCommand)
 export class CreateLikeStatusForCommentsUseCase {
-  constructor(protected commentsRepository: CommentsRepository) {}
+  constructor(protected commentsRepository: CommentsRepositoryMongo) {}
 
   async execute(command: CreateLikeStatusForCommentsCommand) {
     const checkComment = await this.commentsRepository.getInfoStatusByComment(

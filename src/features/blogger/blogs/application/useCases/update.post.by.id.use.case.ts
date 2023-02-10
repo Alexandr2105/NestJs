@@ -1,6 +1,6 @@
 import { CommandHandler } from '@nestjs/cqrs';
 import { UpdatePostByIdDto } from '../../dto/blogger.dto';
-import { PostsRepository } from '../../../../public/posts/posts.repository';
+import { PostsRepositoryMongo } from '../../../../public/posts/posts.repository.mongo';
 import { ForbiddenException, NotFoundException } from '@nestjs/common';
 
 export class UpdatePostByIdCommand {
@@ -14,7 +14,7 @@ export class UpdatePostByIdCommand {
 
 @CommandHandler(UpdatePostByIdCommand)
 export class UpdatePostByIdUseCase {
-  constructor(protected postsRepository: PostsRepository) {}
+  constructor(protected postsRepository: PostsRepositoryMongo) {}
 
   async execute(command: UpdatePostByIdCommand) {
     const post = await this.postsRepository.getPostId(command.postId);

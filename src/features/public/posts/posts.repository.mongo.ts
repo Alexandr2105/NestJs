@@ -4,15 +4,18 @@ import { Model } from 'mongoose';
 import { PostDocument } from './schema/posts.schema';
 import { LikesModelDocument } from '../../../common/schemas/like.type.schema';
 import { IUsersRepository } from '../../sa/users/i.users.repository';
+import { IPostsRepository } from './i.posts.repository';
 
 @Injectable()
-export class PostsRepository {
+export class PostsRepositoryMongo extends IPostsRepository {
   constructor(
     protected usersRepository: IUsersRepository,
     @InjectModel('posts') protected postsCollection: Model<PostDocument>,
     @InjectModel('likeStatuses')
     protected likeInfoCollection: Model<LikesModelDocument>,
-  ) {}
+  ) {
+    super();
+  }
 
   async getPostId(id: string): Promise<PostDocument | null> {
     return this.postsCollection.findOne({ id: id });

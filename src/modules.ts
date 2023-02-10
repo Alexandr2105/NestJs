@@ -5,13 +5,13 @@ import { QueryRepositoryMongo } from './features/public/queryReposytories/query.
 import { BlogsRepositoryMongo } from './features/public/blogs/blogs.repository.mongo';
 import { QueryCount } from './common/helper/query.count';
 import { PostsController } from './features/public/posts/posts.controller';
-import { PostsRepository } from './features/public/posts/posts.repository';
+import { PostsRepositoryMongo } from './features/public/posts/posts.repository.mongo';
 import { UsersController } from './features/sa/users/users.controller';
 import { UsersService } from './features/sa/users/application/users.service';
 import { UsersRepositoryMongo } from './features/sa/users/users.repository.mongo';
 import { CommentsController } from './features/public/comments/comments.controller';
 import { CommentsService } from './features/public/comments/application/comments.service';
-import { CommentsRepository } from './features/public/comments/comments.repostitory';
+import { CommentsRepositoryMongo } from './features/public/comments/comments.repostitory.mongo';
 import { TestingController } from './testing/testing.controller';
 import { TestingRepositoryMongo } from './testing/testing.repository.mongo';
 import { AuthController } from './features/public/auth/auth.controller';
@@ -103,6 +103,10 @@ import { UsersRepositorySql } from './features/sa/users/users.repository.sql';
 import { IUsersRepository } from './features/sa/users/i.users.repository';
 import { QueryRepositorySql } from './features/public/queryReposytories/query.repository.sql';
 import { IQueryRepository } from './features/public/queryReposytories/i.query.repository';
+import { ICommentsRepository } from './features/public/comments/i.comments.repository';
+import { CommentsRepositorySql } from './features/public/comments/comments.repository.sql';
+import { IPostsRepository } from './features/public/posts/i.posts.repository';
+import { PostsRepositorySql } from './features/public/posts/posts.repository.sql';
 
 const Strategies = [LocalStrategy, JwtStrategy, BasicStrategy, RefreshStrategy];
 const Validators = [
@@ -177,6 +181,8 @@ const AbstractClassesSql = [
   },
   { provide: IUsersRepository, useClass: UsersRepositorySql },
   { provide: IQueryRepository, useClass: QueryRepositorySql },
+  { provide: ICommentsRepository, useClass: CommentsRepositorySql },
+  { provide: IPostsRepository, useClass: PostsRepositorySql },
 ];
 const AbstractClassesMongo = [
   {
@@ -197,6 +203,8 @@ const AbstractClassesMongo = [
   },
   { provide: IUsersRepository, useClass: UsersRepositoryMongo },
   { provide: IQueryRepository, useClass: QueryRepositoryMongo },
+  { provide: ICommentsRepository, useClass: CommentsRepositoryMongo },
+  { provide: IPostsRepository, useClass: PostsRepositoryMongo },
 ];
 
 @Module({
@@ -272,10 +280,10 @@ const AbstractClassesMongo = [
   ],
   providers: [
     QueryCount,
-    PostsRepository,
+    PostsRepositoryMongo,
     UsersService,
     CommentsService,
-    CommentsRepository,
+    CommentsRepositoryMongo,
     Jwt,
     EmailManager,
     EmailAdapter,

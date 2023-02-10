@@ -3,10 +3,10 @@ import {
   Comment,
   CommentDocument,
 } from '../../../comments/schema/comment.schema';
-import { PostsRepository } from '../../posts.repository';
+import { PostsRepositoryMongo } from '../../posts.repository.mongo';
 import { Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
-import { CommentsRepository } from '../../../comments/comments.repostitory';
+import { CommentsRepositoryMongo } from '../../../comments/comments.repostitory.mongo';
 
 export class CreateCommentByPostCommand {
   constructor(
@@ -20,8 +20,8 @@ export class CreateCommentByPostCommand {
 @CommandHandler(CreateCommentByPostCommand)
 export class CreateCommentByPostUseCase {
   constructor(
-    protected postsRepository: PostsRepository,
-    protected commentsRepository: CommentsRepository,
+    protected postsRepository: PostsRepositoryMongo,
+    protected commentsRepository: CommentsRepositoryMongo,
     @InjectModel('comments')
     protected commentsCollection: Model<CommentDocument>,
   ) {}

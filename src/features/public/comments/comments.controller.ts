@@ -13,7 +13,7 @@ import {
   ForbiddenException,
 } from '@nestjs/common';
 import { CommentsService } from './application/comments.service';
-import { CommentsRepository } from './comments.repostitory';
+import { CommentsRepositoryMongo } from './comments.repostitory.mongo';
 import { Jwt } from '../auth/jwt';
 import { CheckUserId, UpdateCommentDto } from './dto/comment.dto';
 import { LikeStatusDto } from '../posts/dto/like.status.dto';
@@ -28,7 +28,7 @@ import { IUsersRepository } from '../../sa/users/i.users.repository';
 export class CommentsController {
   constructor(
     private readonly commentsService: CommentsService,
-    private readonly commentsRepository: CommentsRepository,
+    private readonly commentsRepository: CommentsRepositoryMongo,
     private readonly usersRepository: IUsersRepository,
     private readonly jwtService: Jwt,
     private readonly commandBus: CommandBus,

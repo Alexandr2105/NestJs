@@ -7,16 +7,19 @@ import {
   LikesModelDocument,
 } from '../../../common/schemas/like.type.schema';
 import { IUsersRepository } from '../../sa/users/i.users.repository';
+import { ICommentsRepository } from './i.comments.repository';
 
 @Injectable()
-export class CommentsRepository {
+export class CommentsRepositoryMongo extends ICommentsRepository {
   constructor(
     private readonly usersRepository: IUsersRepository,
     @InjectModel('comments')
     private readonly commentsCollection: Model<CommentDocument>,
     @InjectModel('likeStatuses')
     private readonly likeInfoCollection: Model<LikesModelDocument>,
-  ) {}
+  ) {
+    super();
+  }
 
   async getCommentById(id: string): Promise<CommentDocument | null> {
     return this.commentsCollection.findOne({ id: id });
