@@ -13,7 +13,7 @@ export class CheckUserSecurityDevice implements ValidatorConstraintInterface {
   ) {}
 
   async validate(id: string): Promise<boolean> {
-    const deviceId = this.securityDeviceRepository.getDevice(id);
+    const deviceId = await this.securityDeviceRepository.getDevice(id);
     if (!deviceId) {
       throw new NotFoundException();
     } else {
