@@ -4,10 +4,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { RefreshTokenDocument } from '../../../common/schemas/refresh.token.data.schema';
 import { DeviceInfoDto } from './dto/device.info.dto';
 import { ISecurityDevicesRepository } from './i.security.devices.repository';
-import {
-  CountAttempt,
-  CountAttemptDocument,
-} from '../../../common/schemas/count.attempt.schema';
+import { CountAttemptDocument } from '../../../common/schemas/count.attempt.schema';
 
 @Injectable()
 export class SecurityDevicesRepositoryMongo extends ISecurityDevicesRepository {
@@ -85,14 +82,8 @@ export class SecurityDevicesRepositoryMongo extends ISecurityDevicesRepository {
     });
   }
 
-  async createCountAttempt(countAttempt: CountAttempt) {
-    await this.countAttemptCollection.create({
-      ip: countAttempt.ip,
-      iat: countAttempt.iat,
-      method: countAttempt.method,
-      originalUrl: countAttempt.originalUrl,
-      countAttempt: countAttempt.countAttempt,
-    });
+  async createCountAttempt(countAttempt: CountAttemptDocument) {
+    await countAttempt.save();
   }
 
   async updateCountAttemptMany(

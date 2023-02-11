@@ -119,17 +119,50 @@ export class SecurityDevicesRepositorySql extends ISecurityDevicesRepository {
     }
   }
 
-  getIpDevice(ip: string) {}
+  async getIpDevice(ip: string) {
+    await this.dataSource.query(
+      `SELECT * FROM public."CountAttempt"
+            WHERE "ip"=$1`,
+      [ip],
+    );
+  }
 
-  createCountAttempt(countAttempt: CountAttempt) {}
+  async createCountAttempt(countAttempt: CountAttempt) {
+    await this.dataSource.query(
+      `INSERT INTO public."CountAttempt"
+            ("ip", "iat", "method", "originalUrl", "countAttempt")
+            VALUES ($1, $2, $3, $4, $5)`,
+      [
+        countAttempt.ip,
+        countAttempt.iat,
+        countAttempt.method,
+        countAttempt.originalUrl,
+        countAttempt.countAttempt,
+      ],
+    );
+  }
 
-  updateCountAttemptMany(
+  async updateCountAttemptMany(
     countAttempt: number,
     iat: number,
     method: string,
     originalUrl: string,
     dataIpDevice: string,
-  ) {}
+  ) {
+    await this.dataSource.query(
+      `UPDATE public."CountAttempt"
+            SET "iat"=$1, "method"=$2, "originalUrl"=$3, "countAttempt"=$4
+            WHERE "ip"=$5`,
+      [iat, method, originalUrl, countAttempt, dataIpDevice],
+    );
+  }
 
-  updateCountAttempt(countAttempt: number, ip: string) {}
+  async updateCountAttempt(countAttempt: number, ip: string) {
+    await this.dataSource.query(
+      `UPDATE public."CountAttempt"
+            SET "countAttempt"=$1
+            WHERE "ip"=$2`,
+      [countAttempt, ip],
+    );
+  }
 }

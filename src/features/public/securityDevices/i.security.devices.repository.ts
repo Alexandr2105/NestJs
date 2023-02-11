@@ -1,6 +1,6 @@
 import { RefreshTokenDocument } from '../../../common/schemas/refresh.token.data.schema';
 import { DeviceInfoDto } from './dto/device.info.dto';
-import { CountAttempt } from '../../../common/schemas/count.attempt.schema';
+import { CountAttemptDocument } from '../../../common/schemas/count.attempt.schema';
 
 export abstract class ISecurityDevicesRepository {
   abstract save(infoRefreshToken: RefreshTokenDocument);
@@ -15,7 +15,7 @@ export abstract class ISecurityDevicesRepository {
   ): Promise<RefreshTokenDocument>;
   abstract getDevice(deviceId: string);
   abstract getIpDevice(ip: string);
-  abstract createCountAttempt(countAttempt: CountAttempt);
+  abstract createCountAttempt(countAttempt: CountAttemptDocument);
   abstract updateCountAttemptMany(
     countAttempt: number,
     iat: number,

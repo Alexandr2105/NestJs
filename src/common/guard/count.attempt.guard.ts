@@ -5,11 +5,16 @@ import {
   Injectable,
 } from '@nestjs/common';
 import { ISecurityDevicesRepository } from '../../features/public/securityDevices/i.security.devices.repository';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
+import { CountAttemptDocument } from '../schemas/count.attempt.schema';
 
 @Injectable()
 export class CountAttemptGuard implements CanActivate {
   constructor(
     private readonly securityDevicesRepository: ISecurityDevicesRepository,
+    @InjectModel('countAttempts')
+    protected countAttemptCollection: Model<CountAttemptDocument>,
   ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
@@ -18,13 +23,14 @@ export class CountAttemptGuard implements CanActivate {
       req.ip,
     );
     if (!dataIpDevice) {
-      await this.securityDevicesRepository.createCountAttempt({
+      const countAttempt = new this.countAttemptCollection({
         ip: req.ip,
         iat: +new Date(),
         method: req.method,
         originalUrl: req.originalUrl,
         countAttempt: 1,
       });
+      await this.securityDevicesRepository.createCountAttempt(countAttempt);
       return true;
     }
     if (+new Date() - dataIpDevice.iat > 10000) {
