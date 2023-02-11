@@ -3,20 +3,15 @@ import {
   ValidatorConstraintInterface,
 } from 'class-validator';
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
-import { CommentDocument } from '../../features/public/comments/schema/comment.schema';
+import { ICommentsRepository } from '../../features/public/comments/i.comments.repository';
 
 @ValidatorConstraint({ name: 'comment', async: true })
 @Injectable()
 export class CheckUserForComments implements ValidatorConstraintInterface {
-  constructor(
-    @InjectModel('comments')
-    protected commentCollection: Model<CommentDocument>,
-  ) {}
+  constructor(private readonly commentRepository: ICommentsRepository) {}
 
   async validate(id: string): Promise<boolean> {
-    const comment = await this.commentCollection.findOne({ id: id });
+    const comment = await this.commentRepository.getCommentById(id);
     if (!comment) throw new NotFoundException();
     return true;
   }
