@@ -13,7 +13,6 @@ import {
   ForbiddenException,
 } from '@nestjs/common';
 import { CommentsService } from './application/comments.service';
-import { CommentsRepositoryMongo } from './comments.repostitory.mongo';
 import { Jwt } from '../auth/jwt';
 import { CheckUserId, UpdateCommentDto } from './dto/comment.dto';
 import { LikeStatusDto } from '../posts/dto/like.status.dto';
@@ -23,12 +22,13 @@ import { UpdateCommentByIdCommand } from './application/useCase/update.comment.b
 import { GetLikesInfoCommand } from './application/useCase/get.likes.Info.use.case';
 import { CreateLikeStatusForCommentsCommand } from './application/useCase/create.like.status.for.comments.use.case';
 import { IUsersRepository } from '../../sa/users/i.users.repository';
+import { ICommentsRepository } from './i.comments.repository';
 
 @Controller('comments')
 export class CommentsController {
   constructor(
     private readonly commentsService: CommentsService,
-    private readonly commentsRepository: CommentsRepositoryMongo,
+    private readonly commentsRepository: ICommentsRepository,
     private readonly usersRepository: IUsersRepository,
     private readonly jwtService: Jwt,
     private readonly commandBus: CommandBus,

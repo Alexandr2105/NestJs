@@ -14,9 +14,9 @@ export class SaveInfoAboutDevicesUserCommand {
 @CommandHandler(SaveInfoAboutDevicesUserCommand)
 export class SaveInfoAboutDevicesUserUseCase {
   constructor(
-    protected securityDevicesRepository: ISecurityDevicesRepository,
+    private readonly securityDevicesRepository: ISecurityDevicesRepository,
     @InjectModel('refreshTokenData')
-    protected refreshTokenDataCollection: Model<RefreshTokenDocument>,
+    private readonly refreshTokenDataCollection: Model<RefreshTokenDocument>,
   ) {}
 
   async execute(command: SaveInfoAboutDevicesUserCommand) {

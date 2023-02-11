@@ -66,11 +66,12 @@ export class SecurityDevicesRepositorySql extends ISecurityDevicesRepository {
   }
 
   async delDevice(deviceId: string): Promise<boolean> {
-    return await this.dataSource.query(
+    const device = await this.dataSource.query(
       `DELETE FROM public."RefreshTokenData"
              WHERE "deviceId"=$1`,
       [deviceId],
     );
+    return device[0];
   }
 
   async delOldRefreshTokenData(date: number) {
@@ -120,11 +121,12 @@ export class SecurityDevicesRepositorySql extends ISecurityDevicesRepository {
   }
 
   async getIpDevice(ip: string) {
-    await this.dataSource.query(
+    const device = await this.dataSource.query(
       `SELECT * FROM public."CountAttempt"
             WHERE "ip"=$1`,
       [ip],
     );
+    return device[0];
   }
 
   async createCountAttempt(countAttempt: CountAttempt) {

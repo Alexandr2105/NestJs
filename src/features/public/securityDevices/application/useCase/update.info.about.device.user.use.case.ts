@@ -9,7 +9,7 @@ export class UpdateInfoAboutDevicesUserCommand {
 @CommandHandler(UpdateInfoAboutDevicesUserCommand)
 export class UpdateInfoAboutDeviceUserUseCase {
   constructor(
-    protected securityDevicesRepository: ISecurityDevicesRepository,
+    private readonly securityDevicesRepository: ISecurityDevicesRepository,
   ) {}
 
   async execute(command: UpdateInfoAboutDevicesUserCommand) {

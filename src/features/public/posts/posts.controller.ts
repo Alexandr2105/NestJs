@@ -13,7 +13,6 @@ import {
   Req,
   UseGuards,
 } from '@nestjs/common';
-import { PostsRepositoryMongo } from './posts.repository.mongo';
 import { QueryCount } from '../../../common/helper/query.count';
 import { Jwt } from '../auth/jwt';
 import { CreateCommentDto } from '../comments/dto/comment.dto';
@@ -27,6 +26,7 @@ import { GetLikesInfoCommand } from '../comments/application/useCase/get.likes.I
 import { IUsersRepository } from '../../sa/users/i.users.repository';
 import { IQueryRepository } from '../queryReposytories/i.query.repository';
 import { IBlogsRepository } from '../blogs/i.blogs.repository';
+import { IPostsRepository } from './i.posts.repository';
 
 @Controller('posts')
 export class PostsController {
@@ -34,7 +34,7 @@ export class PostsController {
     private readonly blogsRepository: IBlogsRepository,
     private readonly queryCount: QueryCount,
     private readonly usersRepository: IUsersRepository,
-    private readonly postsRepository: PostsRepositoryMongo,
+    private readonly postsRepository: IPostsRepository,
     private readonly queryRepository: IQueryRepository,
     private readonly jwtService: Jwt,
     private readonly commandBus: CommandBus,

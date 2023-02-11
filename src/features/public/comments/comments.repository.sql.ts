@@ -25,11 +25,12 @@ export class CommentsRepositorySql extends ICommentsRepository {
   }
 
   async getCommentById(id: string): Promise<CommentDocument | null> {
-    return this.dataSource.query(
+    const comment = await this.dataSource.query(
       `SELECT * FROM public,"Comments"
             WHERE "id"=$1`,
       [id],
     );
+    return comment[0];
   }
 
   async getDislikeInfo(idComment: string): Promise<number | undefined> {
@@ -53,11 +54,12 @@ export class CommentsRepositorySql extends ICommentsRepository {
   }
 
   async getInfoStatusByComment(idComment: string, userId: string) {
-    return this.dataSource.query(
+    const info = this.dataSource.query(
       `SELECT * FROM public."LikesModel"
             WHERE "id"=$1 AND "userId"=$2`,
       [idComment, userId],
     );
+    return info[0];
   }
 
   async getLikesInfo(idComment: string): Promise<number> {
@@ -90,7 +92,7 @@ export class CommentsRepositorySql extends ICommentsRepository {
       [userId, commentId],
     );
     if (commentInfo) {
-      return commentInfo.status.toString();
+      return commentInfo[0].status.toString();
     } else {
       return 'None';
     }

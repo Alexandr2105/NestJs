@@ -16,7 +16,7 @@ export class CreateUserUseCase {
   constructor(
     private readonly usersRepository: IUsersRepository,
     private readonly usersService: UsersService,
-    @InjectModel('users') protected usersCollection: Model<User>,
+    @InjectModel('users') private readonly usersCollection: Model<User>,
   ) {}
 
   async execute(command: CreateUserCommand) {

@@ -4,7 +4,7 @@ import { ISecurityDevicesRepository } from '../i.security.devices.repository';
 @Injectable()
 export class SecurityDevicesService {
   constructor(
-    protected securityDevicesRepository: ISecurityDevicesRepository,
+    private readonly securityDevicesRepository: ISecurityDevicesRepository,
   ) {}
 
   createDeviceId() {

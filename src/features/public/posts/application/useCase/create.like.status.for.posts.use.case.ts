@@ -1,8 +1,8 @@
 import { CommandHandler } from '@nestjs/cqrs';
-import { PostsRepositoryMongo } from '../../posts.repository.mongo';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { LikesModelDocument } from '../../../../../common/schemas/like.type.schema';
+import { IPostsRepository } from '../../i.posts.repository';
 
 export class CreateLikeStatusForPostsCommand {
   constructor(
@@ -16,9 +16,9 @@ export class CreateLikeStatusForPostsCommand {
 @CommandHandler(CreateLikeStatusForPostsCommand)
 export class CreateLikeStatusForPostsUseCase {
   constructor(
-    protected postsRepository: PostsRepositoryMongo,
+    private readonly postsRepository: IPostsRepository,
     @InjectModel('likeStatuses')
-    protected likeInfoCollection: Model<LikesModelDocument>,
+    private readonly likeInfoCollection: Model<LikesModelDocument>,
   ) {}
 
   async execute(command: CreateLikeStatusForPostsCommand): Promise<boolean> {

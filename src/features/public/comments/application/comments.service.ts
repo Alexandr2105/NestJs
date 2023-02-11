@@ -1,11 +1,11 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { CommentsRepositoryMongo } from '../comments.repostitory.mongo';
+import { ICommentsRepository } from '../i.comments.repository';
 
 @Injectable()
 export class CommentsService {
   constructor(
-    @Inject(CommentsRepositoryMongo)
-    protected commentsRepository: CommentsRepositoryMongo,
+    @Inject(ICommentsRepository)
+    private readonly commentsRepository: ICommentsRepository,
   ) {}
 
   async getCommentById(id: string) {
