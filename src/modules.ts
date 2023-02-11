@@ -107,6 +107,7 @@ import { ICommentsRepository } from './features/public/comments/i.comments.repos
 import { CommentsRepositorySql } from './features/public/comments/comments.repository.sql';
 import { IPostsRepository } from './features/public/posts/i.posts.repository';
 import { PostsRepositorySql } from './features/public/posts/posts.repository.sql';
+import { BlogRepositorySql } from './features/public/blogs/blog.repository.sql';
 
 const Strategies = [LocalStrategy, JwtStrategy, BasicStrategy, RefreshStrategy];
 const Validators = [
@@ -154,13 +155,18 @@ const MongoRepositories = [
   SecurityDevicesRepositoryMongo,
   UsersRepositoryMongo,
   QueryRepositoryMongo,
+  CommentsRepositoryMongo,
+  PostsRepositoryMongo,
 ];
 const SqlRepositories = [
   AuthRepositorySql,
+  BlogRepositorySql,
   TestingRepositorySql,
   SecurityDevicesRepositorySql,
   UsersRepositorySql,
   QueryRepositorySql,
+  CommentsRepositorySql,
+  PostsRepositorySql,
 ];
 const AbstractClassesSql = [
   {
@@ -294,7 +300,7 @@ const AbstractClassesMongo = [
     ...UseCases,
     ...SqlRepositories,
     ...MongoRepositories,
-    ...AbstractClassesSql,
+    ...AbstractClassesMongo,
   ],
 })
 export class Modules {}
