@@ -1,6 +1,6 @@
 import { ItemsComments } from '../../../../../common/helper/allTypes';
 import { CommandHandler } from '@nestjs/cqrs';
-import { CommentsRepositoryMongo } from '../../comments.repostitory.mongo';
+import { ICommentsRepository } from '../../i.comments.repository';
 
 export class GetLikesInfoCommand {
   constructor(public idComment: string, public userId: string) {}
@@ -8,7 +8,7 @@ export class GetLikesInfoCommand {
 
 @CommandHandler(GetLikesInfoCommand)
 export class GetLikesInfoUseCase {
-  constructor(protected commentsRepository: CommentsRepositoryMongo) {}
+  constructor(private readonly commentsRepository: ICommentsRepository) {}
 
   async execute(
     command: GetLikesInfoCommand,

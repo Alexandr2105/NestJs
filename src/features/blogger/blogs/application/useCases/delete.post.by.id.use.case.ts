@@ -1,6 +1,6 @@
 import { CommandHandler } from '@nestjs/cqrs';
-import { PostsRepositoryMongo } from '../../../../public/posts/posts.repository.mongo';
 import { ForbiddenException, NotFoundException } from '@nestjs/common';
+import { IPostsRepository } from '../../../../public/posts/i.posts.repository';
 
 export class DeletePostByIdCommand {
   constructor(
@@ -12,7 +12,7 @@ export class DeletePostByIdCommand {
 
 @CommandHandler(DeletePostByIdCommand)
 export class DeletePostByIdUseCase {
-  constructor(protected postsRepository: PostsRepositoryMongo) {}
+  constructor(private readonly postsRepository: IPostsRepository) {}
   async execute(command: DeletePostByIdCommand) {
     const post = await this.postsRepository.getPostId(command.postId);
     if (!post || post.blogId !== command.blogId) {

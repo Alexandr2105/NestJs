@@ -1,6 +1,6 @@
 import { CommandHandler } from '@nestjs/cqrs';
 import { UpdateCommentDto } from '../../dto/comment.dto';
-import { CommentsRepositoryMongo } from '../../comments.repostitory.mongo';
+import { ICommentsRepository } from '../../i.comments.repository';
 
 export class UpdateCommentByIdCommand {
   constructor(public id: string, public body: UpdateCommentDto) {}
@@ -8,7 +8,7 @@ export class UpdateCommentByIdCommand {
 
 @CommandHandler(UpdateCommentByIdCommand)
 export class UpdateCommentByIdUseCase {
-  constructor(protected commentsRepository: CommentsRepositoryMongo) {}
+  constructor(private readonly commentsRepository: ICommentsRepository) {}
 
   async execute(command: UpdateCommentByIdCommand): Promise<boolean> {
     const comment = await this.commentsRepository.getCommentById(command.id);

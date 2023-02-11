@@ -1,5 +1,5 @@
 import { CommandHandler } from '@nestjs/cqrs';
-import { PostsRepositoryMongo } from '../../posts.repository.mongo';
+import { IPostsRepository } from '../../i.posts.repository';
 
 export class GetPostIdCommand {
   constructor(public postId: string, public userId: string) {}
@@ -7,7 +7,7 @@ export class GetPostIdCommand {
 
 @CommandHandler(GetPostIdCommand)
 export class GetPostIdUseCase {
-  constructor(protected postsRepository: PostsRepositoryMongo) {}
+  constructor(private readonly postsRepository: IPostsRepository) {}
 
   async execute(command: GetPostIdCommand) {
     const post = await this.postsRepository.getPostId(command.postId);

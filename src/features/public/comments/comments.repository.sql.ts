@@ -2,46 +2,152 @@ import { ICommentsRepository } from './i.comments.repository';
 import { CommentDocument } from './schema/comment.schema';
 import { LikesModel } from '../../../common/schemas/like.type.schema';
 import { Injectable } from '@nestjs/common';
+import { InjectDataSource } from '@nestjs/typeorm';
+import { DataSource } from 'typeorm';
+import { IUsersRepository } from '../../sa/users/i.users.repository';
 
 @Injectable()
 export class CommentsRepositorySql extends ICommentsRepository {
-  constructor() {
+  constructor(
+    @InjectDataSource() private readonly dataSource: DataSource,
+    private readonly usersRepository: IUsersRepository,
+  ) {
     super();
   }
 
-  deleteCommentById(id: string): Promise<boolean> {
-    return Promise.resolve(false);
+  async deleteCommentById(id: string): Promise<boolean> {
+    const result = await this.dataSource.query(
+      `DELETE * FROM public,"Comments"
+            WHERE "id"=$1`,
+      [id],
+    );
+    return result[1] === 1;
   }
 
-  getCommentById(id: string): Promise<CommentDocument | null> {
-    return Promise.resolve(undefined);
+  async getCommentById(id: string): Promise<CommentDocument | null> {
+    return this.dataSource.query(
+      `SELECT * FROM public,"Comments"
+            WHERE "id"=$1`,
+      [id],
+    );
   }
 
-  getDislikeInfo(idComment: string): Promise<number | undefined> {
-    return Promise.resolve(undefined);
+  async getDislikeInfo(idComment: string): Promise<number | undefined> {
+    const banUsers = await this.usersRepository.getBanUsers();
+    const allDislikes = await this.dataSource.query(
+      `SELECT * FROM public."LikesModel"
+            WHERE "id"=$1 AND "status"=$2 AND "userId" NOT IN $3`,
+      [
+        idComment,
+        'Dislike',
+        banUsers.map((a) => {
+          return a.id;
+        }),
+      ],
+    );
+    if (allDislikes) {
+      return allDislikes.length;
+    } else {
+      return 0;
+    }
   }
 
-  getInfoStatusByComment(idComment: string, userId: string) {}
-
-  getLikesInfo(idComment: string): Promise<number> {
-    return Promise.resolve(0);
+  async getInfoStatusByComment(idComment: string, userId: string) {
+    return this.dataSource.query(
+      `SELECT * FROM public."LikesModel"
+            WHERE "id"=$1 AND "userId"=$2`,
+      [idComment, userId],
+    );
   }
 
-  getMyStatus(userId: string, commentId: string): Promise<string | undefined> {
-    return Promise.resolve(undefined);
+  async getLikesInfo(idComment: string): Promise<number> {
+    const banUsers = await this.usersRepository.getBanUsers();
+    const allLikes = await this.dataSource.query(
+      `SELECT * FROM public."LikesModel"
+            WHERE "id"=$1 AND "status"=$2 AND "userId" NOT IN $3`,
+      [
+        idComment,
+        'Like',
+        banUsers.map((a) => {
+          return a.id;
+        }),
+      ],
+    );
+    if (allLikes) {
+      return allLikes.length;
+    } else {
+      return 0;
+    }
   }
 
-  save(comment: CommentDocument) {}
-
-  setLikeStatus(likeInfo: LikesModel): Promise<boolean> {
-    return Promise.resolve(false);
+  async getMyStatus(
+    userId: string,
+    commentId: string,
+  ): Promise<string | undefined> {
+    const commentInfo = await this.dataSource.query(
+      `SELECT * FROM public."LikesModel"
+            WHERE "userId"=$1 AND "id"=$2`,
+      [userId, commentId],
+    );
+    if (commentInfo) {
+      return commentInfo.status.toString();
+    } else {
+      return 'None';
+    }
   }
 
-  updateStatusComment(
+  async save(comment: CommentDocument) {
+    if (await this.getCommentById(comment.id)) {
+      await this.dataSource.query(
+        `INSERT INTO public."Comments"
+            ("id", "idPost", "content", "userId", "userLogin", "createdAt")
+            VALUES($1,$2,$3,$4,$5,$6)`,
+        [
+          comment.id,
+          comment.idPost,
+          comment.content,
+          comment.userId,
+          comment.userLogin,
+          comment.createdAt,
+        ],
+      );
+    } else {
+      await this.dataSource.query(
+        `UPDATE public."Comments"
+            SET content=$1
+            WHERE "id"=$2`,
+        [comment.content, comment.id],
+      );
+    }
+  }
+
+  async setLikeStatus(likeInfo: LikesModel): Promise<boolean> {
+    const info = await this.dataSource.query(
+      `INSERT INTO public."LikesModel"
+            ("id","userId","login","status","createDate")
+            VALUES ($1,$2,$3,$4,$5)`,
+      [
+        likeInfo.id,
+        likeInfo.userId,
+        likeInfo.login,
+        likeInfo.status,
+        likeInfo.createDate,
+      ],
+    );
+    return !!info;
+  }
+
+  async updateStatusComment(
     idComment: string,
     userId: string,
     status: string,
   ): Promise<boolean> {
-    return Promise.resolve(false);
+    const newStatusComment = await this.dataSource.query(
+      `UPDATE public."LikesModel"
+            SET "status"=$1
+            WHERE "id"=$2,"userId"=$3`,
+      [status, idComment, userId],
+    );
+    return newStatusComment[1] === 1;
   }
 }
