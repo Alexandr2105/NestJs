@@ -1,5 +1,5 @@
 import { CommandHandler } from '@nestjs/cqrs';
-import { BlogsRepositoryMongo } from '../../../../public/blogs/blogs.repository.mongo';
+import { IBlogsRepository } from '../../../../public/blogs/i.blogs.repository';
 
 export class UpdateBanStatusForBlogSaCommand {
   constructor(public banStatus: boolean, public blogId: string) {}
@@ -7,7 +7,7 @@ export class UpdateBanStatusForBlogSaCommand {
 
 @CommandHandler(UpdateBanStatusForBlogSaCommand)
 export class UpdateBanStatusForBlogSaUseCase {
-  constructor(protected blogRepository: BlogsRepositoryMongo) {}
+  constructor(private readonly blogRepository: IBlogsRepository) {}
 
   async execute(command: UpdateBanStatusForBlogSaCommand) {
     const blog: any = await this.blogRepository.getBlogId(command.blogId);

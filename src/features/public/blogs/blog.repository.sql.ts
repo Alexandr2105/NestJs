@@ -1,4 +1,4 @@
-import { IBlogsRepository } from './i.blog.repository';
+import { IBlogsRepository } from './i.blogs.repository';
 import { BlogDocument } from './schema/blogs.schema';
 import { BanUsersForBlogDocument } from './schema/ban.users.for.blog.schema';
 

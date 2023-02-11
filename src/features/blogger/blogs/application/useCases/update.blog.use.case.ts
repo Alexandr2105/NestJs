@@ -1,7 +1,7 @@
-import { BlogsRepositoryMongo } from '../../../../public/blogs/blogs.repository.mongo';
 import { CommandHandler } from '@nestjs/cqrs';
 import { UpdateBlogDto } from '../../dto/blogger.dto';
 import { ForbiddenException, NotFoundException } from '@nestjs/common';
+import { IBlogsRepository } from '../../../../public/blogs/i.blogs.repository';
 
 export class UpdateBlogCommand {
   constructor(
@@ -13,8 +13,7 @@ export class UpdateBlogCommand {
 
 @CommandHandler(UpdateBlogCommand)
 export class UpdateBlogUseCase {
-  constructor(protected blogsRepository: BlogsRepositoryMongo) {}
-
+  constructor(private readonly blogsRepository: IBlogsRepository) {}
   async execute(command: UpdateBlogCommand): Promise<boolean> {
     const blog = await this.blogsRepository.getBlogId(command.id);
     if (!blog) throw new NotFoundException();

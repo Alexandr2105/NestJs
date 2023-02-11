@@ -24,14 +24,14 @@ import { GetPostIdCommand } from './application/useCase/get.post.id.use.case';
 import { CreateCommentByPostCommand } from './application/useCase/create.comment.by.post.use.case';
 import { CreateLikeStatusForPostsCommand } from './application/useCase/create.like.status.for.posts.use.case';
 import { GetLikesInfoCommand } from '../comments/application/useCase/get.likes.Info.use.case';
-import { BlogsRepositoryMongo } from '../blogs/blogs.repository.mongo';
 import { IUsersRepository } from '../../sa/users/i.users.repository';
 import { IQueryRepository } from '../queryReposytories/i.query.repository';
+import { IBlogsRepository } from '../blogs/i.blogs.repository';
 
 @Controller('posts')
 export class PostsController {
   constructor(
-    private readonly blogsRepository: BlogsRepositoryMongo,
+    private readonly blogsRepository: IBlogsRepository,
     private readonly queryCount: QueryCount,
     private readonly usersRepository: IUsersRepository,
     private readonly postsRepository: PostsRepositoryMongo,

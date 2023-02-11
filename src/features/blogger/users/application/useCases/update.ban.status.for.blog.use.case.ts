@@ -1,10 +1,10 @@
 import { CommandHandler } from '@nestjs/cqrs';
-import { BlogsRepositoryMongo } from '../../../../public/blogs/blogs.repository.mongo';
 import { BanUsersForBlogDto } from '../../dto/users.for.blogger.dto';
 import { ForbiddenException, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { BanUsersForBlogDocument } from '../../../../public/blogs/schema/ban.users.for.blog.schema';
+import { IBlogsRepository } from '../../../../public/blogs/i.blogs.repository';
 
 export class UpdateBanStatusForBlogCommand {
   constructor(
@@ -18,8 +18,8 @@ export class UpdateBanStatusForBlogCommand {
 export class UpdateBanStatusForBlogUseCase {
   constructor(
     @InjectModel('banUsersForBlogs')
-    protected banUsersForBlogsCollection: Model<BanUsersForBlogDocument>,
-    protected blogsRepository: BlogsRepositoryMongo,
+    private readonly banUsersForBlogsCollection: Model<BanUsersForBlogDocument>,
+    private readonly blogsRepository: IBlogsRepository,
   ) {}
 
   async execute(command: UpdateBanStatusForBlogCommand) {

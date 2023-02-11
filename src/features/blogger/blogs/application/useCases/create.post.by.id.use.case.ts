@@ -6,9 +6,9 @@ import {
 import { ForbiddenException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { BlogsRepositoryMongo } from '../../../../public/blogs/blogs.repository.mongo';
 import { PostsRepositoryMongo } from '../../../../public/posts/posts.repository.mongo';
 import { CreatePostForBlogDto } from '../../dto/blogger.dto';
+import { IBlogsRepository } from '../../../../public/blogs/i.blogs.repository';
 
 export class CreatePostByIdCommand {
   constructor(
@@ -21,8 +21,8 @@ export class CreatePostByIdCommand {
 @CommandHandler(CreatePostByIdCommand)
 export class CreatePostByIdUseCase {
   constructor(
-    protected blogsRepository: BlogsRepositoryMongo,
-    protected postsRepository: PostsRepositoryMongo,
+    private readonly blogsRepository: IBlogsRepository,
+    private readonly postsRepository: PostsRepositoryMongo,
     @InjectModel('posts') protected postsCollection: Model<PostDocument>,
   ) {}
 

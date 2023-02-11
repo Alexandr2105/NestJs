@@ -93,7 +93,7 @@ import { UpdateBanStatusForBlogSaUseCase } from './features/sa/blogs/aplication/
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { BanUsersForBlogSchema } from './features/public/blogs/schema/ban.users.for.blog.schema';
 import { AuthRepositorySql } from './features/public/auth/auth.repository.sql';
-import { IBlogsRepository } from './features/public/blogs/i.blog.repository';
+import { IBlogsRepository } from './features/public/blogs/i.blogs.repository';
 import { ITestingRepository } from './testing/i.testing.repository';
 import { TestingRepositorySql } from './testing/testing.repository.sql';
 import { ISecurityDevicesRepository } from './features/public/securityDevices/i.security.devices.repository';

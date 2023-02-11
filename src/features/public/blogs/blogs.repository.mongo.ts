@@ -3,14 +3,14 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { BlogDocument } from './schema/blogs.schema';
 import { BanUsersForBlogDocument } from './schema/ban.users.for.blog.schema';
-import { IBlogsRepository } from './i.blog.repository';
+import { IBlogsRepository } from './i.blogs.repository';
 
 @Injectable()
 export class BlogsRepositoryMongo extends IBlogsRepository {
   constructor(
-    @InjectModel('blogs') protected blogsCollection: Model<BlogDocument>,
+    @InjectModel('blogs') private readonly blogsCollection: Model<BlogDocument>,
     @InjectModel('banUsersForBlogs')
-    protected banUsersForBlogsCollection: Model<BanUsersForBlogDocument>,
+    private readonly banUsersForBlogsCollection: Model<BanUsersForBlogDocument>,
   ) {
     super();
   }

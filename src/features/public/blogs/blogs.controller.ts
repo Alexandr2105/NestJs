@@ -10,17 +10,17 @@ import { QueryCount } from '../../../common/helper/query.count';
 import { Jwt } from '../auth/jwt';
 import { CommandBus } from '@nestjs/cqrs';
 import { GetBlogIdCommand } from './aplication/useCases/get.blog.id.use.case';
-import { BlogsRepositoryMongo } from './blogs.repository.mongo';
 import { IQueryRepository } from '../queryReposytories/i.query.repository';
+import { IBlogsRepository } from './i.blogs.repository';
 
 @Controller('blogs')
 export class BlogsController {
   constructor(
-    protected queryCount: QueryCount,
-    protected queryRepository: IQueryRepository,
-    protected jwtService: Jwt,
-    protected commandBus: CommandBus,
-    protected blogsRepository: BlogsRepositoryMongo,
+    private readonly queryCount: QueryCount,
+    private readonly queryRepository: IQueryRepository,
+    private readonly jwtService: Jwt,
+    private readonly commandBus: CommandBus,
+    private readonly blogsRepository: IBlogsRepository,
   ) {}
 
   @Get()
@@ -32,8 +32,8 @@ export class BlogsController {
   @Get(':id')
   async getBlog(@Param('id') blogId: string) {
     const blog = await this.commandBus.execute(new GetBlogIdCommand(blogId));
-    if (blog && blog.banStatus == false) {
-      return blog;
+    if (blog && blog.banStatus === false) {
+      return await this.blogsRepository.getBlogIdSpecial(blogId);
     } else {
       throw new NotFoundException();
     }

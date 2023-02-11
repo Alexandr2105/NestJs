@@ -1,6 +1,6 @@
 import { CommandHandler } from '@nestjs/cqrs';
 import { ForbiddenException, NotFoundException } from '@nestjs/common';
-import { IBlogsRepository } from '../../../../public/blogs/i.blog.repository';
+import { IBlogsRepository } from '../../../../public/blogs/i.blogs.repository';
 
 export class DeleteBlogCommand {
   constructor(public id: string, public userId: string) {}
