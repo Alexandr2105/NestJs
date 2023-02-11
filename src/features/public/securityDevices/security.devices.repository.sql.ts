@@ -4,6 +4,7 @@ import { DataSource } from 'typeorm';
 import { DeviceInfoDto } from './dto/device.info.dto';
 import { RefreshTokenDocument } from '../../../common/schemas/refresh.token.data.schema';
 import { Injectable } from '@nestjs/common';
+import { CountAttempt } from '../../../common/schemas/count.attempt.schema';
 
 @Injectable()
 export class SecurityDevicesRepositorySql extends ISecurityDevicesRepository {
@@ -117,4 +118,18 @@ export class SecurityDevicesRepositorySql extends ISecurityDevicesRepository {
       );
     }
   }
+
+  getIpDevice(ip: string) {}
+
+  createCountAttempt(countAttempt: CountAttempt) {}
+
+  updateCountAttemptMany(
+    countAttempt: number,
+    iat: number,
+    method: string,
+    originalUrl: string,
+    dataIpDevice: string,
+  ) {}
+
+  updateCountAttempt(countAttempt: number, ip: string) {}
 }

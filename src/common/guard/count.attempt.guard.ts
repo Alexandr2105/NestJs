@@ -4,24 +4,21 @@ import {
   HttpException,
   Injectable,
 } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
-import { CountAttemptDocument } from '../schemas/count.attempt.schema';
+import { ISecurityDevicesRepository } from '../../features/public/securityDevices/i.security.devices.repository';
 
 @Injectable()
 export class CountAttemptGuard implements CanActivate {
   constructor(
-    @InjectModel('countAttempts')
-    protected countAttemptCollection: Model<CountAttemptDocument>,
+    private readonly securityDevicesRepository: ISecurityDevicesRepository,
   ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const req = context.switchToHttp().getRequest();
-    const dataIpDevice = await this.countAttemptCollection.findOne({
-      ip: req.ip,
-    });
+    const dataIpDevice = await this.securityDevicesRepository.getIpDevice(
+      req.ip,
+    );
     if (!dataIpDevice) {
-      await this.countAttemptCollection.create({
+      await this.securityDevicesRepository.createCountAttempt({
         ip: req.ip,
         iat: +new Date(),
         method: req.method,
@@ -31,16 +28,12 @@ export class CountAttemptGuard implements CanActivate {
       return true;
     }
     if (+new Date() - dataIpDevice.iat > 10000) {
-      await this.countAttemptCollection.updateMany(
-        { ip: dataIpDevice?.ip },
-        {
-          $set: {
-            countAttempt: 1,
-            iat: +new Date(),
-            method: req.method,
-            originalUrl: req.originalUrl,
-          },
-        },
+      await this.securityDevicesRepository.updateCountAttemptMany(
+        1,
+        +new Date(),
+        req.method,
+        req.originalUrl,
+        dataIpDevice?.ip,
       );
       return true;
     } else {
@@ -50,9 +43,9 @@ export class CountAttemptGuard implements CanActivate {
         dataIpDevice.originalUrl === req.originalUrl
       ) {
         const count = dataIpDevice.countAttempt + 1;
-        await this.countAttemptCollection.updateOne(
-          { ip: dataIpDevice?.ip },
-          { $set: { countAttempt: count } },
+        await this.securityDevicesRepository.updateCountAttempt(
+          dataIpDevice?.ip,
+          count,
         );
         return true;
       } else if (
@@ -60,16 +53,12 @@ export class CountAttemptGuard implements CanActivate {
         dataIpDevice.method !== req.method ||
         dataIpDevice.originalUrl !== req.originalUrl
       ) {
-        await this.countAttemptCollection.updateMany(
-          { ip: dataIpDevice?.ip },
-          {
-            $set: {
-              countAttempt: 1,
-              iat: +new Date(),
-              method: req.method,
-              originalUrl: req.originalUrl,
-            },
-          },
+        await this.securityDevicesRepository.updateCountAttemptMany(
+          1,
+          +new Date(),
+          req.method,
+          req.originalUrl,
+          dataIpDevice?.ip,
         );
         return true;
       } else {

@@ -4,12 +4,18 @@ import { InjectModel } from '@nestjs/mongoose';
 import { RefreshTokenDocument } from '../../../common/schemas/refresh.token.data.schema';
 import { DeviceInfoDto } from './dto/device.info.dto';
 import { ISecurityDevicesRepository } from './i.security.devices.repository';
+import {
+  CountAttempt,
+  CountAttemptDocument,
+} from '../../../common/schemas/count.attempt.schema';
 
 @Injectable()
 export class SecurityDevicesRepositoryMongo extends ISecurityDevicesRepository {
   constructor(
     @InjectModel('refreshTokenData')
     private readonly refreshTokenDataCollection: Model<RefreshTokenDocument>,
+    @InjectModel('countAttempts')
+    protected countAttemptCollection: Model<CountAttemptDocument>,
   ) {
     super();
   }
@@ -71,5 +77,48 @@ export class SecurityDevicesRepositoryMongo extends ISecurityDevicesRepository {
     return this.refreshTokenDataCollection.findOne({
       deviceId: deviceId,
     });
+  }
+
+  async getIpDevice(ip: string) {
+    return this.countAttemptCollection.findOne({
+      ip: ip,
+    });
+  }
+
+  async createCountAttempt(countAttempt: CountAttempt) {
+    await this.countAttemptCollection.create({
+      ip: countAttempt.ip,
+      iat: countAttempt.iat,
+      method: countAttempt.method,
+      originalUrl: countAttempt.originalUrl,
+      countAttempt: countAttempt.countAttempt,
+    });
+  }
+
+  async updateCountAttemptMany(
+    countAttempt: number,
+    iat: number,
+    method: string,
+    originalUrl: string,
+    dataIpDevice: string,
+  ) {
+    await this.countAttemptCollection.updateMany(
+      { ip: dataIpDevice },
+      {
+        $set: {
+          countAttempt: countAttempt,
+          iat: iat,
+          method: method,
+          originalUrl: originalUrl,
+        },
+      },
+    );
+  }
+
+  async updateCountAttempt(countAttempt: number, ip: string) {
+    await this.countAttemptCollection.updateOne(
+      { ip: ip },
+      { $set: { countAttempt: countAttempt } },
+    );
   }
 }
