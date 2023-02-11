@@ -108,6 +108,7 @@ import { CommentsRepositorySql } from './features/public/comments/comments.repos
 import { IPostsRepository } from './features/public/posts/i.posts.repository';
 import { PostsRepositorySql } from './features/public/posts/posts.repository.sql';
 import { BlogRepositorySql } from './features/public/blogs/blog.repository.sql';
+import { GetBlogIdUseCase } from './features/public/blogs/aplication/useCases/get.blog.id.use.case';
 
 const Strategies = [LocalStrategy, JwtStrategy, BasicStrategy, RefreshStrategy];
 const Validators = [
@@ -147,6 +148,7 @@ const UseCases = [
   CreateEmailConfirmationUseCae,
   UpdateBanStatusForBlogUseCase,
   UpdateBanStatusForBlogSaUseCase,
+  GetBlogIdUseCase,
 ];
 const MongoRepositories = [
   AuthRepositoryMongo,

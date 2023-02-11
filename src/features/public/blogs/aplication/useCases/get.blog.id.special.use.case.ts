@@ -9,7 +9,6 @@ export class GetBlogIdSpecialCommand {
 @CommandHandler(GetBlogIdSpecialCommand)
 export class GetBlogIdSpecialUseCase {
   constructor(private readonly blogsRepository: IBlogsRepository) {}
-
   async execute(
     command: GetBlogIdSpecialCommand,
   ): Promise<BlogDocument | false> {
