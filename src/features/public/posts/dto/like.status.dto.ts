@@ -1,5 +1,5 @@
 import { Validate } from 'class-validator';
-import { CheckLikeStatus } from '../../../../common/customValidator/check.like.status';
+import { CheckLikeStatus } from '../../../../common/customValidators/check.like.status';
 
 export class LikeStatusDto {
   @Validate(CheckLikeStatus)

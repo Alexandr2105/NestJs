@@ -1,7 +1,7 @@
 import { IsBoolean, IsEmail, Length, Validate } from 'class-validator';
 import { Transform } from 'class-transformer';
-import { CheckOriginalLogin } from '../../../../common/customValidator/check.original.login';
-import { CheckOriginalEmail } from '../../../../common/customValidator/check.origin.email';
+import { CheckOriginalLogin } from '../../../../common/customValidators/check.original.login';
+import { CheckOriginalEmail } from '../../../../common/customValidators/check.origin.email';
 
 export class CreateUserDto {
   @Length(3, 10, { message: 'Не верно заполнено поле' })

@@ -1,8 +1,8 @@
 import { IsEmail, Length, Validate } from 'class-validator';
 import { Transform } from 'class-transformer';
-import { CheckEmailConfirmation } from '../../../../common/customValidator/check.email.confirmation';
-import { CheckCode } from '../../../../common/customValidator/check.code';
-import { CheckRecoveryCode } from '../../../../common/customValidator/check.recovery.code';
+import { CheckEmailConfirmation } from '../../../../common/customValidators/check.email.confirmation';
+import { CheckCode } from '../../../../common/customValidators/check.code';
+import { CheckRecoveryCode } from '../../../../common/customValidators/check.recovery.code';
 
 export class LoginDto {
   @Transform(({ value }) => value.trim())

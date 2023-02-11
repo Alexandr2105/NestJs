@@ -1,6 +1,6 @@
 import { Prop } from '@nestjs/mongoose';
 import { Validate } from 'class-validator';
-import { CheckUserSecurityDevice } from '../../../../common/customValidator/check.user.security.device';
+import { CheckUserSecurityDevice } from '../../../../common/customValidators/check.user.security.device';
 
 export class DeviceInfoDto {
   @Prop()

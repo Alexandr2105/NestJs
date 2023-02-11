@@ -1,7 +1,7 @@
 import { IsBoolean, Length, Validate } from 'class-validator';
 import { Transform } from 'class-transformer';
-import { CheckBlogIdForBlog } from '../../../../common/customValidator/check.blog.id.for.blog';
-import { CheckUserIdSa } from '../../../../common/customValidator/check.user.id.sa';
+import { CheckBlogIdForBlog } from '../../../../common/customValidators/check.blog.id.for.blog';
+import { CheckUserIdSa } from '../../../../common/customValidators/check.user.id.sa';
 
 export class BanUsersForBlogDto {
   @IsBoolean()
