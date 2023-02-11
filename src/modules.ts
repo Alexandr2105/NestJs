@@ -63,7 +63,7 @@ import { CountAttemptGuard } from './common/guard/count.attempt.guard';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { CreateBlogUseCase } from './features/blogger/blogs/application/useCases/create.blog.use.case';
 import { DeleteBlogUseCase } from './features/blogger/blogs/application/useCases/delete.blog.use.case';
-import { GetBlogIdUseCase } from './features/public/blogs/aplication/useCases/get.blog.id.use.case';
+import { GetBlogIdSpecialUseCase } from './features/public/blogs/aplication/useCases/get.blog.id.special.use.case';
 import { UpdateBlogUseCase } from './features/blogger/blogs/application/useCases/update.blog.use.case';
 import { CreateUserUseCase } from './features/sa/users/application/useCases/create.user.use.case';
 import { BlogsControllerBlogger } from './features/blogger/blogs/blogs.controller.blogger';
@@ -127,7 +127,7 @@ const Validators = [
 const UseCases = [
   CreateBlogUseCase,
   DeleteBlogUseCase,
-  GetBlogIdUseCase,
+  GetBlogIdSpecialUseCase,
   UpdateBlogUseCase,
   CreateUserUseCase,
   UpdatePostByIdUseCase,

@@ -15,7 +15,7 @@ import {
 import { QueryCount } from '../../../common/helper/query.count';
 import { JwtAuthGuard } from '../../../common/guard/jwt.auth.guard';
 import { CreateBlogCommand } from './application/useCases/create.blog.use.case';
-import { GetBlogIdCommand } from '../../public/blogs/aplication/useCases/get.blog.id.use.case';
+import { GetBlogIdSpecialCommand } from '../../public/blogs/aplication/useCases/get.blog.id.special.use.case';
 import { CommandBus } from '@nestjs/cqrs';
 import { UpdateBlogCommand } from './application/useCases/update.blog.use.case';
 import { DeleteBlogCommand } from './application/useCases/delete.blog.use.case';
@@ -95,7 +95,9 @@ export class BlogsControllerBlogger {
     const createBlog = await this.commandBus.execute(
       new CreateBlogCommand(body, req.user.id),
     );
-    return await this.commandBus.execute(new GetBlogIdCommand(createBlog.id));
+    return await this.commandBus.execute(
+      new GetBlogIdSpecialCommand(createBlog.id),
+    );
   }
 
   @UseGuards(JwtAuthGuard)
