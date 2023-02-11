@@ -16,7 +16,7 @@ export class CreateBlogCommand {
 export class CreateBlogUseCase {
   constructor(
     private readonly blogsRepository: IBlogsRepository,
-    @InjectModel('blogs') protected blogsCollection: Model<BlogDocument>,
+    @InjectModel('blogs') private readonly blogsCollection: Model<BlogDocument>,
   ) {}
 
   async execute(command: CreateBlogCommand): Promise<Blog> {

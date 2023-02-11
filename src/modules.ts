@@ -107,8 +107,8 @@ import { ICommentsRepository } from './features/public/comments/i.comments.repos
 import { CommentsRepositorySql } from './features/public/comments/comments.repository.sql';
 import { IPostsRepository } from './features/public/posts/i.posts.repository';
 import { PostsRepositorySql } from './features/public/posts/posts.repository.sql';
-import { BlogRepositorySql } from './features/public/blogs/blog.repository.sql';
 import { GetBlogIdUseCase } from './features/public/blogs/aplication/useCases/get.blog.id.use.case';
+import { BlogsRepositorySql } from './features/public/blogs/blogs.repository.sql';
 
 const Strategies = [LocalStrategy, JwtStrategy, BasicStrategy, RefreshStrategy];
 const Validators = [
@@ -162,7 +162,7 @@ const MongoRepositories = [
 ];
 const SqlRepositories = [
   AuthRepositorySql,
-  BlogRepositorySql,
+  BlogsRepositorySql,
   TestingRepositorySql,
   SecurityDevicesRepositorySql,
   UsersRepositorySql,
@@ -173,7 +173,7 @@ const SqlRepositories = [
 const AbstractClassesSql = [
   {
     provide: IBlogsRepository,
-    useClass: BlogsRepositoryMongo,
+    useClass: BlogsRepositorySql,
   },
   {
     provide: IAuthRepository,
@@ -302,7 +302,7 @@ const AbstractClassesMongo = [
     ...UseCases,
     ...SqlRepositories,
     ...MongoRepositories,
-    ...AbstractClassesMongo,
+    ...AbstractClassesSql,
   ],
 })
 export class Modules {}

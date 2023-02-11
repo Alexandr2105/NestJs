@@ -132,7 +132,7 @@ export class QueryRepositorySql extends IQueryRepository {
     );
     const totalCount = await this.dataSource.query(
       `SELECT count(*) FROM public."Users"
-            WHERE "id"=$1 AND "login"=$2`,
+            WHERE "id" IN $1 AND "login"=$2`,
       [
         banUsers.map((a) => {
           return a.userId;
@@ -142,7 +142,7 @@ export class QueryRepositorySql extends IQueryRepository {
     );
     const banUsersArraySort = await this.dataSource.query(
       `SELECT * FROM public."Users"
-            WHERE "id"=$1 AND "login"=$2
+            WHERE "id" IN $1 AND "login"=$2
             ORDER BY "${query.sortBy}" ${query.sortDirection}
             LIMIT $3 OFFSET $4`,
       [
@@ -156,12 +156,12 @@ export class QueryRepositorySql extends IQueryRepository {
     );
     return {
       pagesCount: this.queryCount.pagesCountHelper(
-        totalCount.count,
+        totalCount[0].count,
         query.pageSize,
       ),
       page: query.pageNumber,
       pageSize: query.pageSize,
-      totalCount: +totalCount.count,
+      totalCount: +totalCount[0].count,
       items: banUsersArraySort.map((a) => {
         const banInfo = banUsers.find((b) => a.id === b.userId);
         return {

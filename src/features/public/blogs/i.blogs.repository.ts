@@ -11,6 +11,5 @@ export abstract class IBlogsRepository {
   ): Promise<BanUsersForBlogDocument[]>;
   abstract deleteBanUsers(userId: string);
   abstract saveBanUser(banUser: BanUsersForBlogDocument);
-
   abstract save(blog: BlogDocument);
 }

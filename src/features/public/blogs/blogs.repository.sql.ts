@@ -4,7 +4,7 @@ import { BanUsersForBlogDocument } from './schema/ban.users.for.blog.schema';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
 
-export class BlogRepositorySql extends IBlogsRepository {
+export class BlogsRepositorySql extends IBlogsRepository {
   constructor(@InjectDataSource() private readonly dataSource: DataSource) {
     super();
   }
@@ -27,11 +27,12 @@ export class BlogRepositorySql extends IBlogsRepository {
   }
 
   async getBanBlogs(idBlog: string) {
-    return this.dataSource.query(
+    const banBlogs = this.dataSource.query(
       `SELECT * FROM public."Blogs"
             WHERE "id"=$1 AND "banStatus"=true`,
       [idBlog],
     );
+    return banBlogs[0];
   }
 
   async getBanUsersForBlogs(
@@ -50,7 +51,7 @@ export class BlogRepositorySql extends IBlogsRepository {
             WHERE "id"=$1`,
       [id],
     );
-    if (blog) {
+    if (blog[0]) {
       return blog;
     } else {
       return false;
@@ -64,7 +65,7 @@ export class BlogRepositorySql extends IBlogsRepository {
             WHERE "id"=$1`,
       [id],
     );
-    if (blog) {
+    if (blog[0]) {
       return blog;
     } else {
       return false;
