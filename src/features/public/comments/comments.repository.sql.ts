@@ -116,7 +116,7 @@ export class CommentsRepositorySql extends ICommentsRepository {
     } else {
       await this.dataSource.query(
         `UPDATE public."Comments"
-            SET content=$1
+            SET "content"=$1
             WHERE "id"=$2`,
         [comment.content, comment.id],
       );

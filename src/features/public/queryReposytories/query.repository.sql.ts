@@ -307,7 +307,7 @@ export class QueryRepositorySql extends IQueryRepository {
       `SELECT * FROM public."Blogs"
              WHERE "name" ILIKE $1 AND "userId"=$2
              ORDER BY "${query.sortBy}" ${query.sortDirection}
-             LIMIT $4 OFFSET $4`,
+             LIMIT $3 OFFSET $4`,
       [
         `%${query.searchNameTerm}%`,
         userId,

@@ -132,21 +132,30 @@ export class PostsRepositorySql extends IPostsRepository {
   }
 
   async save(post: PostDocument) {
-    await this.dataSource.query(
-      `INSERT INTO public."Posts"
+    if (!(await this.getPostId(post.id)))
+      await this.dataSource.query(
+        `INSERT INTO public."Posts"
             ("id", "title", "shortDescription", "content", "blogId", "blogName", "createdAt", "userId")
             VALUES ($1, $2, $3, $4, $5, $6, $7, $8)`,
-      [
-        post.id,
-        post.title,
-        post.shortDescription,
-        post.content,
-        post.blogId,
-        post.blogName,
-        post.createdAt,
-        post.userId,
-      ],
-    );
+        [
+          post.id,
+          post.title,
+          post.shortDescription,
+          post.content,
+          post.blogId,
+          post.blogName,
+          post.createdAt,
+          post.userId,
+        ],
+      );
+    else {
+      await this.dataSource.query(
+        `UPDATE public."Posts"
+               SET "title"=$1, "shortDescription"=$2, "content"=$3
+               WHERE "id"=$4;`,
+        [post.title, post.shortDescription, post.content, post.id],
+      );
+    }
   }
 
   async updateStatusPost(
