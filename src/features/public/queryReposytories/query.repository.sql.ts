@@ -130,7 +130,7 @@ export class QueryRepositorySql extends IQueryRepository {
     if (!blog[0]) throw new NotFoundException();
     if (blog[0].userId !== ownerId) throw new ForbiddenException();
     const banUsers = await this.dataSource.query(
-      `SELECT * FROM public."BanUsers"
+      `SELECT * FROM public."BanUsersForBlog"
             WHERE "blogId"=$1`,
       [blog[0].id],
     );

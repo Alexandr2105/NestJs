@@ -117,7 +117,7 @@ export class BlogsRepositorySql extends IBlogsRepository {
       await this.dataSource.query(
         `UPDATE public."BanUsersForBlog"
             SET "isBanned"=$1, "banReason"=$2, "banDate"=$3
-            WHERE "userId"=$4,"blogId"=$5`,
+            WHERE "userId"=$4 AND "blogId"=$5`,
         [
           banUser.isBanned,
           banUser.banReason,
@@ -130,10 +130,11 @@ export class BlogsRepositorySql extends IBlogsRepository {
   }
 
   async getBanUserForBlog(idBlog: string, userId: string) {
-    return this.dataSource.query(
+    const banUser = this.dataSource.query(
       `SELECT * FROM public."BanUsersForBlog"
             WHERE "blogId"=$1 AND "userId"=$2`,
       [idBlog, userId],
     );
+    return banUser[0];
   }
 }
