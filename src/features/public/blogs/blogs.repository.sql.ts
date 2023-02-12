@@ -100,7 +100,7 @@ export class BlogsRepositorySql extends IBlogsRepository {
   }
 
   async saveBanUser(banUser: BanUsersForBlogDocument) {
-    if (!(await this.getBanUserForBlog(banUser.userId, banUser.blogId))) {
+    if (!(await this.getBanUserForBlog(banUser.blogId, banUser.userId))) {
       await this.dataSource.query(
         `INSERT INTO public."BanUsersForBlog"(
             "blogId", "userId", "isBanned", "banReason", "banDate")
@@ -129,11 +129,11 @@ export class BlogsRepositorySql extends IBlogsRepository {
     }
   }
 
-  async getBanUserForBlog(idBlog: string, userId: string) {
-    const banUser = this.dataSource.query(
+  async getBanUserForBlog(blogId: string, userId: string) {
+    const banUser = await this.dataSource.query(
       `SELECT * FROM public."BanUsersForBlog"
             WHERE "blogId"=$1 AND "userId"=$2`,
-      [idBlog, userId],
+      [blogId, userId],
     );
     return banUser[0];
   }
