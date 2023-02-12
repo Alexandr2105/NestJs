@@ -11,7 +11,7 @@ export class CheckPostId implements ValidatorConstraintInterface {
   constructor(private readonly postsRepository: IPostsRepository) {}
 
   async validate(postId: string): Promise<boolean> {
-    const post = this.postsRepository.getPostId(postId);
+    const post = await this.postsRepository.getPostId(postId);
     if (post) {
       return true;
     } else {

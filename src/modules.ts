@@ -109,7 +109,7 @@ import { IPostsRepository } from './features/public/posts/i.posts.repository';
 import { PostsRepositorySql } from './features/public/posts/posts.repository.sql';
 import { GetBlogIdUseCase } from './features/public/blogs/aplication/useCases/get.blog.id.use.case';
 import { BlogsRepositorySql } from './features/public/blogs/blogs.repository.sql';
-import { CheckPostId } from './common/customValidators/check.postId';
+import { CheckPostId } from './common/customValidators/check.post.id';
 
 const Strategies = [LocalStrategy, JwtStrategy, BasicStrategy, RefreshStrategy];
 const Validators = [
