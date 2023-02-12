@@ -10,14 +10,14 @@ export class TestingRepositorySql extends ITestingRepository {
   }
   async deleteAllCollection() {
     await this.dataSource.query(`DELETE FROM public."EmailConfirmations"`);
-    await this.dataSource.query(`DELETE FROM public."Blogs"`);
     await this.dataSource.query(`DELETE FROM public."RefreshTokenData"`);
-    await this.dataSource.query(`DELETE FROM public."Users"`);
-    await this.dataSource.query(`DELETE FROM public."Comments"`);
     await this.dataSource.query(`DELETE FROM public."CountAttempts"`);
-    await this.dataSource.query(`DELETE FROM public."LikeStatuses"`);
-    await this.dataSource.query(`DELETE FROM public."Posts"`);
+    await this.dataSource.query(`DELETE FROM public."LikesModel"`);
     await this.dataSource.query(`DELETE FROM public."BanUsers"`);
-    await this.dataSource.query(`DELETE FROM public."BanUsersForBlogs"`);
+    await this.dataSource.query(`DELETE FROM public."BanUsersForBlog"`);
+    await this.dataSource.query(`DELETE FROM public."Comments"`);
+    await this.dataSource.query(`DELETE FROM public."Posts"`);
+    await this.dataSource.query(`DELETE FROM public."Blogs"`);
+    await this.dataSource.query(`DELETE FROM public."Users"`);
   }
 }

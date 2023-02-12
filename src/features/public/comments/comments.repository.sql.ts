@@ -26,7 +26,7 @@ export class CommentsRepositorySql extends ICommentsRepository {
 
   async getCommentById(id: string): Promise<CommentDocument | null> {
     const comment = await this.dataSource.query(
-      `SELECT * FROM public,"Comments"
+      `SELECT * FROM public."Comments"
             WHERE "id"=$1`,
       [id],
     );
@@ -37,7 +37,7 @@ export class CommentsRepositorySql extends ICommentsRepository {
     const banUsers = await this.usersRepository.getBanUsers();
     const allDislikes = await this.dataSource.query(
       `SELECT * FROM public."LikesModel"
-            WHERE "id"=$1 AND "status"=$2 AND "userId" NOT IN $3`,
+            WHERE "id"=$1 AND "status"=$2 AND "userId" != ANY ($3)`,
       [
         idComment,
         'Dislike',
@@ -66,7 +66,7 @@ export class CommentsRepositorySql extends ICommentsRepository {
     const banUsers = await this.usersRepository.getBanUsers();
     const allLikes = await this.dataSource.query(
       `SELECT * FROM public."LikesModel"
-            WHERE "id"=$1 AND "status"=$2 AND "userId" NOT IN $3`,
+            WHERE "id"=$1 AND "status"=$2 AND "userId" != ANY ($3)`,
       [
         idComment,
         'Like',
@@ -91,7 +91,7 @@ export class CommentsRepositorySql extends ICommentsRepository {
             WHERE "userId"=$1 AND "id"=$2`,
       [userId, commentId],
     );
-    if (commentInfo) {
+    if (commentInfo[0]) {
       return commentInfo[0].status.toString();
     } else {
       return 'None';
@@ -99,7 +99,7 @@ export class CommentsRepositorySql extends ICommentsRepository {
   }
 
   async save(comment: CommentDocument) {
-    if (await this.getCommentById(comment.id)) {
+    if (!(await this.getCommentById(comment.id))) {
       await this.dataSource.query(
         `INSERT INTO public."Comments"
             ("id", "idPost", "content", "userId", "userLogin", "createdAt")

@@ -52,7 +52,7 @@ export class BlogsRepositorySql extends IBlogsRepository {
       [id],
     );
     if (blog[0]) {
-      return blog;
+      return blog[0];
     } else {
       return false;
     }
@@ -66,7 +66,7 @@ export class BlogsRepositorySql extends IBlogsRepository {
       [id],
     );
     if (blog[0]) {
-      return blog;
+      return blog[0];
     } else {
       return false;
     }

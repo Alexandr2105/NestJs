@@ -44,8 +44,8 @@ export class PostsRepositorySql extends IPostsRepository {
     const banUsers = await this.usersRepository.getBanUsers();
     return this.dataSource.query(
       `SELECT * FROM public."LikesModel"
-            WHERE "id"=$1 AND "status"=$2 AND "userId" NOT IN $3
-            ORDER BY "createDate" $4
+            WHERE "id"=$1 AND "status"=$2 AND "userId" != ANY ($3)
+            ORDER BY "createDate" DESC
             LIMIT 3`,
       [
         postId,
@@ -53,7 +53,6 @@ export class PostsRepositorySql extends IPostsRepository {
         banUsers.map((a) => {
           return a.id;
         }),
-        'desc',
       ],
     );
   }
@@ -62,7 +61,7 @@ export class PostsRepositorySql extends IPostsRepository {
     const banUsers = await this.usersRepository.getBanUsers();
     const allDislikes = await this.dataSource.query(
       `SELECT * FROM public."LikesModel"
-            WHERE "id"=$1 AND "status"=$2 AND "userId" NOT IN $3`,
+            WHERE "id"=$1 AND "status"=$2 AND "userId" != ANY ($3)`,
       [
         idPost,
         'Dislike',
@@ -91,7 +90,7 @@ export class PostsRepositorySql extends IPostsRepository {
     const banUsers = await this.usersRepository.getBanUsers();
     const allLikes = await this.dataSource.query(
       `SELECT * FROM public."LikesModel"
-            WHERE "id"=$1 AND "status"=$2 AND "userId" NOT IN $3`,
+            WHERE "id"=$1 AND "status"=$2 AND "userId" != ANY ($3)`,
       [
         idPost,
         'Like',
