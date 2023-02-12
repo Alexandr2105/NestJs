@@ -92,9 +92,20 @@ export class BlogsRepositorySql extends IBlogsRepository {
     } else {
       await this.dataSource.query(
         `UPDATE public."Blogs"
-            SET "name"=$1, "websiteUrl"=$2, "description"=$3
-            WHERE "id"=$4`,
-        [blog.name, blog.websiteUrl, blog.description, blog.id],
+            SET "name"=$1, "websiteUrl"=$2, "description"=$3, 
+            "createdAt"=$4, "userId"=$5, "banDate"=$6, "isMembership"=$7, "banStatus"=$8
+            WHERE "id"=$9`,
+        [
+          blog.name,
+          blog.websiteUrl,
+          blog.description,
+          blog.createdAt,
+          blog.userId,
+          blog.banDate,
+          blog.isMembership,
+          blog.banStatus,
+          blog.id,
+        ],
       );
     }
   }
