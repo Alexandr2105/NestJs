@@ -16,7 +16,7 @@ import {
 import { QueryCount } from '../../../common/helper/query.count';
 import { Jwt } from '../auth/jwt';
 import { CreateCommentDto } from '../comments/dto/comment.dto';
-import { LikeStatusDto } from './dto/like.status.dto';
+import { CheckParamForPosts, PostsDto } from './dto/posts.dto';
 import { JwtAuthGuard } from '../../../common/guard/jwt.auth.guard';
 import { CommandBus } from '@nestjs/cqrs';
 import { GetPostIdCommand } from './application/useCase/get.post.id.use.case';
@@ -102,19 +102,24 @@ export class PostsController {
   @UseGuards(JwtAuthGuard)
   @Post(':postId/comments')
   async createCommentsForPost(
-    @Param('postId') postId: string,
+    @Param() param: CheckParamForPosts,
     @Body() body: CreateCommentDto,
     @Headers() headers,
     @Req() req,
   ) {
     const user: any = await this.usersRepository.getUserId(req.user.id);
-    const post = await this.postsRepository.getPostId(postId);
+    const post = await this.postsRepository.getPostId(param.postId);
     const blog: any = await this.blogsRepository.getBlogId(post.blogId);
     const banUsers = await this.blogsRepository.getBanUsersForBlogs(blog.id);
     if (banUsers.find((a) => a.userId === user.id))
       throw new ForbiddenException();
     const comment = await this.commandBus.execute(
-      new CreateCommentByPostCommand(postId, body.content, user.id, user.login),
+      new CreateCommentByPostCommand(
+        param.postId,
+        body.content,
+        user.id,
+        user.login,
+      ),
     );
     const userId: any = await this.jwtService.getUserIdByToken(
       headers.authorization.split(' ')[1],
@@ -132,11 +137,11 @@ export class PostsController {
   @HttpCode(204)
   @Put(':postId/like-status')
   async createLikeStatusForPost(
-    @Param('postId') postId: string,
+    @Param() param: CheckParamForPosts,
     @Headers() headers,
-    @Body() body: LikeStatusDto,
+    @Body() body: PostsDto,
   ) {
-    const post = await this.postsRepository.getPostId(postId);
+    const post = await this.postsRepository.getPostId(param.postId);
     if (!post) {
       throw new NotFoundException();
     }
@@ -146,7 +151,7 @@ export class PostsController {
     const user: any = await this.usersRepository.getUserId(userId);
     const likeStatus = await this.commandBus.execute(
       new CreateLikeStatusForPostsCommand(
-        postId,
+        param.postId,
         userId,
         body.likeStatus,
         user.login,

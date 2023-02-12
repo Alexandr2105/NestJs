@@ -15,7 +15,7 @@ import {
 import { CommentsService } from './application/comments.service';
 import { Jwt } from '../auth/jwt';
 import { CheckUserId, UpdateCommentDto } from './dto/comment.dto';
-import { LikeStatusDto } from '../posts/dto/like.status.dto';
+import { PostsDto } from '../posts/dto/posts.dto';
 import { JwtAuthGuard } from '../../../common/guard/jwt.auth.guard';
 import { CommandBus } from '@nestjs/cqrs';
 import { UpdateCommentByIdCommand } from './application/useCase/update.comment.by.id.use.case';
@@ -98,7 +98,7 @@ export class CommentsController {
   @Put(':commentId/like-status')
   async updateLikeStatusForComment(
     @Param('commentId') commentId: string,
-    @Body() body: LikeStatusDto,
+    @Body() body: PostsDto,
     @Headers() headers,
   ) {
     const comment = await this.commentsRepository.getCommentById(commentId);
