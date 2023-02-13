@@ -37,7 +37,7 @@ export class CommentsRepositorySql extends ICommentsRepository {
     const banUsers = await this.usersRepository.getBanUsers();
     const allDislikes = await this.dataSource.query(
       `SELECT * FROM public."LikesModel"
-            WHERE "id"=$1 AND "status"=$2 AND "userId" != ANY ($3)`,
+            WHERE "id"=$1 AND "status"=$2 AND NOT "userId" = ANY ($3)`,
       [
         idComment,
         'Dislike',
@@ -66,7 +66,7 @@ export class CommentsRepositorySql extends ICommentsRepository {
     const banUsers = await this.usersRepository.getBanUsers();
     const allLikes = await this.dataSource.query(
       `SELECT * FROM public."LikesModel"
-            WHERE "id"=$1 AND "status"=$2 AND "userId" != ANY ($3)`,
+            WHERE "id"=$1 AND "status"=$2 AND NOT "userId" = ANY ($3)`,
       [
         idComment,
         'Like',

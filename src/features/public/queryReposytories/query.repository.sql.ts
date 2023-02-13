@@ -78,9 +78,9 @@ export class QueryRepositorySql extends IQueryRepository {
     );
     const sortPostsArray = await this.dataSource.query(
       `SELECT * FROM public."Posts"
-            WHERE "userId"!= ANY ($1) AND NOT "BlogId"=ANY($2)
+            WHERE NOT "userId"= ANY ($1) AND NOT "blogId"=ANY($2)
             ORDER BY "${query.sortBy}" ${query.sortDirection}
-            LIMIT $2 OFFSET $3`,
+            LIMIT $3 OFFSET $4`,
       [
         banUsers.map((a) => {
           return a.id;
