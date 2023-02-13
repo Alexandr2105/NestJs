@@ -17,7 +17,7 @@ export class CommentsRepositorySql extends ICommentsRepository {
 
   async deleteCommentById(id: string): Promise<boolean> {
     const result = await this.dataSource.query(
-      `DELETE * FROM public,"Comments"
+      `DELETE FROM public,"Comments"
             WHERE "id"=$1`,
       [id],
     );

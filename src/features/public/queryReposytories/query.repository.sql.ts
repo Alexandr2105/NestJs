@@ -78,7 +78,7 @@ export class QueryRepositorySql extends IQueryRepository {
     );
     const sortPostsArray = await this.dataSource.query(
       `SELECT * FROM public."Posts"
-            WHERE "userId"!= ANY ($1) AND "BlogId"!=ANY($2)
+            WHERE "userId"!= ANY ($1) AND NOT "BlogId"=ANY($2)
             ORDER BY "${query.sortBy}" ${query.sortDirection}
             LIMIT $2 OFFSET $3`,
       [
@@ -94,7 +94,7 @@ export class QueryRepositorySql extends IQueryRepository {
     );
     const totalCount = await this.dataSource.query(
       `SELECT count(*) FROM public."Posts"
-            WHERE "userId"!=ANY($1)`,
+            WHERE NOT "userId"=ANY($1)`,
       [
         banUsers.map((a) => {
           return a.id;
@@ -155,7 +155,7 @@ export class QueryRepositorySql extends IQueryRepository {
     const banUsers = await this.usersRepository.getBanUsers();
     const totalCount = await this.dataSource.query(
       `SELECT count(*) FROM public."Posts"
-            WHERE "blogId"=$1 AND "userId"!=ANY($2)`,
+            WHERE "blogId"=$1 AND NOT "userId"=ANY($2)`,
       [
         blogId,
         banUsers.map((a) => {
@@ -165,7 +165,7 @@ export class QueryRepositorySql extends IQueryRepository {
     );
     const sortPostsId = await this.dataSource.query(
       `SELECT * FROM public."Posts"
-            WHERE "blogId"=$1 AND "userId"!=ANY($2)
+            WHERE "blogId"=$1 AND NOT "userId"=ANY($2)
             ORDER BY "${query.sortBy}" ${query.sortDirection}
             LIMIT $3 OFFSET $4`,
       [
@@ -288,8 +288,8 @@ export class QueryRepositorySql extends IQueryRepository {
   ): Promise<CommentsType | boolean> {
     const banUsers = await this.usersRepository.getBanUsers();
     const totalCount = await this.dataSource.query(
-      `SELECT * FROM public."Comments"
-            WHERE "idPost"=$1 AND "userId" != ANY ($2)`,
+      `SELECT count(*) FROM public."Comments"
+            WHERE "idPost"=$1 AND NOT "userId" = ANY ($2)`,
       [
         postId,
         banUsers.map((a) => {
@@ -299,9 +299,9 @@ export class QueryRepositorySql extends IQueryRepository {
     );
     const sortCommentsByPostId = await this.dataSource.query(
       `SELECT * FROM public."Comments"
-            WHERE "idPost"=$1 AND "userId"!=ANY($2)
+            WHERE "idPost"=$1 AND NOT "userId"=ANY($2)
             ORDER BY "${query.sortBy}" ${query.sortDirection}
-            LIMIT $2 OFFSET $3`,
+            LIMIT $3 OFFSET $4`,
       [
         postId,
         banUsers.map((a) => {
