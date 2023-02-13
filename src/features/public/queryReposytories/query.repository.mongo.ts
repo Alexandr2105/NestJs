@@ -484,6 +484,14 @@ export class QueryRepositoryMongo extends IQueryRepository {
       items: await Promise.all(
         sortArrayComments.map(async (a) => {
           const comment = arrayPosts.find((b) => a.idPost === b.id);
+          const likeInfo = await this.commentsRepository.getLikesInfo(a.userId);
+          const dislikeInfo = await this.commentsRepository.getDislikeInfo(
+            a.userId,
+          );
+          const myStatus = await this.commentsRepository.getMyStatus(
+            a.userId,
+            a.id,
+          );
           return {
             id: a.id,
             content: a.content,
@@ -497,6 +505,11 @@ export class QueryRepositoryMongo extends IQueryRepository {
               title: comment.title,
               blogId: comment.blogId,
               blogName: comment.blogName,
+            },
+            likesInfo: {
+              likesCount: likeInfo,
+              dislikesCount: dislikeInfo,
+              myStatus: myStatus,
             },
           };
         }),
