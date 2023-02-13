@@ -37,6 +37,12 @@ export class CommentsController {
   @Get(':id')
   async getComment(@Param('id') commentId: string, @Headers() headers) {
     const banUser = await this.usersRepository.getBanUsers();
+    const checkComment = await this.commentsRepository.getCommentById(
+      commentId,
+    );
+    banUser.map((a) => {
+      if (a.id == checkComment.userId) throw new NotFoundException();
+    });
     let comment;
     if (headers.authorization) {
       const userId: any = this.jwtService.getUserIdByToken(
@@ -51,9 +57,6 @@ export class CommentsController {
       );
     }
     if (!comment) throw new NotFoundException();
-    banUser.map((a) => {
-      if (a.id == comment.userId) throw new NotFoundException();
-    });
     return comment;
   }
 
