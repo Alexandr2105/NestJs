@@ -54,7 +54,7 @@ export class CommentsRepositorySql extends ICommentsRepository {
   }
 
   async getInfoStatusByComment(idComment: string, userId: string) {
-    const info = this.dataSource.query(
+    const info = await this.dataSource.query(
       `SELECT * FROM public."LikesModel"
             WHERE "id"=$1 AND "userId"=$2`,
       [idComment, userId],
@@ -147,7 +147,7 @@ export class CommentsRepositorySql extends ICommentsRepository {
     const newStatusComment = await this.dataSource.query(
       `UPDATE public."LikesModel"
             SET "status"=$1
-            WHERE "id"=$2,"userId"=$3`,
+            WHERE "id"=$2 AND "userId"=$3`,
       [status, idComment, userId],
     );
     return newStatusComment[1] === 1;
