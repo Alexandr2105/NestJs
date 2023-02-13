@@ -27,6 +27,7 @@ import { IUsersRepository } from '../../sa/users/i.users.repository';
 import { IQueryRepository } from '../queryReposytories/i.query.repository';
 import { IBlogsRepository } from '../blogs/i.blogs.repository';
 import { IPostsRepository } from './i.posts.repository';
+import { CheckPostIdDto } from '../../blogger/blogs/dto/blogger.dto';
 
 @Controller('posts')
 export class PostsController {
@@ -42,17 +43,15 @@ export class PostsController {
 
   @Get()
   async getPosts(@Query() dataQuery, @Headers() headers) {
-    let post;
     const query = this.queryCount.queryCheckHelper(dataQuery);
     if (headers.authorization) {
       const userId: any = this.jwtService.getUserIdByToken(
         headers.authorization.split(' ')[1],
       );
-      post = await this.queryRepository.getQueryPosts(query, userId);
+      return this.queryRepository.getQueryPosts(query, userId);
     } else {
-      post = await this.queryRepository.getQueryPosts(query, 'null');
+      return this.queryRepository.getQueryPosts(query, 'null');
     }
-    return post;
   }
 
   @Get(':id')
@@ -84,18 +83,27 @@ export class PostsController {
 
   @Get(':postId/comments')
   async getCommentsForPost(
-    @Param('postId') blogId: string,
+    @Param() param: CheckPostIdDto,
     @Query() dataQuery,
+    @Headers() headers,
   ) {
     const query = this.queryCount.queryCheckHelper(dataQuery);
-    const comments = await this.queryRepository.getQueryCommentsByPostId(
-      query,
-      blogId,
-    );
-    if (comments) {
-      return comments;
+    if (headers.authorization) {
+      const userId: any = this.jwtService.getUserIdByToken(
+        headers.authorization.split(' ')[1],
+      );
+      const query = this.queryCount.queryCheckHelper(dataQuery);
+      return this.queryRepository.getQueryCommentsByPostId(
+        query,
+        param.postId,
+        userId,
+      );
     } else {
-      throw new NotFoundException();
+      return this.queryRepository.getQueryCommentsByPostId(
+        query,
+        param.postId,
+        'null',
+      );
     }
   }
 

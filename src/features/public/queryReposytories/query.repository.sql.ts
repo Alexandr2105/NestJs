@@ -284,6 +284,7 @@ export class QueryRepositorySql extends IQueryRepository {
   async getQueryCommentsByPostId(
     query: any,
     postId: string,
+    userId: string,
   ): Promise<CommentsType | boolean> {
     const banUsers = await this.usersRepository.getBanUsers();
     const totalCount = await this.dataSource.query(
@@ -296,9 +297,6 @@ export class QueryRepositorySql extends IQueryRepository {
         }),
       ],
     );
-    if (totalCount.length === 0) {
-      return false;
-    }
     const sortCommentsByPostId = await this.dataSource.query(
       `SELECT * FROM public."Comments"
             WHERE "idPost"=$1 AND "userId"!=ANY($2)
@@ -328,7 +326,7 @@ export class QueryRepositorySql extends IQueryRepository {
             a.id,
           );
           const myStatus = await this.commentsRepository.getMyStatus(
-            a.userId,
+            userId,
             a.id,
           );
           return {
@@ -509,14 +507,6 @@ export class QueryRepositorySql extends IQueryRepository {
       items: await Promise.all(
         sortArrayComments.map(async (a) => {
           const comment = arrayPosts.find((b) => a.idPost === b.id);
-          const likeInfo = await this.commentsRepository.getLikesInfo(a.userId);
-          const dislikeInfo = await this.commentsRepository.getDislikeInfo(
-            a.userId,
-          );
-          const myStatus = await this.commentsRepository.getMyStatus(
-            a.userId,
-            a.id,
-          );
           return {
             id: a.id,
             content: a.content,
@@ -530,11 +520,6 @@ export class QueryRepositorySql extends IQueryRepository {
               title: comment.title,
               blogId: comment.blogId,
               blogName: comment.blogName,
-            },
-            likesInfo: {
-              likesCount: likeInfo,
-              dislikesCount: dislikeInfo,
-              myStatus: myStatus,
             },
           };
         }),

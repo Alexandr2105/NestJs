@@ -1,6 +1,7 @@
 import { Transform } from 'class-transformer';
 import { IsUrl, Length, Validate } from 'class-validator';
 import { CheckIdForBlog } from '../../../../common/customValidators/check.id.for.blog';
+import { CheckPostId } from '../../../../common/customValidators/check.post.id';
 
 export class CreateBlogDto {
   @Transform(({ value }) => value.trim())
@@ -55,4 +56,9 @@ export class UpdatePostByIdDto {
 export class CheckBlogId {
   @Validate(CheckIdForBlog)
   blogId: string;
+}
+
+export class CheckPostIdDto {
+  @Validate(CheckPostId)
+  postId: string;
 }

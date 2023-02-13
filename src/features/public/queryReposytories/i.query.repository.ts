@@ -22,6 +22,7 @@ export abstract class IQueryRepository {
   abstract getQueryCommentsByPostId(
     query: any,
     postId: string,
+    userId: string,
   ): Promise<CommentsType | boolean>;
   abstract getQueryBlogsAuthUser(
     query: any,

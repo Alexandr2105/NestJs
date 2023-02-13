@@ -15,8 +15,6 @@ import {
 import { QueryCount } from '../../../common/helper/query.count';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { CommentsRepositoryMongo } from '../comments/comments.repostitory.mongo';
-import { PostsRepositoryMongo } from '../posts/posts.repository.mongo';
 import { BlogDocument } from '../blogs/schema/blogs.schema';
 import { PostDocument } from '../posts/schema/posts.schema';
 import { CommentDocument } from '../comments/schema/comment.schema';
@@ -26,6 +24,8 @@ import { BanUsers } from '../../sa/users/schema/banUsers';
 import { BanUsersForBlogDocument } from '../blogs/schema/ban.users.for.blog.schema';
 import { IUsersRepository } from '../../sa/users/i.users.repository';
 import { IQueryRepository } from './i.query.repository';
+import { IPostsRepository } from '../posts/i.posts.repository';
+import { ICommentsRepository } from '../comments/i.comments.repository';
 
 @Injectable()
 export class QueryRepositoryMongo extends IQueryRepository {
@@ -41,8 +41,8 @@ export class QueryRepositoryMongo extends IQueryRepository {
     private readonly queryCount: QueryCount,
     @InjectModel('banUsersForBlogs')
     private readonly banUsersForBlogsCollection: Model<BanUsersForBlogDocument>,
-    private readonly commentsRepository: CommentsRepositoryMongo,
-    private readonly postsRepository: PostsRepositoryMongo,
+    private readonly commentsRepository: ICommentsRepository,
+    private readonly postsRepository: IPostsRepository,
     private readonly usersRepository: IUsersRepository,
   ) {
     super();
@@ -293,6 +293,7 @@ export class QueryRepositoryMongo extends IQueryRepository {
   async getQueryCommentsByPostId(
     query: any,
     postId: string,
+    userId: string,
   ): Promise<CommentsType | boolean> {
     const banUsers = await this.usersRepository.getBanUsers();
     const totalCount = await this.commentsCollection.countDocuments({
@@ -303,9 +304,6 @@ export class QueryRepositoryMongo extends IQueryRepository {
         }),
       },
     });
-    if (totalCount === 0) {
-      return false;
-    }
     const sortCommentsByPostId = await this.commentsCollection
       .find({
         idPost: postId,
@@ -330,7 +328,7 @@ export class QueryRepositoryMongo extends IQueryRepository {
             a.id,
           );
           const myStatus = await this.commentsRepository.getMyStatus(
-            a.userId,
+            userId,
             a.id,
           );
           return {
@@ -486,14 +484,6 @@ export class QueryRepositoryMongo extends IQueryRepository {
       items: await Promise.all(
         sortArrayComments.map(async (a) => {
           const comment = arrayPosts.find((b) => a.idPost === b.id);
-          const likeInfo = await this.commentsRepository.getLikesInfo(a.userId);
-          const dislikeInfo = await this.commentsRepository.getDislikeInfo(
-            a.userId,
-          );
-          const myStatus = await this.commentsRepository.getMyStatus(
-            a.userId,
-            a.id,
-          );
           return {
             id: a.id,
             content: a.content,
@@ -507,11 +497,6 @@ export class QueryRepositoryMongo extends IQueryRepository {
               title: comment.title,
               blogId: comment.blogId,
               blogName: comment.blogName,
-            },
-            likesInfo: {
-              likesCount: likeInfo,
-              dislikesCount: dislikeInfo,
-              myStatus: myStatus,
             },
           };
         }),
