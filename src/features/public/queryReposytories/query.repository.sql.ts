@@ -41,7 +41,7 @@ export class QueryRepositorySql extends IQueryRepository {
     const sortedBlogsArray = await this.dataSource.query(
       `SELECT * FROM public."Blogs"
              WHERE "name" ILIKE $1 AND "banStatus"=false
-             ORDER BY "${query.sortBy}" ${query.sortDirection}
+             ORDER BY "${query.sortBy}" COLLATE "C" ${query.sortDirection}
              LIMIT $2 OFFSET $3`,
       [
         `%${query.searchNameTerm}%`,
@@ -111,13 +111,13 @@ export class QueryRepositorySql extends IQueryRepository {
       totalCount: +totalCount[0].count,
       items: await Promise.all(
         sortPostsArray.map(async (a) => {
-          const likeStatus = await this.postsRepository.getLikesInfo(a.id);
-          const dislikeStatus = await this.postsRepository.getDislikeInfo(a.id);
-          const myStatus = await this.postsRepository.getMyStatus(userId, a.id);
+          const likeStatus = this.postsRepository.getLikesInfo(a.id);
+          const dislikeStatus = this.postsRepository.getDislikeInfo(a.id);
+          const myStatus = this.postsRepository.getMyStatus(userId, a.id);
           const sortLikesArray = await this.dataSource.query(
             `SELECT * FROM public."LikesModel"
                     WHERE "id"=$1 AND "status"=$2
-                   ORDER BY "createDate" DESC
+                   ORDER BY "createDate" COLLATE "C" DESC
                    LIMIT 3`,
             [a.id, 'Like'],
           );
@@ -166,7 +166,7 @@ export class QueryRepositorySql extends IQueryRepository {
     const sortPostsId = await this.dataSource.query(
       `SELECT * FROM public."Posts"
             WHERE "blogId"=$1 AND NOT "userId"=ANY($2)
-            ORDER BY "${query.sortBy}" ${query.sortDirection}
+            ORDER BY "${query.sortBy}" COLLATE "C" ${query.sortDirection}
             LIMIT $3 OFFSET $4`,
       [
         blogId,
@@ -239,7 +239,7 @@ export class QueryRepositorySql extends IQueryRepository {
       `SELECT * FROM public."Users"
             WHERE "login" ILIKE $1
             OR "email" ILIKE $2
-            ORDER BY "${query.sortBy}" ${query.sortDirection}
+            ORDER BY "${query.sortBy}" COLLATE "C" ${query.sortDirection}
             LIMIT $3 OFFSET $4`,
       [
         `%${query.searchLoginTerm}%`,
@@ -268,7 +268,7 @@ export class QueryRepositorySql extends IQueryRepository {
             WHERE ("login" ILIKE $1
             OR "email" ILIKE $2)
             AND "ban"=$5
-            ORDER BY "${query.sortBy}" ${query.sortDirection}
+            ORDER BY "${query.sortBy}" COLLATE "C" ${query.sortDirection}
             LIMIT $3 OFFSET $4`,
       [
         `%${query.searchLoginTerm}%`,
@@ -300,7 +300,7 @@ export class QueryRepositorySql extends IQueryRepository {
     const sortCommentsByPostId = await this.dataSource.query(
       `SELECT * FROM public."Comments"
             WHERE "idPost"=$1 AND NOT "userId"=ANY($2)
-            ORDER BY "${query.sortBy}" ${query.sortDirection}
+            ORDER BY "${query.sortBy}" COLLATE "C" ${query.sortDirection}
             LIMIT $3 OFFSET $4`,
       [
         postId,
@@ -357,7 +357,7 @@ export class QueryRepositorySql extends IQueryRepository {
     const sortedBlogsArray = await this.dataSource.query(
       `SELECT * FROM public."Blogs"
              WHERE "name" ILIKE $1 AND "userId"=$2
-             ORDER BY "${query.sortBy}" ${query.sortDirection}
+             ORDER BY "${query.sortBy}" COLLATE "C" ${query.sortDirection}
              LIMIT $3 OFFSET $4`,
       [
         `%${query.searchNameTerm}%`,
@@ -396,7 +396,7 @@ export class QueryRepositorySql extends IQueryRepository {
     const sortedBlogsArray = await this.dataSource.query(
       `SELECT * FROM public."Blogs"
              WHERE "name" ILIKE $1
-             ORDER BY "${query.sortBy}" ${query.sortDirection}
+             ORDER BY "${query.sortBy}" COLLATE "C" ${query.sortDirection}
              LIMIT $2 OFFSET $3`,
       [
         `%${query.searchNameTerm}%`,
@@ -486,7 +486,7 @@ export class QueryRepositorySql extends IQueryRepository {
     const sortArrayComments = await this.dataSource.query(
       `SELECT * FROM public."Comments"
             WHERE "idPost" = ANY ($1)
-            ORDER BY "${query.sortBy}" ${query.sortDirection}
+            ORDER BY "${query.sortBy}" COLLATE "C" ${query.sortDirection}
             LIMIT $2 OFFSET $3`,
       [
         arrayPosts.map((a) => {
@@ -570,7 +570,7 @@ export class QueryRepositorySql extends IQueryRepository {
     const banUsersArraySort = await this.dataSource.query(
       `SELECT * FROM public."Users"
             WHERE "id" = ANY ($1) AND "login" ILIKE $2
-            ORDER BY "${query.sortBy}" ${query.sortDirection}
+            ORDER BY "${query.sortBy}" COLLATE "C" ${query.sortDirection}
             LIMIT $3 OFFSET $4`,
       [
         banUsers.map((a) => {

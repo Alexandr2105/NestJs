@@ -107,6 +107,7 @@ export class BlogsControllerBlogger {
     @Body() body: CreatePostForBlogDto,
     @Req() req,
   ) {
+    console.time('start');
     const newPostForBlogId = await this.commandBus.execute(
       new CreatePostByIdCommand(
         {
@@ -119,9 +120,11 @@ export class BlogsControllerBlogger {
       ),
     );
     if (newPostForBlogId) {
-      return await this.commandBus.execute(
+      const a = await this.commandBus.execute(
         new GetPostIdCommand(newPostForBlogId.id, req.user.id),
       );
+      console.timeLog('start');
+      return a;
     } else {
       throw new NotFoundException();
     }
