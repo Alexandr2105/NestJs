@@ -111,9 +111,9 @@ export class QueryRepositorySql extends IQueryRepository {
       totalCount: +totalCount[0].count,
       items: await Promise.all(
         sortPostsArray.map(async (a) => {
-          const likeStatus = this.postsRepository.getLikesInfo(a.id);
-          const dislikeStatus = this.postsRepository.getDislikeInfo(a.id);
-          const myStatus = this.postsRepository.getMyStatus(userId, a.id);
+          const likeStatus = await this.postsRepository.getLikesInfo(a.id);
+          const dislikeStatus = await this.postsRepository.getDislikeInfo(a.id);
+          const myStatus = await this.postsRepository.getMyStatus(userId, a.id);
           const sortLikesArray = await this.dataSource.query(
             `SELECT * FROM public."LikesModel"
                     WHERE "id"=$1 AND "status"=$2
