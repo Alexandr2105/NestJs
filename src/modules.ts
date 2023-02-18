@@ -271,7 +271,6 @@ const AbstractClassesMongo = [
           CountAttempt,
           BanUsers,
         ],
-        connectTimeoutMS: 60000,
         synchronize: false,
       }),
       inject: [ConfigService],
