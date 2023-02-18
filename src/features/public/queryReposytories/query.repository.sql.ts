@@ -113,14 +113,12 @@ export class QueryRepositorySql extends IQueryRepository {
       totalCount: +totalCount[0].count,
       items: await Promise.all(
         sortPostsArray.map(async (a) => {
-          const infoLikes = await this.postsRepositorySql.getAllInfoAboutLikes(
-            a.id,
-          );
-          const like = infoLikes.find((l) => 'Like' === l.status);
-          const dislike = infoLikes.find((d) => 'Dislike' === d.status);
-          // const likeStatus = await this.postsRepository.getLikesInfo(a.id);
-          // const dislikeStatus = await this.postsRepository.getDislikeInfo(a.id);
-          // const myStatus = await this.postsRepository.getMyStatus(userId, a.id);
+          const infoLikes = this.postsRepositorySql.getAllInfoAboutLikes(a.id);
+          // const like = infoLikes.find((l) => 'Like' === l.status);
+          // const dislike = infoLikes.find((d) => 'Dislike' === d.status);
+          const likeStatus = await this.postsRepository.getLikesInfo(a.id);
+          const dislikeStatus = await this.postsRepository.getDislikeInfo(a.id);
+          const myStatus = await this.postsRepository.getMyStatus(userId, a.id);
           const sortLikesArray = await this.dataSource.query(
             `SELECT * FROM public."LikesModel"
                     WHERE "id"=$1 AND "status"=$2
@@ -137,9 +135,9 @@ export class QueryRepositorySql extends IQueryRepository {
             blogName: a.blogName,
             createdAt: a.createdAt,
             extendedLikesInfo: {
-              likesCount: like?.count || 0,
-              dislikesCount: dislike?.count || 0,
-              myStatus: 'None',
+              likesCount: likeStatus,
+              dislikesCount: dislikeStatus,
+              myStatus: myStatus,
               newestLikes: sortLikesArray.map((b) => {
                 return {
                   addedAt: b.createDate.toString(),
