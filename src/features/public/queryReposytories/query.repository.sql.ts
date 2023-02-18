@@ -120,7 +120,7 @@ export class QueryRepositorySql extends IQueryRepository {
           const dislike = infoLikes.find((d) => 'Dislike' === d.status);
           // const likeStatus = await this.postsRepository.getLikesInfo(a.id);
           // const dislikeStatus = await this.postsRepository.getDislikeInfo(a.id);
-          const myStatus = await this.postsRepository.getMyStatus(userId, a.id);
+          // const myStatus = await this.postsRepository.getMyStatus(userId, a.id);
           const sortLikesArray = await this.dataSource.query(
             `SELECT * FROM public."LikesModel"
                     WHERE "id"=$1 AND "status"=$2
@@ -139,7 +139,7 @@ export class QueryRepositorySql extends IQueryRepository {
             extendedLikesInfo: {
               likesCount: like?.count || 0,
               dislikesCount: dislike?.count || 0,
-              myStatus: myStatus,
+              myStatus: 'None',
               newestLikes: sortLikesArray.map((b) => {
                 return {
                   addedAt: b.createDate.toString(),
