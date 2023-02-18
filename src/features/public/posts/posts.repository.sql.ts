@@ -171,4 +171,19 @@ export class PostsRepositorySql extends IPostsRepository {
     );
     return newStatusComment[1] === 1;
   }
+
+  async getAllInfoAboutLikes(idPost: string) {
+    const banUsers = await this.usersRepository.getBanUsers();
+    return await this.dataSource.query(
+      `SELECT "status", count(*) FROM public."LikesModel"
+            WHERE NOT "userId" = ANY ($1) AND "id"=$2
+            GROUP BY "status"`,
+      [
+        banUsers.map((a) => {
+          return a.id;
+        }),
+        idPost,
+      ],
+    );
+  }
 }
