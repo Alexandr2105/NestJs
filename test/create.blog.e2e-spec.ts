@@ -3,6 +3,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { AppModule } from '../src/app.module';
 import { createApp } from '../src/common/helper/createApp';
 import request from 'supertest';
+import { CreateBlogDto } from '../src/features/blogger/blogs/dto/blogger.dto';
 
 describe('Create test for blog', () => {
   jest.setTimeout(5 * 60 * 1000);
@@ -36,14 +37,31 @@ describe('Create test for blog', () => {
       .expect(201);
   });
 
-  it('login', () => {
-    return request(app.getHttpServer())
+  it('login', async () => {
+    const response = await request(app.getHttpServer())
       .post('/auth/login')
-      .send({ loginOrEmail: user.login, password: user.password })
-      .expect(200);
+      .send({ loginOrEmail: user.login, password: user.password });
+
+    expect(response.status).toBe(200);
+    const accessToken = response.body;
+    expect(accessToken).toEqual({
+      accessToken: expect.any(String),
+    });
+
+    expect.setState({ accessToken });
   });
 
-  // it('Create Blog', () => {
-  //   return request(app.getHttpServer()).post('/blogger/blogs/').expect(201);
-  // });
+  it('Create Blog', () => {
+    const { accessToken } = expect.getState();
+    const blogInputData: CreateBlogDto = {
+      name: '123123',
+      description: '12312421421',
+      websiteUrl: 'www.any.com',
+    };
+
+    return request(app.getHttpServer())
+      .post('/blogger/blogs/')
+      .auth(accessToken, { type: 'bearer' })
+      .send(blogInputData);
+  });
 });

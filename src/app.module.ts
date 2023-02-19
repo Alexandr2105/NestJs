@@ -28,16 +28,6 @@ import { MongooseModule } from '@nestjs/mongoose';
       inject: [ConfigService],
     }),
     Modules,
-    // TypeOrmModule.forRoot({
-    //   type: 'postgres',
-    //   host: 'localhost',
-    //   port: 5432,
-    //   username: 'postgres',
-    //   password: 'sa',
-    //   database: 'tube',
-    //   entities: [],
-    //   synchronize: false,
-    // }),
     TypeOrmModule.forFeature([
       Blog,
       Post,
