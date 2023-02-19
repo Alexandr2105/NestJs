@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { Modules } from './modules';
@@ -15,15 +15,29 @@ import { BanUsers } from './features/sa/users/schema/banUsers';
 import { Comment } from './features/public/comments/schema/comment.schema';
 import { MongooseModule } from '@nestjs/mongoose';
 
-const mongoUri = process.env.MONGO_URL || 'mongodb://0.0.0.0:27017/tube';
-
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
     }),
-    MongooseModule.forRoot(mongoUri),
+    MongooseModule.forRootAsync({
+      imports: [ConfigModule],
+      useFactory: async (configService: ConfigService) => ({
+        uri: configService.get<string>('MONGO_URL'),
+      }),
+      inject: [ConfigService],
+    }),
     Modules,
+    TypeOrmModule.forRoot({
+      type: 'postgres',
+      host: 'localhost',
+      port: 5432,
+      username: 'postgres',
+      password: 'sa',
+      database: 'tube',
+      entities: [],
+      synchronize: false,
+    }),
     TypeOrmModule.forFeature([
       Blog,
       Post,

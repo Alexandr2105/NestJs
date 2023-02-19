@@ -1,39 +1,16 @@
-import 'dotenv/config';
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import { BadRequestException, ValidationPipe } from '@nestjs/common';
-import { HttpExceptionFilter } from './exception.filter';
-import { useContainer } from 'class-validator';
-import cookieParser from 'cookie-parser';
-
-const port = process.env.PORT || 3000;
+import { ConfigService } from '@nestjs/config';
+import { createApp } from './common/helper/createApp';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
-  app.use(cookieParser());
-  app.enableCors();
-  app.useGlobalPipes(
-    new ValidationPipe({
-      forbidUnknownValues: false,
-      stopAtFirstError: true,
-      exceptionFactory: (errors) => {
-        const errorsForResponse = [];
-        errors.forEach((e) => {
-          const constraintsKeys = Object.keys(e.constraints);
-          constraintsKeys.forEach((c) => {
-            errorsForResponse.push({
-              message: e.constraints[c],
-              field: e.property,
-            });
-          });
-        });
-        throw new BadRequestException(errorsForResponse);
-      },
-    }),
-  );
-  useContainer(app.select(AppModule), { fallbackOnErrors: true });
-  app.useGlobalFilters(new HttpExceptionFilter());
-  await app.listen(port);
+  const rawApp = await NestFactory.create(AppModule);
+  const app = createApp(rawApp);
+  const configService = app.get(ConfigService);
+  const port = parseInt(configService.get('PORT'), 10) || 3000;
+  await app.listen(port, () => {
+    console.log(`App started at ${port} port`);
+  });
 }
 
 bootstrap();

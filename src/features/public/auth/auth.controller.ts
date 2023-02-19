@@ -66,7 +66,7 @@ export class AuthController {
     await this.devicesService.delOldRefreshTokenData(+new Date());
     res.cookie('refreshToken', refreshToken, {
       httpOnly: true,
-      secure: true,
+      // secure: true,
     });
     res.send(accessToken);
   }
@@ -137,7 +137,7 @@ export class AuthController {
     );
     res.cookie('refreshToken', refreshToken, {
       httpOnly: true,
-      secure: true,
+      // secure: true,
     });
     res.send(token);
   }
