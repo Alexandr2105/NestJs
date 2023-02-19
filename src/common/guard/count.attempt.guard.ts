@@ -14,7 +14,7 @@ export class CountAttemptGuard implements CanActivate {
   constructor(
     private readonly securityDevicesRepository: ISecurityDevicesRepository,
     @InjectModel('countAttempts')
-    protected countAttemptCollection: Model<CountAttemptDocument>,
+    private readonly countAttemptCollection: Model<CountAttemptDocument>,
   ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
