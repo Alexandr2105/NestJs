@@ -121,7 +121,7 @@ export class PostsController {
     const banUsers = await this.blogsRepository.getBanUsersForBlogs(blog.id);
     if (banUsers.find((a) => a.userId === user.id))
       throw new ForbiddenException();
-    const comment = await this.commandBus.execute(
+    return await this.commandBus.execute(
       new CreateCommentByPostCommand(
         param.postId,
         body.content,
@@ -129,16 +129,6 @@ export class PostsController {
         user.login,
       ),
     );
-    const userId: any = await this.jwtService.getUserIdByToken(
-      headers.authorization.split(' ')[1],
-    );
-    if (comment) {
-      return await this.commandBus.execute(
-        new GetLikesInfoCommand(comment.id, userId),
-      );
-    } else {
-      throw new NotFoundException();
-    }
   }
 
   @UseGuards(JwtAuthGuard)
