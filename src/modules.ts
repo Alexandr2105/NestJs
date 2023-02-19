@@ -282,7 +282,7 @@ const AbstractClassesMongo = [
     ...UseCases,
     ...SqlRepositories,
     ...MongoRepositories,
-    ...AbstractClassesMongo,
+    ...AbstractClassesSql,
   ],
 })
 export class Modules {}
