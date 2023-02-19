@@ -164,7 +164,7 @@ export class SecurityDevicesRepositorySql extends ISecurityDevicesRepository {
       `UPDATE public."CountAttempts"
             SET "countAttempt"=$1
             WHERE "ip"=$2`,
-      [ip, countAttempts],
+      [countAttempts, ip],
     );
   }
 }
