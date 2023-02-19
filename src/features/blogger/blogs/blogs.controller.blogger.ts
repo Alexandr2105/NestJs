@@ -117,15 +117,6 @@ export class BlogsControllerBlogger {
         req.user.id,
       ),
     );
-    // if (newPostForBlogId) {
-    //   const a = await this.commandBus.execute(
-    //     new GetPostIdCommand(newPostForBlogId.id, req.user.id),
-    //   );
-    //   console.timeLog('start');
-    //   return a;
-    // } else {
-    //   throw new NotFoundException();
-    // }
   }
 
   @HttpCode(204)

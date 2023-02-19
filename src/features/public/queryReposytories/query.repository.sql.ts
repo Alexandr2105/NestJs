@@ -118,8 +118,6 @@ export class QueryRepositorySql extends IQueryRepository {
           );
           const like = infoLikes.find((l) => 'Like' === l.status);
           const dislike = infoLikes.find((d) => 'Dislike' === d.status);
-          // const likeStatus = await this.postsRepository.getLikesInfo(a.id);
-          // const dislikeStatus = await this.postsRepository.getDislikeInfo(a.id);
           const myStatus = await this.postsRepository.getMyStatus(userId, a.id);
           const sortLikesArray = await this.dataSource.query(
             `SELECT * FROM public."LikesModel"
