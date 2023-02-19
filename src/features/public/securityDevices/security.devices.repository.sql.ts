@@ -122,7 +122,7 @@ export class SecurityDevicesRepositorySql extends ISecurityDevicesRepository {
 
   async getIpDevice(ip: string) {
     const device = await this.dataSource.query(
-      `SELECT * FROM public."CountAttempt"
+      `SELECT * FROM public."CountAttempts"
             WHERE "ip"=$1`,
       [ip],
     );
@@ -131,7 +131,7 @@ export class SecurityDevicesRepositorySql extends ISecurityDevicesRepository {
 
   async createCountAttempt(countAttempt: CountAttempt) {
     await this.dataSource.query(
-      `INSERT INTO public."CountAttempt"
+      `INSERT INTO public."CountAttempts"
             ("ip", "iat", "method", "originalUrl", "countAttempt")
             VALUES ($1, $2, $3, $4, $5)`,
       [
@@ -152,7 +152,7 @@ export class SecurityDevicesRepositorySql extends ISecurityDevicesRepository {
     dataIpDevice: string,
   ) {
     await this.dataSource.query(
-      `UPDATE public."CountAttempt"
+      `UPDATE public."CountAttempts"
             SET "iat"=$1, "method"=$2, "originalUrl"=$3, "countAttempt"=$4
             WHERE "ip"=$5`,
       [iat, method, originalUrl, countAttempt, dataIpDevice],
@@ -161,7 +161,7 @@ export class SecurityDevicesRepositorySql extends ISecurityDevicesRepository {
 
   async updateCountAttempt(countAttempt: number, ip: string) {
     await this.dataSource.query(
-      `UPDATE public."CountAttempt"
+      `UPDATE public."CountAttempts"
             SET "countAttempt"=$1
             WHERE "ip"=$2`,
       [countAttempt, ip],
