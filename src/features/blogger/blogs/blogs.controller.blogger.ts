@@ -28,7 +28,6 @@ import {
 } from './dto/blogger.dto';
 import { UpdatePostByIdCommand } from './application/useCases/update.post.by.id.use.case';
 import { DeletePostByIdCommand } from './application/useCases/delete.post.by.id.use.case';
-import { GetPostIdCommand } from '../../public/posts/application/useCase/get.post.id.use.case';
 import { CreatePostByIdCommand } from './application/useCases/create.post.by.id.use.case';
 import { IQueryRepository } from '../../public/queryReposytories/i.query.repository';
 
@@ -107,8 +106,7 @@ export class BlogsControllerBlogger {
     @Body() body: CreatePostForBlogDto,
     @Req() req,
   ) {
-    console.time('start');
-    const newPostForBlogId = await this.commandBus.execute(
+    return await this.commandBus.execute(
       new CreatePostByIdCommand(
         {
           title: body.title,
@@ -119,15 +117,15 @@ export class BlogsControllerBlogger {
         req.user.id,
       ),
     );
-    if (newPostForBlogId) {
-      const a = await this.commandBus.execute(
-        new GetPostIdCommand(newPostForBlogId.id, req.user.id),
-      );
-      console.timeLog('start');
-      return a;
-    } else {
-      throw new NotFoundException();
-    }
+    // if (newPostForBlogId) {
+    //   const a = await this.commandBus.execute(
+    //     new GetPostIdCommand(newPostForBlogId.id, req.user.id),
+    //   );
+    //   console.timeLog('start');
+    //   return a;
+    // } else {
+    //   throw new NotFoundException();
+    // }
   }
 
   @HttpCode(204)
