@@ -135,8 +135,8 @@ export class QueryRepositorySql extends IQueryRepository {
             blogName: a.blogName,
             createdAt: a.createdAt,
             extendedLikesInfo: {
-              likesCount: like?.count || 0,
-              dislikesCount: dislike?.count || 0,
+              likesCount: +like?.count || 0,
+              dislikesCount: +dislike?.count || 0,
               myStatus: myStatus,
               newestLikes: sortLikesArray.map((b) => {
                 return {

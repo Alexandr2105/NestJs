@@ -26,7 +26,7 @@ export class CreateCommentByPostUseCase {
     private readonly commentsCollection: Model<CommentDocument>,
   ) {}
 
-  async execute(command: CreateCommentByPostCommand): Promise<Comment | false> {
+  async execute(command: CreateCommentByPostCommand) {
     const post = await this.postsRepository.getPostId(command.postId);
     if (!post) return false;
     const newComment = new this.commentsCollection();
@@ -37,6 +37,19 @@ export class CreateCommentByPostUseCase {
     newComment.id = +new Date() + '';
     newComment.createdAt = new Date().toISOString();
     await this.commentsRepository.save(newComment);
-    return newComment;
+    return {
+      id: newComment.id,
+      content: newComment.content,
+      commentatorInfo: {
+        userId: newComment.userId,
+        userLogin: newComment.userLogin,
+      },
+      createdAt: newComment.createdAt,
+      likesInfo: {
+        likesCount: 0,
+        dislikesCount: 0,
+        myStatus: 'None',
+      },
+    };
   }
 }
