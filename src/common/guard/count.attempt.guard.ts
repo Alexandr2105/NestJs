@@ -50,8 +50,8 @@ export class CountAttemptGuard implements CanActivate {
       ) {
         const count = dataIpDevice.countAttempt + 1;
         await this.securityDevicesRepository.updateCountAttempt(
-          dataIpDevice?.ip,
           count,
+          dataIpDevice?.ip,
         );
         return true;
       } else if (

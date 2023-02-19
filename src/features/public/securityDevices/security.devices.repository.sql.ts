@@ -159,12 +159,12 @@ export class SecurityDevicesRepositorySql extends ISecurityDevicesRepository {
     );
   }
 
-  async updateCountAttempt(countAttempt: number, ip: string) {
+  async updateCountAttempt(countAttempts: number, ip: string) {
     await this.dataSource.query(
       `UPDATE public."CountAttempts"
             SET "countAttempt"=$1
             WHERE "ip"=$2`,
-      [ip, countAttempt],
+      [ip, countAttempts],
     );
   }
 }
