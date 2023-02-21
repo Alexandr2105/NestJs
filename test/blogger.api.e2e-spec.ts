@@ -7,6 +7,7 @@ import { CreateBlogDto } from '../src/features/blogger/blogs/dto/blogger.dto';
 import { Blog } from '../src/features/public/blogs/schema/blogs.schema';
 import { Post } from '../src/features/public/posts/schema/posts.schema';
 import { User } from '../src/features/sa/users/schema/user';
+import { Helper } from './helper';
 
 describe('Create tests for blogger', () => {
   let newBlog1: Blog = null;
@@ -46,20 +47,11 @@ describe('Create tests for blogger', () => {
   });
 
   it('Create user 1', async () => {
-    return await test
-      .post('/sa/users')
-      .auth('admin', 'qwerty', { type: 'basic' })
-      .send(user1)
-      .expect(201);
+    return await new Helper().user(user1, 'admin', 'qwerty', test);
   });
 
   it('Create user 2', async () => {
-    const user = await test
-      .post('/sa/users')
-      .auth('admin', 'qwerty', { type: 'basic' })
-      .send(user2)
-      .expect(201);
-    banUser = user.body;
+    banUser = await new Helper().user(user2, 'admin', 'qwerty', test);
   });
 
   it('login', async () => {
@@ -96,42 +88,17 @@ describe('Create tests for blogger', () => {
       websiteUrl: 'www.any.com',
     };
     const { accessToken } = expect.getState();
-    const blog1 = await test
-      .post('/blogger/blogs/')
-      .auth(accessToken, { type: 'bearer' })
-      .send(blogInputData)
-      .expect(201);
-    newBlog1 = blog1.body;
-    expect(newBlog1).toEqual({
-      id: newBlog1.id,
-      name: newBlog1.name,
-      description: newBlog1.description,
-      websiteUrl: newBlog1.websiteUrl,
-      createdAt: newBlog1.createdAt,
-      isMembership: false,
-    });
+    newBlog1 = await new Helper().blog(blogInputData, accessToken, test);
   });
 
   it('Создаем новый blog2', async () => {
+    const blogInputData: CreateBlogDto = {
+      name: 'String',
+      description: '421421',
+      websiteUrl: 'www.anySite.com',
+    };
     const { accessToken } = expect.getState();
-    const blog = await test
-      .post('/blogger/blogs')
-      .auth(accessToken, { type: 'bearer' })
-      .send({
-        name: 'Alex1',
-        description: '12312421421',
-        websiteUrl: 'www.youtube1.com',
-      })
-      .expect(201);
-    newBlog2 = blog.body;
-    expect(newBlog2).toEqual({
-      id: newBlog2.id,
-      name: newBlog2.name,
-      description: newBlog2.description,
-      websiteUrl: newBlog2.websiteUrl,
-      createdAt: newBlog2.createdAt,
-      isMembership: false,
-    });
+    newBlog2 = await new Helper().blog(blogInputData, accessToken, test);
   });
 
   it('Создаем новый blog без авторизации', async () => {
@@ -292,56 +259,26 @@ describe('Create tests for blogger', () => {
 
   it('Создаем 2 posts по blogId с авторизацией', async () => {
     const { accessToken } = expect.getState();
-    const post1 = await test
-      .post('/blogger/blogs/' + newBlog2.id + '/posts')
-      .auth(accessToken, { type: 'bearer' })
-      .send({
+    newPost1 = await new Helper().post(
+      {
         title: 'string1',
         shortDescription: 'string1',
         content: 'string1',
-      })
-      .expect(201);
-    newPost1 = post1.body;
-    expect(post1.body).toEqual({
-      id: newPost1.id,
-      title: newPost1.title,
-      shortDescription: newPost1.shortDescription,
-      content: newPost1.content,
-      blogId: newPost1.blogId,
-      blogName: newPost1.blogName,
-      createdAt: newPost1.createdAt,
-      extendedLikesInfo: {
-        likesCount: 0,
-        dislikesCount: 0,
-        myStatus: 'None',
-        newestLikes: [],
       },
-    });
-    const post2 = await test
-      .post('/blogger/blogs/' + newBlog2.id + '/posts')
-      .auth(accessToken, { type: 'bearer' })
-      .send({
+      accessToken,
+      test,
+      newBlog2,
+    );
+    newPost2 = await new Helper().post(
+      {
         title: 'string1',
         shortDescription: 'string1',
         content: 'string1',
-      })
-      .expect(201);
-    newPost2 = post2.body;
-    expect(post2.body).toEqual({
-      id: newPost2.id,
-      title: newPost2.title,
-      shortDescription: newPost2.shortDescription,
-      content: newPost2.content,
-      blogId: newPost2.blogId,
-      blogName: newPost2.blogName,
-      createdAt: newPost2.createdAt,
-      extendedLikesInfo: {
-        likesCount: 0,
-        dislikesCount: 0,
-        myStatus: 'None',
-        newestLikes: [],
       },
-    });
+      accessToken,
+      test,
+      newBlog2,
+    );
   });
 
   it('Создаем post по blogId без авторизации', async () => {
@@ -653,6 +590,8 @@ describe('Create tests for sa', () => {
   let app: INestApplication;
   let test;
 
+  let newBlog1: Blog = null;
+  let newBlog2: Blog = null;
   const user1 = {
     login: 'Alex',
     password: 'QWERTY',
@@ -663,6 +602,7 @@ describe('Create tests for sa', () => {
     password: 'QWERTY',
     email: '50305531@gmail.com',
   };
+  let banUser: User = null;
 
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -678,5 +618,74 @@ describe('Create tests for sa', () => {
 
   afterAll(async () => {
     await app.close();
+  });
+
+  it('Create user 1', async () => {
+    return await new Helper().user(user1, 'admin', 'qwerty', test);
+  });
+
+  it('Create user 2', async () => {
+    banUser = await new Helper().user(user2, 'admin', 'qwerty', test);
+  });
+
+  it('login', async () => {
+    const response = await test
+      .post('/auth/login')
+      .send({ loginOrEmail: user1.login, password: user1.password });
+
+    expect(response.status).toBe(200);
+    const accessToken = response.body;
+    expect(accessToken).toEqual({
+      accessToken: expect.any(String),
+    });
+    expect.setState(accessToken);
+  });
+
+  it('Create Blog1', async () => {
+    const blogInputData: CreateBlogDto = {
+      name: '123123',
+      description: '12312421421',
+      websiteUrl: 'www.any.com',
+    };
+    const { accessToken } = expect.getState();
+    newBlog1 = await new Helper().blog(blogInputData, accessToken, test);
+  });
+
+  it('Create Blog2', async () => {
+    const blogInputData: CreateBlogDto = {
+      name: 'string',
+      description: 'Any String',
+      websiteUrl: 'www.anySite.com',
+    };
+    const { accessToken } = expect.getState();
+    newBlog2 = await new Helper().blog(blogInputData, accessToken, test);
+  });
+  it('Баним blog по id', async () => {
+    await test
+      .put(`/sa/blogs/${newBlog1.id}/ban`)
+      .send({
+        isBanned: true,
+      })
+      .expect(401);
+    const info = await test
+      .put(`/sa/blogs/${newBlog1.id}/ban`)
+      .auth('admin', 'qwerty', { type: 'basic' })
+      .send('True')
+      .expect(400);
+    expect(info.body).toEqual({
+      errorsMessages: [
+        {
+          message: expect.any(String),
+          field: 'isBanned',
+        },
+      ],
+    });
+    await test
+      .put(`/sa/blogs/${newBlog1.id}/ban`)
+      .auth('admin', 'qwerty', { type: 'basic' })
+      .send({
+        isBanned: true,
+      })
+      .expect(204);
   });
 });
