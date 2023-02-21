@@ -27,6 +27,7 @@ describe('Create tests for blogger', () => {
     password: 'QWERTY',
     email: '50305531@gmail.com',
   };
+  let admin: User = null;
   let banUser: User = null;
   let app: INestApplication;
   let test;
@@ -48,7 +49,7 @@ describe('Create tests for blogger', () => {
   });
 
   it('Create user 1', async () => {
-    return await new Helper().user(user1, 'admin', 'qwerty', test);
+    admin = await new Helper().user(user1, 'admin', 'qwerty', test);
   });
 
   it('Create user 2', async () => {
@@ -138,34 +139,24 @@ describe('Create tests for blogger', () => {
       ],
     });
   });
-  // it('Получаем blog по id', async () => {
-  //   await test.get('/blogger/blogs/' + newBlog1.id).expect(200, newBlog1);
-  // });
-  // it('Получаем blog по не верному id', async () => {
-  //   await test.get('/blogger/blog/' + newBlog1).expect(404);
-  // });
-  // it('Получаем все blogs', async () => {
-  //   const { accessToken } = expect.getState();
-  //   await test
-  //     .get('/blogger/blogs')
-  //     .auth(accessToken, { type: 'bearer' })
-  //     .expect(200, {
-  //       pagesCount: 1,
-  //       page: 1,
-  //       pageSize: 10,
-  //       totalCount: 2,
-  //       items: [newBlog2, newBlog1],
-  //     });
-  // });
-  // it('Получаем все blogs, без авторизации', async () => {
-  //   await test.get('/blogger/blogs').expect(200, {
-  //     pagesCount: 1,
-  //     page: 1,
-  //     pageSize: 10,
-  //     totalCount: 2,
-  //     items: [newBlog2, newBlog1],
-  //   });
-  // });
+
+  it('Получаем все blogs', async () => {
+    const { accessToken } = expect.getState();
+    await test
+      .get('/blogger/blogs')
+      .auth(accessToken, { type: 'bearer' })
+      .expect(200, {
+        pagesCount: 1,
+        page: 1,
+        pageSize: 10,
+        totalCount: 2,
+        items: [newBlog2, newBlog1],
+      });
+  });
+
+  it('Получаем все blogs, без авторизации', async () => {
+    await test.get('/blogger/blogs').expect(401);
+  });
 
   it('Удаляем blog и проверяем на удаление', async () => {
     const { accessToken } = expect.getState();
@@ -350,19 +341,7 @@ describe('Create tests for blogger', () => {
       })
       .expect(403);
   });
-  // it('Получаем post по blog id', async () => {
-  //   await test.get('/blogs/' + newBlog2.id + '/posts').expect(200, {
-  //     pagesCount: 1,
-  //     page: 1,
-  //     pageSize: 10,
-  //     totalCount: 2,
-  //     items: [newPost2, newPost1],
-  //   });
-  // });
-  //
-  // it('Получаем post по не верному blog id', async () => {
-  //   await test.get('/blogs/' + newBlog1.id + '/posts').expect(404);
-  // });
+
   it('Обновляем post по id', async () => {
     const { accessToken } = expect.getState();
     await test
@@ -555,34 +534,75 @@ describe('Create tests for blogger', () => {
 
   it('Получаем все комментарии конкретного blog', async () => {
     const { accessToken } = expect.getState();
+    const comment1 = await new Helper().comment(
+      {
+        content: 'stringstringstringst',
+      },
+      accessToken,
+      test,
+      newPost2,
+    );
+    const comment2 = await new Helper().comment(
+      {
+        content: 'stringstringstringstadfas',
+      },
+      accessToken,
+      test,
+      newPost2,
+    );
     await test.get(`/blogger/blogs/comments`).expect(401);
     const info = await test
       .get(`/blogger/blogs/comments`)
       .auth(accessToken, { type: 'bearer' })
       .expect(200);
-    // expect(info.body).toEqual({
-    //   pagesCount: 0,
-    //   page: 0,
-    //   pageSize: 0,
-    //   totalCount: 0,
-    //   items: [
-    //     {
-    //       id: 'string',
-    //       content: 'string',
-    //       commentatorInfo: {
-    //         userId: 'string',
-    //         userLogin: 'string',
-    //       },
-    //       createdAt: '2023-02-21T08:49:49.631Z',
-    //       postInfo: {
-    //         id: 'string',
-    //         title: 'string',
-    //         blogId: 'string',
-    //         blogName: 'string',
-    //       },
-    //     },
-    //   ],
-    // });
+    expect(info.body).toEqual({
+      pagesCount: 1,
+      page: 1,
+      pageSize: 10,
+      totalCount: 2,
+      items: [
+        {
+          id: comment2.id,
+          content: 'stringstringstringstadfas',
+          commentatorInfo: {
+            userId: admin.id,
+            userLogin: admin.login,
+          },
+          createdAt: comment2.createdAt,
+          likesInfo: {
+            dislikesCount: 0,
+            likesCount: 0,
+            myStatus: 'None',
+          },
+          postInfo: {
+            id: newPost2.id,
+            title: newPost2.title,
+            blogId: newPost2.blogId,
+            blogName: newPost2.blogName,
+          },
+        },
+        {
+          id: comment1.id,
+          content: 'stringstringstringst',
+          commentatorInfo: {
+            userId: admin.id,
+            userLogin: admin.login,
+          },
+          createdAt: comment1.createdAt,
+          likesInfo: {
+            dislikesCount: 0,
+            likesCount: 0,
+            myStatus: 'None',
+          },
+          postInfo: {
+            id: newPost2.id,
+            title: newPost2.title,
+            blogId: newPost2.blogId,
+            blogName: newPost2.blogName,
+          },
+        },
+      ],
+    });
   });
 });
 
@@ -861,12 +881,404 @@ describe('Create tests for all', () => {
     password: 'QWERTY',
     email: '50305531@gmail.com',
   };
-  const admin: User = null;
-  const banUser: User = null;
-  const newBlog1: Blog = null;
-  const newBlog2: Blog = null;
-  const newPost1: Post = null;
-  const newPost2: Post = null;
-  const newComment1: Comment = null;
-  const newComment2: Comment = null;
+  let admin: User = null;
+  let newBlog1: Blog = null;
+  let newBlog2: Blog = null;
+  let newPost1: Post = null;
+  let newPost2: Post = null;
+  let newComment1: Comment = null;
+  let newComment2: Comment = null;
+
+  beforeAll(async () => {
+    const moduleFixture: TestingModule = await Test.createTestingModule({
+      imports: [AppModule],
+    }).compile();
+
+    app = moduleFixture.createNestApplication();
+    app = createApp(app);
+    await app.init();
+    test = request(app.getHttpServer());
+    return test.del('/testing/all-data').expect(204);
+  });
+
+  afterAll(async () => {
+    await app.close();
+  });
+
+  it('Create user 1', async () => {
+    admin = await new Helper().user(user1, 'admin', 'qwerty', test);
+  });
+
+  it('Create user 2', async () => {
+    await new Helper().user(user2, 'admin', 'qwerty', test);
+  });
+
+  it('login', async () => {
+    const response = await test
+      .post('/auth/login')
+      .send({ loginOrEmail: user1.login, password: user1.password });
+
+    expect(response.status).toBe(200);
+    const accessToken = response.body;
+    expect(accessToken).toEqual({
+      accessToken: expect.any(String),
+    });
+    expect.setState(accessToken);
+  });
+
+  it('Create Blog1', async () => {
+    const blogInputData: CreateBlogDto = {
+      name: '123123',
+      description: '12312421421',
+      websiteUrl: 'www.any.com',
+    };
+    const { accessToken } = expect.getState();
+    newBlog1 = await new Helper().blog(blogInputData, accessToken, test);
+  });
+
+  it('Create Blog2', async () => {
+    const blogInputData: CreateBlogDto = {
+      name: 'string',
+      description: 'Any String',
+      websiteUrl: 'www.anySite.com',
+    };
+    const { accessToken } = expect.getState();
+    newBlog2 = await new Helper().blog(blogInputData, accessToken, test);
+  });
+
+  it('Получаем blog по id', async () => {
+    const info = await test.get('/blogs/' + newBlog2.id).expect(200);
+    expect(info.body).toEqual({
+      id: newBlog2.id,
+      name: newBlog2.name,
+      description: newBlog2.description,
+      websiteUrl: newBlog2.websiteUrl,
+      createdAt: newBlog2.createdAt,
+      isMembership: false,
+    });
+    await test.get(`/blogs/1234`).expect(404);
+  });
+
+  it('Получаем все blog', async () => {
+    const info = await test.get(`/blogs`).expect(200);
+    expect(info.body).toEqual({
+      pagesCount: 1,
+      page: 1,
+      pageSize: 10,
+      totalCount: 2,
+      items: [
+        {
+          id: newBlog2.id,
+          name: newBlog2.name,
+          description: newBlog2.description,
+          websiteUrl: newBlog2.websiteUrl,
+          createdAt: newBlog2.createdAt,
+          isMembership: newBlog2.isMembership,
+        },
+        {
+          id: newBlog1.id,
+          name: newBlog1.name,
+          description: newBlog1.description,
+          websiteUrl: newBlog1.websiteUrl,
+          createdAt: newBlog1.createdAt,
+          isMembership: newBlog1.isMembership,
+        },
+      ],
+    });
+  });
+
+  it('Создаем 2 posts по blogId с авторизацией', async () => {
+    const { accessToken } = expect.getState();
+    newPost1 = await new Helper().post(
+      {
+        title: 'string1',
+        shortDescription: 'string1',
+        content: 'string1',
+      },
+      accessToken,
+      test,
+      newBlog2,
+    );
+    newPost2 = await new Helper().post(
+      {
+        title: 'string1',
+        shortDescription: 'string1',
+        content: 'string1',
+      },
+      accessToken,
+      test,
+      newBlog2,
+    );
+  });
+
+  it('Получаем post по blog id', async () => {
+    await test.get('/blogs/' + newBlog2.id + '/posts').expect(200, {
+      pagesCount: 1,
+      page: 1,
+      pageSize: 10,
+      totalCount: 2,
+      items: [newPost2, newPost1],
+    });
+  });
+
+  it('Получаем post по не верному blog id', async () => {
+    await test.get('/blogs/1234/posts').expect(404);
+  });
+
+  it('Возвращаем все posts', async () => {
+    const info = await test.get('/posts').expect(200);
+    expect(info.body).toEqual({
+      pagesCount: 1,
+      page: 1,
+      pageSize: 10,
+      totalCount: 2,
+      items: [
+        {
+          id: newPost2.id,
+          title: newPost2.title,
+          shortDescription: newPost2.shortDescription,
+          content: newPost2.content,
+          blogId: newPost2.blogId,
+          blogName: newPost2.blogName,
+          createdAt: newPost2.createdAt,
+          extendedLikesInfo: {
+            likesCount: 0,
+            dislikesCount: 0,
+            myStatus: 'None',
+            newestLikes: [],
+          },
+        },
+        {
+          id: newPost1.id,
+          title: newPost1.title,
+          shortDescription: newPost1.shortDescription,
+          content: newPost1.content,
+          blogId: newPost1.blogId,
+          blogName: newPost1.blogName,
+          createdAt: newPost1.createdAt,
+          extendedLikesInfo: {
+            likesCount: 0,
+            dislikesCount: 0,
+            myStatus: 'None',
+            newestLikes: [],
+          },
+        },
+      ],
+    });
+  });
+
+  it('Получаем post по id', async () => {
+    const info = await test.get('/posts/' + newPost1.id).expect(200);
+    expect(info.body).toEqual({
+      id: newPost1.id,
+      title: newPost1.title,
+      shortDescription: newPost1.shortDescription,
+      content: newPost1.content,
+      blogId: newPost1.blogId,
+      blogName: newPost1.blogName,
+      createdAt: newPost1.createdAt,
+      extendedLikesInfo: {
+        likesCount: 0,
+        dislikesCount: 0,
+        myStatus: 'None',
+        newestLikes: [],
+      },
+    });
+  });
+
+  it('Получаем post по не верному id', async () => {
+    await test.get('/posts/234').expect(404);
+  });
+
+  it('Создаем два коментария с токеном по postId', async () => {
+    const { accessToken } = expect.getState();
+    newComment1 = await new Helper().comment(
+      { content: 'stringstringstringst' },
+      accessToken,
+      test,
+      newPost1,
+    );
+    newComment2 = await new Helper().comment(
+      { content: 'stringstringstringstadsfasdf' },
+      accessToken,
+      test,
+      newPost1,
+    );
+  });
+
+  it('Создаем коментарий без токена по postId', async () => {
+    await test
+      .post('/posts/' + newPost2.id + '/comments')
+      .send({
+        content: 'stringstringstringst',
+      })
+      .expect(401);
+  });
+
+  it('Создаем коментарий с токеном, но неверным контентом', async () => {
+    const { accessToken } = expect.getState();
+    await test
+      .post('/posts/' + newPost2.id + '/comments')
+      .auth(accessToken, { type: 'bearer' })
+      .send({
+        content: 'string',
+      })
+      .expect(400);
+  });
+
+  it('Создаем коментарий по неверному postId', async () => {
+    const { accessToken } = expect.getState();
+    await test
+      .post('/posts/1213/comments')
+      .auth(accessToken, { type: 'bearer' })
+      .send({
+        content: 'stringstringstringst',
+      })
+      .expect(404);
+  });
+
+  it('Получаем комментарии для конкретного post по id', async () => {
+    await test.get(`/posts/1234/comments`).expect(404);
+    const info = await test.get(`/posts/${newPost1.id}/comments`).expect(200);
+    expect(info.body).toEqual({
+      pagesCount: 1,
+      page: 1,
+      pageSize: 10,
+      totalCount: 2,
+      items: [
+        {
+          id: newComment2.id,
+          content: 'stringstringstringstadsfasdf',
+          commentatorInfo: {
+            userId: admin.id,
+            userLogin: admin.login,
+          },
+          createdAt: newComment2.createdAt,
+          likesInfo: {
+            dislikesCount: 0,
+            likesCount: 0,
+            myStatus: 'None',
+          },
+        },
+        {
+          id: newComment1.id,
+          content: 'stringstringstringst',
+          commentatorInfo: {
+            userId: admin.id,
+            userLogin: admin.login,
+          },
+          createdAt: newComment1.createdAt,
+          likesInfo: {
+            dislikesCount: 0,
+            likesCount: 0,
+            myStatus: 'None',
+          },
+        },
+      ],
+    });
+  });
+
+  it('Обновляем like status для post по postId', async () => {
+    const { accessToken } = expect.getState();
+    await test
+      .put(`/posts/${newPost1.id}/like-status`)
+      .send({
+        likeStatus: 'Like',
+      })
+      .expect(401);
+    await test
+      .put(`/posts/1234/like-status`)
+      .auth(accessToken, { type: 'bearer' })
+      .send({
+        likeStatus: 'Like',
+      })
+      .expect(404);
+    const info = await test
+      .put(`/posts/${newPost1.id}/like-status`)
+      .auth(accessToken, { type: 'bearer' })
+      .send({
+        likeStatus: 'true',
+      })
+      .expect(400);
+    expect(info.body).toEqual({
+      errorsMessages: [
+        {
+          message: expect.any(String),
+          field: 'likeStatus',
+        },
+      ],
+    });
+    await test
+      .put(`/posts/${newPost1.id}/like-status`)
+      .auth(accessToken, { type: 'bearer' })
+      .send({
+        likeStatus: 'Like',
+      })
+      .expect(204);
+  });
+
+  it('Получаем post по id после like', async () => {
+    const { accessToken } = expect.getState();
+    const info1 = await test.get('/posts/' + newPost1.id).expect(200);
+    expect(info1.body).toEqual({
+      id: newPost1.id,
+      title: newPost1.title,
+      shortDescription: newPost1.shortDescription,
+      content: newPost1.content,
+      blogId: newPost1.blogId,
+      blogName: newPost1.blogName,
+      createdAt: newPost1.createdAt,
+      extendedLikesInfo: {
+        likesCount: 1,
+        dislikesCount: 0,
+        myStatus: 'None',
+        newestLikes: [
+          {
+            addedAt: expect.any(String),
+            userId: admin.id,
+            login: admin.login,
+          },
+        ],
+      },
+    });
+    const info2 = await test
+      .get('/posts/' + newPost1.id)
+      .auth(accessToken, { type: 'bearer' })
+      .expect(200);
+    expect(info2.body).toEqual({
+      id: newPost1.id,
+      title: newPost1.title,
+      shortDescription: newPost1.shortDescription,
+      content: newPost1.content,
+      blogId: newPost1.blogId,
+      blogName: newPost1.blogName,
+      createdAt: newPost1.createdAt,
+      extendedLikesInfo: {
+        likesCount: 1,
+        dislikesCount: 0,
+        myStatus: 'Like',
+        newestLikes: [
+          {
+            addedAt: expect.any(String),
+            userId: admin.id,
+            login: admin.login,
+          },
+        ],
+      },
+    });
+  });
+
+  it('Получаем информацию о пользователе', async () => {
+    const { accessToken } = expect.getState();
+    await test.get(`/auth/me`).expect(401);
+    const info = await test
+      .get(`/auth/me`)
+      .auth(accessToken, { type: 'bearer' })
+      .expect(200);
+    expect(info.body).toEqual({
+      email: admin.email,
+      login: admin.login,
+      userId: admin.id,
+    });
+  });
 });

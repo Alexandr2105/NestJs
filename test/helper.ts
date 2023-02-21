@@ -4,6 +4,8 @@ import {
 } from '../src/features/blogger/blogs/dto/blogger.dto';
 import { Blog } from '../src/features/public/blogs/schema/blogs.schema';
 import { CreateUserDto } from '../src/features/sa/users/dto/user.dto';
+import { CreateCommentDto } from '../src/features/public/comments/dto/comment.dto';
+import { Post } from '../src/features/public/posts/schema/posts.schema';
 
 export class Helper {
   blog = async (
@@ -84,6 +86,33 @@ export class Helper {
     });
     return user.body;
   };
-  // comment = async () => {};
+
+  comment = async (
+    commentInputData: CreateCommentDto,
+    accessToken: string,
+    test: any,
+    post: Post,
+  ) => {
+    const comment = await test
+      .post(`/posts/${post.id}/comments`)
+      .auth(accessToken, { type: 'bearer' })
+      .send(commentInputData)
+      .expect(201);
+    expect(comment.body).toEqual({
+      id: comment.body.id,
+      content: comment.body.content,
+      commentatorInfo: {
+        userId: comment.body.commentatorInfo.userId,
+        userLogin: comment.body.commentatorInfo.userLogin,
+      },
+      createdAt: expect.any(String),
+      likesInfo: {
+        likesCount: 0,
+        dislikesCount: 0,
+        myStatus: 'None',
+      },
+    });
+    return comment.body;
+  };
   // blog1 = async () => {};
 }
