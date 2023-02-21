@@ -8,6 +8,7 @@ import { Blog } from '../src/features/public/blogs/schema/blogs.schema';
 import { Post } from '../src/features/public/posts/schema/posts.schema';
 import { User } from '../src/features/sa/users/schema/user';
 import { Helper } from './helper';
+import { Comment } from '../src/features/public/comments/schema/comment.schema';
 
 describe('Create tests for blogger', () => {
   let newBlog1: Blog = null;
@@ -602,6 +603,7 @@ describe('Create tests for sa', () => {
     password: 'QWERTY',
     email: '50305531@gmail.com',
   };
+  let admin: User = null;
   let banUser: User = null;
 
   beforeAll(async () => {
@@ -621,7 +623,7 @@ describe('Create tests for sa', () => {
   });
 
   it('Create user 1', async () => {
-    return await new Helper().user(user1, 'admin', 'qwerty', test);
+    admin = await new Helper().user(user1, 'admin', 'qwerty', test);
   });
 
   it('Create user 2', async () => {
@@ -660,6 +662,7 @@ describe('Create tests for sa', () => {
     const { accessToken } = expect.getState();
     newBlog2 = await new Helper().blog(blogInputData, accessToken, test);
   });
+
   it('Баним blog по id', async () => {
     await test
       .put(`/sa/blogs/${newBlog1.id}/ban`)
@@ -688,4 +691,182 @@ describe('Create tests for sa', () => {
       })
       .expect(204);
   });
+
+  it('Соеденям blog и user, если у блога нет ешё владельца', async () => {
+    await test
+      .put(`/sa/blogs/${newBlog2.id}/bind-with-user/${banUser.id}`)
+      .expect(401);
+    await test
+      .put(`/sa/blogs/${newBlog2.id}/bind-with-user/${banUser.id}`)
+      .auth('admin', 'qwerty', { type: 'basic' })
+      .expect(400);
+  });
+
+  it('Получаем все блоги', async () => {
+    await test.get(`/sa/blogs`).expect(401);
+    const info = await test
+      .get(`/sa/blogs`)
+      .auth('admin', 'qwerty', { type: 'basic' })
+      .expect(200);
+    expect(info.body).toEqual({
+      pagesCount: 1,
+      page: 1,
+      pageSize: 10,
+      totalCount: 2,
+      items: [
+        {
+          id: newBlog2.id,
+          name: newBlog2.name,
+          description: newBlog2.description,
+          websiteUrl: newBlog2.websiteUrl,
+          createdAt: newBlog2.createdAt,
+          isMembership: false,
+          blogOwnerInfo: {
+            userId: admin.id,
+            userLogin: admin.login,
+          },
+          banInfo: {
+            isBanned: false,
+            banDate: null,
+          },
+        },
+        {
+          id: newBlog1.id,
+          name: newBlog1.name,
+          description: newBlog1.description,
+          websiteUrl: newBlog1.websiteUrl,
+          createdAt: newBlog1.createdAt,
+          isMembership: false,
+          blogOwnerInfo: {
+            userId: admin.id,
+            userLogin: admin.login,
+          },
+          banInfo: {
+            isBanned: true,
+            banDate: expect.any(String),
+          },
+        },
+      ],
+    });
+  });
+
+  it('Баним пользователя по id', async () => {
+    await test.put(`/sa/users/${banUser.id}/ban`).expect(401);
+    const info = await test
+      .put(`/sa/users/${banUser.id}/ban`)
+      .auth('admin', 'qwerty', { type: 'basic' })
+      .send({
+        isBanned: 'True',
+        banReason: '',
+      })
+      .expect(400);
+    expect(info.body).toEqual({
+      errorsMessages: [
+        {
+          message: expect.any(String),
+          field: 'isBanned',
+        },
+        {
+          message: expect.any(String),
+          field: 'banReason',
+        },
+      ],
+    });
+    await test
+      .put(`/sa/users/${banUser.id}/ban`)
+      .auth('admin', 'qwerty', { type: 'basic' })
+      .send({
+        isBanned: true,
+        banReason: 'stringstringstringst',
+      })
+      .expect(204);
+  });
+
+  it('Получить всех пользователей', async () => {
+    await test.get(`/sa/users`).expect(401);
+    const info = await test
+      .get(`/sa/users`)
+      .auth('admin', 'qwerty', { type: 'basic' })
+      .expect(200);
+    expect(info.body).toEqual({
+      pagesCount: 1,
+      page: 1,
+      pageSize: 10,
+      totalCount: 2,
+      items: [
+        {
+          id: banUser.id,
+          login: banUser.login,
+          email: banUser.email,
+          createdAt: banUser.createdAt,
+          banInfo: {
+            isBanned: true,
+            banDate: expect.any(String),
+            banReason: expect.any(String),
+          },
+        },
+        {
+          id: admin.id,
+          login: admin.login,
+          email: admin.email,
+          createdAt: admin.createdAt,
+          banInfo: {
+            isBanned: false,
+            banDate: null,
+            banReason: null,
+          },
+        },
+      ],
+    });
+  });
+
+  it('Проверяем создание нового пользователя на ошибки', async () => {
+    await test
+      .post('/sa/users')
+      .auth('admin', 'qwerty', { type: 'basic' })
+      .send(user1)
+      .expect(400);
+    await test
+      .post('/sa/users')
+      .auth('admin1', 'qwerty1', { type: 'basic' })
+      .send(user1)
+      .expect(401);
+  });
+
+  it('Удаляем юзера и провераяем', async () => {
+    await test.del(`/sa/users/${banUser.id}`).expect(401);
+    await test
+      .del(`/sa/users/${banUser.id}`)
+      .auth('admin', 'qwerty', { type: 'basic' })
+      .expect(204);
+    await test
+      .del(`/sa/users/${banUser.id}`)
+      .auth('admin', 'qwerty', { type: 'basic' })
+      .expect(404);
+  });
+});
+
+describe('Create tests for all', () => {
+  jest.setTimeout(5 * 60 * 1000);
+  let app: INestApplication;
+  let test;
+
+  const user1 = {
+    login: 'Alex',
+    password: 'QWERTY',
+    email: '5030553@gmail.com',
+  };
+  const user2 = {
+    login: 'Alex1',
+    password: 'QWERTY',
+    email: '50305531@gmail.com',
+  };
+  const admin: User = null;
+  const banUser: User = null;
+  const newBlog1: Blog = null;
+  const newBlog2: Blog = null;
+  const newPost1: Post = null;
+  const newPost2: Post = null;
+  const newComment1: Comment = null;
+  const newComment2: Comment = null;
 });
