@@ -11,7 +11,7 @@ export class CheckBlogIdForBlog implements ValidatorConstraintInterface {
   constructor(private readonly blogsRepository: IBlogsRepository) {}
 
   async validate(id: string): Promise<boolean> {
-    const blog = this.blogsRepository.getBlogId(id);
+    const blog = await this.blogsRepository.getBlogId(id);
     return !!blog;
   }
 
