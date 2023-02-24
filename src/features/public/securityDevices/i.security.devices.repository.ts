@@ -4,7 +4,7 @@ import { CountAttemptDocument } from '../../../common/schemas/count.attempt.sche
 
 export abstract class ISecurityDevicesRepository {
   abstract save(infoRefreshToken: RefreshTokenDocument);
-  abstract delAllDevicesExcludeCurrent(deviceId: string);
+  abstract delAllDevicesExcludeCurrent(deviceId: string, userId: string);
   abstract delDevice(deviceId: string): Promise<boolean>;
   abstract delAllDevicesUser(userId: string);
   abstract getAllDevicesUser(userId: string): Promise<DeviceInfoDto[]>;

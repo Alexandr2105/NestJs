@@ -49,11 +49,11 @@ export class SecurityDevicesRepositorySql extends ISecurityDevicesRepository {
     return deviceInfo[0];
   }
 
-  async delAllDevicesExcludeCurrent(deviceId: string) {
+  async delAllDevicesExcludeCurrent(deviceId: string, userId: string) {
     await this.dataSource.query(
       `DELETE FROM public."RefreshTokenData"
-             WHERE NOT "deviceId"=$1`,
-      [deviceId],
+             WHERE NOT "deviceId"=$1 AND "userId"=$2`,
+      [deviceId, userId],
     );
   }
 

@@ -15,8 +15,11 @@ export class SecurityDevicesService {
     await this.securityDevicesRepository.delOldRefreshTokenData(date);
   }
 
-  async delAllDevicesExcludeCurrent(deviceId: string) {
-    await this.securityDevicesRepository.delAllDevicesExcludeCurrent(deviceId);
+  async delAllDevicesExcludeCurrent(deviceId: string, userId: string) {
+    await this.securityDevicesRepository.delAllDevicesExcludeCurrent(
+      deviceId,
+      userId,
+    );
   }
 
   async delDevice(deviceId: string): Promise<boolean> {

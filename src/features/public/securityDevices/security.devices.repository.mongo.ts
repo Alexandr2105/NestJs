@@ -21,8 +21,9 @@ export class SecurityDevicesRepositoryMongo extends ISecurityDevicesRepository {
     await infoRefreshToken.save();
   }
 
-  async delAllDevicesExcludeCurrent(deviceId: string) {
+  async delAllDevicesExcludeCurrent(deviceId: string, userId: string) {
     await this.refreshTokenDataCollection.deleteMany({
+      userId: userId,
       deviceId: { $ne: deviceId },
     });
   }

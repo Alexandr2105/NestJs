@@ -35,7 +35,10 @@ export class SecurityDevicesController {
   @HttpCode(204)
   @Delete()
   async deleteDevices(@Req() req) {
-    await this.devicesService.delAllDevicesExcludeCurrent(req.user.deviceId);
+    await this.devicesService.delAllDevicesExcludeCurrent(
+      req.user.deviceId,
+      req.user.userId,
+    );
     return;
   }
 

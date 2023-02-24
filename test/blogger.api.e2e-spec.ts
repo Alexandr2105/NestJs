@@ -8,7 +8,6 @@ import { Blog } from '../src/features/public/blogs/schema/blogs.schema';
 import { Post } from '../src/features/public/posts/schema/posts.schema';
 import { User } from '../src/features/sa/users/schema/user';
 import { Helper } from './helper';
-import { Comment } from '../src/features/public/comments/schema/comment.schema';
 
 describe('Create tests for blogger', () => {
   let newBlog1: Blog = null;
@@ -886,8 +885,10 @@ describe('Create tests for all', () => {
   let newBlog2: Blog = null;
   let newPost1: Post = null;
   let newPost2: Post = null;
-  let newComment1: Comment = null;
-  let newComment2: Comment = null;
+  let newComment1 = null;
+  let newComment2 = null;
+  let infoUser1 = null;
+  let infoUser2 = null;
 
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -914,12 +915,12 @@ describe('Create tests for all', () => {
   });
 
   it('login', async () => {
-    const response = await test
+    infoUser1 = await test
       .post('/auth/login')
       .send({ loginOrEmail: user1.login, password: user1.password });
 
-    expect(response.status).toBe(200);
-    const accessToken = response.body;
+    expect(infoUser1.status).toBe(200);
+    const accessToken = infoUser1.body;
     expect(accessToken).toEqual({
       accessToken: expect.any(String),
     });
@@ -1280,5 +1281,216 @@ describe('Create tests for all', () => {
       login: admin.login,
       userId: admin.id,
     });
+  });
+
+  it('Обновляем like status для коментария', async () => {
+    const { accessToken } = expect.getState();
+    await test
+      .put(`/comments/${newComment1.id}/like-status`)
+      .auth(accessToken, { type: 'bearer' })
+      .send({
+        likeStatus: 'Like',
+      })
+      .expect(204);
+    await test
+      .put(`/comments/${newComment2.id}/like-status`)
+      .send({
+        likeStatus: 'Dislike',
+      })
+      .expect(401);
+    const info = await test
+      .put(`/comments/${newComment2.id}/like-status`)
+      .auth(accessToken, { type: 'bearer' })
+      .send({
+        likeStatus: 'Dis',
+      })
+      .expect(400);
+    expect(info.body).toEqual({
+      errorsMessages: [
+        {
+          message: expect.any(String),
+          field: 'likeStatus',
+        },
+      ],
+    });
+    await test
+      .put(`/comments/1234/like-status`)
+      .auth(accessToken, { type: 'bearer' })
+      .send({
+        likeStatus: 'Dislike',
+      })
+      .expect(404);
+  });
+
+  it('Обновляем коментарий по id', async () => {
+    const { accessToken } = expect.getState();
+    await test
+      .put(`/comments/${newComment1.id}`)
+      .auth(accessToken, { type: 'bearer' })
+      .send({
+        ...newComment1,
+        content: 'stringstringstringst20lenght',
+      })
+      .expect(204);
+    const info = await test
+      .put(`/comments/${newComment1.id}`)
+      .auth(accessToken, { type: 'bearer' })
+      .send({
+        ...newComment1,
+        content: 'strings',
+      })
+      .expect(400);
+    expect(info.body).toEqual({
+      errorsMessages: [
+        {
+          message: expect.any(String),
+          field: 'content',
+        },
+      ],
+    });
+    await test
+      .put(`/comments/${newComment1.id}`)
+      .send({
+        ...newComment1,
+        content: 'stringstringstringst20lenght',
+      })
+      .expect(401);
+    await test
+      .put(`/comments/1234`)
+      .auth(accessToken, { type: 'bearer' })
+      .send({
+        ...newComment1,
+        content: 'stringstringstringst20lenght',
+      })
+      .expect(404);
+    infoUser2 = await test
+      .post('/auth/login')
+      .send({ loginOrEmail: user2.login, password: user1.password });
+    const pass = infoUser2.body;
+    await test
+      .put(`/comments/${newComment1.id}`)
+      .auth(pass.accessToken, { type: 'bearer' })
+      .send({
+        ...newComment1,
+        content: 'stringstringstringst20lenght',
+      })
+      .expect(403);
+  });
+
+  it('Удаляем коментарий по id', async () => {
+    const { accessToken } = expect.getState();
+    await test
+      .delete(`/comments/${newComment2.id}`)
+      .auth(accessToken, { type: 'bearer' })
+      .expect(204);
+    await test
+      .delete(`/comments/${newComment2.id}`)
+      .auth(accessToken, { type: 'bearer' })
+      .expect(404);
+    await test.delete(`/comments/${newComment2.id}`).expect(401);
+    infoUser2 = await test
+      .post('/auth/login')
+      .send({ loginOrEmail: user2.login, password: user1.password });
+    const pass = infoUser2.body;
+    await test
+      .delete(`/comments/${newComment1.id}`)
+      .auth(pass.accessToken, { type: 'bearer' })
+      .expect(403);
+  });
+
+  it('Получаем коментарий по id', async () => {
+    const { accessToken } = expect.getState();
+    await test.get(`/comments/${newComment2.id}`).expect(404);
+    const info = await test.get(`/comments/${newComment1.id}`).expect(200);
+    expect(info.body).toEqual({
+      id: newComment1.id,
+      content: 'stringstringstringst20lenght',
+      commentatorInfo: {
+        userId: newComment1.commentatorInfo.userId,
+        userLogin: newComment1.commentatorInfo.userLogin,
+      },
+      createdAt: expect.any(String),
+      likesInfo: {
+        likesCount: 1,
+        dislikesCount: 0,
+        myStatus: 'None',
+      },
+    });
+    const info1 = await test
+      .get(`/comments/${newComment1.id}`)
+      .auth(accessToken, { type: 'bearer' })
+      .expect(200);
+    expect(info1.body).toEqual({
+      id: newComment1.id,
+      content: 'stringstringstringst20lenght',
+      commentatorInfo: {
+        userId: newComment1.commentatorInfo.userId,
+        userLogin: newComment1.commentatorInfo.userLogin,
+      },
+      createdAt: expect.any(String),
+      likesInfo: {
+        likesCount: 1,
+        dislikesCount: 0,
+        myStatus: 'Like',
+      },
+    });
+  });
+
+  it('Вернуть все девайсы пользователя за сессию', async () => {
+    const cookies = infoUser1.headers['set-cookie'];
+    await test.get(`/security/devices`).expect(401);
+    const info = await test
+      .get(`/security/devices`)
+      .set('Cookie', cookies)
+      .expect(200);
+    expect(info.body).toEqual([
+      {
+        ip: expect.any(String),
+        title: null,
+        lastActiveDate: expect.any(String),
+        deviceId: expect.any(String),
+      },
+    ]);
+  });
+
+  it('Выйти из всех девайсов кроме текущего', async () => {
+    const cookies = infoUser2.headers['set-cookie'];
+    await test.delete(`/security/devices`).expect(401);
+    await test.delete(`/security/devices`).set('Cookie', cookies).expect(204);
+    const info = await test
+      .get(`/security/devices`)
+      .set('Cookie', cookies)
+      .expect(200);
+    expect(info.body).toEqual([
+      {
+        ip: expect.any(String),
+        title: null,
+        lastActiveDate: expect.any(String),
+        deviceId: expect.any(String),
+      },
+    ]);
+  });
+
+  it('Выйти из текущего девайса по id', async () => {
+    const cookies1 = infoUser1.headers['set-cookie'];
+    const cookies2 = infoUser2.headers['set-cookie'];
+    await test.delete(`/security/devices/1234`).expect(401);
+    await test
+      .delete(`/security/devices/1234`)
+      .set('Cookie', cookies2)
+      .expect(404);
+    const info = await test
+      .get(`/security/devices`)
+      .set('Cookie', cookies2)
+      .expect(200);
+    await test
+      .delete(`/security/devices/${info.body[0].deviceId}`)
+      .set('Cookie', cookies1)
+      .expect(403);
+    await test
+      .delete(`/security/devices/${info.body[0].deviceId}`)
+      .set('Cookie', cookies2)
+      .expect(204);
+    await test.get(`/security/devices`).set('Cookie', cookies2).expect(401);
   });
 });
