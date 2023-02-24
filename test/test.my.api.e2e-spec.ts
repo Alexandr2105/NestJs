@@ -58,8 +58,8 @@ describe('Create tests for blogger', () => {
   it('login', async () => {
     const response = await test
       .post('/auth/login')
+      .set('user-agent', 'Chrome')
       .send({ loginOrEmail: user1.login, password: user1.password });
-
     expect(response.status).toBe(200);
     const accessToken = response.body;
     expect(accessToken).toEqual({
@@ -174,6 +174,7 @@ describe('Create tests for blogger', () => {
       .expect(404);
     const response = await test
       .post('/auth/login')
+      .set('user-agent', 'Chrome')
       .send({ loginOrEmail: user2.login, password: user2.password });
     const token = response.body;
     await test
@@ -217,6 +218,7 @@ describe('Create tests for blogger', () => {
     });
     const res = await test
       .post('/auth/login')
+      .set('user-agent', 'Chrome')
       .send({ loginOrEmail: user2.login, password: user2.password });
     const token = res.body;
     await test
@@ -328,6 +330,7 @@ describe('Create tests for blogger', () => {
   it('Создаем post пользователем которому не принадлежит blog', async () => {
     const response = await test
       .post('/auth/login')
+      .set('user-agent', 'Chrome')
       .send({ loginOrEmail: user2.login, password: user2.password });
     const token = response.body;
     await test
@@ -416,6 +419,7 @@ describe('Create tests for blogger', () => {
   it('Обновляем post, который нам не принадлежит', async () => {
     const response = await test
       .post('/auth/login')
+      .set('user-agent', 'Chrome')
       .send({ loginOrEmail: user2.login, password: user2.password });
     const token = response.body;
     await test
@@ -451,6 +455,7 @@ describe('Create tests for blogger', () => {
   it('Удаляем post, который принадлежит другому пользователю', async () => {
     const response = await test
       .post('/auth/login')
+      .set('user-agent', 'Chrome')
       .send({ loginOrEmail: user2.login, password: user2.password });
     const token = response.body;
     await test
@@ -523,6 +528,7 @@ describe('Create tests for blogger', () => {
     });
     const response = await test
       .post('/auth/login')
+      .set('user-agent', 'Chrome')
       .send({ loginOrEmail: user2.login, password: user2.password });
     const token = response.body;
     await test
@@ -652,6 +658,7 @@ describe('Create tests for sa', () => {
   it('login', async () => {
     const response = await test
       .post('/auth/login')
+      .set('user-agent', 'Chrome')
       .send({ loginOrEmail: user1.login, password: user1.password });
 
     expect(response.status).toBe(200);
@@ -917,6 +924,7 @@ describe('Create tests for all', () => {
   it('login', async () => {
     infoUser1 = await test
       .post('/auth/login')
+      .set('user-agent', 'Chrome')
       .send({ loginOrEmail: user1.login, password: user1.password });
 
     expect(infoUser1.status).toBe(200);
@@ -1365,6 +1373,7 @@ describe('Create tests for all', () => {
       .expect(404);
     infoUser2 = await test
       .post('/auth/login')
+      .set('user-agent', 'Chrome')
       .send({ loginOrEmail: user2.login, password: user1.password });
     const pass = infoUser2.body;
     await test
@@ -1390,6 +1399,7 @@ describe('Create tests for all', () => {
     await test.delete(`/comments/${newComment2.id}`).expect(401);
     infoUser2 = await test
       .post('/auth/login')
+      .set('user-agent', 'Chrome')
       .send({ loginOrEmail: user2.login, password: user1.password });
     const pass = infoUser2.body;
     await test
@@ -1446,7 +1456,7 @@ describe('Create tests for all', () => {
     expect(info.body).toEqual([
       {
         ip: expect.any(String),
-        title: null,
+        title: 'Chrome',
         lastActiveDate: expect.any(String),
         deviceId: expect.any(String),
       },
@@ -1464,7 +1474,7 @@ describe('Create tests for all', () => {
     expect(info.body).toEqual([
       {
         ip: expect.any(String),
-        title: null,
+        title: 'Chrome',
         lastActiveDate: expect.any(String),
         deviceId: expect.any(String),
       },
