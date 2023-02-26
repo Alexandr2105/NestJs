@@ -3,35 +3,38 @@ import { LikesModel } from '../../../common/schemas/like.type.schema';
 import { CommentDocument } from './schema/comment.schema';
 
 export class CommentsRepositoryTypeorm extends ICommentsRepository {
-  deleteCommentById(id: string): Promise<boolean> {
+  async deleteCommentById(id: string): Promise<boolean> {
     return Promise.resolve(false);
   }
 
-  getCommentById(id: string): Promise<CommentDocument | null> {
+  async getCommentById(id: string): Promise<CommentDocument | null> {
     return Promise.resolve(undefined);
   }
 
-  getDislikeInfo(idComment: string): Promise<number | undefined> {
+  async getDislikeInfo(idComment: string): Promise<number | undefined> {
     return Promise.resolve(undefined);
   }
 
-  getInfoStatusByComment(idComment: string, userId: string) {}
+  async getInfoStatusByComment(idComment: string, userId: string) {}
 
-  getLikesInfo(idComment: string): Promise<number> {
+  async getLikesInfo(idComment: string): Promise<number> {
     return Promise.resolve(0);
   }
 
-  getMyStatus(userId: string, commentId: string): Promise<string | undefined> {
+  async getMyStatus(
+    userId: string,
+    commentId: string,
+  ): Promise<string | undefined> {
     return Promise.resolve(undefined);
   }
 
-  save(comment: CommentDocument) {}
+  async save(comment: CommentDocument) {}
 
-  setLikeStatus(likeInfo: LikesModel): Promise<boolean> {
+  async setLikeStatus(likeInfo: LikesModel): Promise<boolean> {
     return Promise.resolve(false);
   }
 
-  updateStatusComment(
+  async updateStatusComment(
     idComment: string,
     userId: string,
     status: string,

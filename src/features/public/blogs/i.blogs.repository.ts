@@ -2,13 +2,11 @@ import { BlogDocument } from './schema/blogs.schema';
 import { BanUsersForBlogDocument } from './schema/ban.users.for.blog.schema';
 
 export abstract class IBlogsRepository {
-  abstract getBlogIdSpecial(id: string): Promise<BlogDocument | false>;
-  abstract getBlogId(id: string): Promise<BlogDocument | false>;
-  abstract deleteBlogId(id: string): Promise<boolean>;
+  abstract getBlogIdSpecial(id: string);
+  abstract getBlogId(id: string);
+  abstract deleteBlogId(id: string);
   abstract getBanBlogs(idBlog: string);
-  abstract getBanUsersForBlogs(
-    blogId: string,
-  ): Promise<BanUsersForBlogDocument[]>;
+  abstract getBanUsersForBlogs(blogId: string);
   abstract deleteBanUsers(userId: string);
   abstract saveBanUser(banUser: BanUsersForBlogDocument);
   abstract save(blog: BlogDocument);

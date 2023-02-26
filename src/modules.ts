@@ -223,7 +223,7 @@ const AbstractClassesMongo = [
   { provide: IPostsRepository, useClass: PostsRepositoryMongo },
 ];
 
-const AbstractClassesTypeOrm = [
+const AbstractClassesTypeorm = [
   {
     provide: IBlogsRepository,
     useClass: BlogsRepositoryTypeorm,
@@ -338,7 +338,6 @@ const entities = [
     ...SqlRepositories,
     ...MongoRepositories,
     ...AbstractClassesSql,
-    ...AbstractClassesTypeOrm,
   ],
 })
 export class Modules {}

@@ -10,7 +10,7 @@ import {
 } from '../../../common/helper/allTypes';
 
 export class QueryRepositoryTypeorm extends IQueryRepository {
-  getQueryAllBannedUsersForBlog(
+  async getQueryAllBannedUsersForBlog(
     query: any,
     blogId: string,
     ownerId: string,
@@ -18,30 +18,33 @@ export class QueryRepositoryTypeorm extends IQueryRepository {
     return Promise.resolve(undefined);
   }
 
-  getQueryAllInfoForBlog(
+  async getQueryAllInfoForBlog(
     query: any,
     userId: string,
   ): Promise<AllCommentsForAllPostsCurrentUserBlogs> {
     return Promise.resolve(undefined);
   }
 
-  getQueryAllUsers(query: any): Promise<UserQueryType> {
+  async getQueryAllUsers(query: any): Promise<UserQueryType> {
     return Promise.resolve(undefined);
   }
 
-  getQueryBlogs(query: any): Promise<BlogsQueryType> {
+  async getQueryBlogs(query: any): Promise<BlogsQueryType> {
     return Promise.resolve(undefined);
   }
 
-  getQueryBlogsAuthUser(query: any, userId: string): Promise<BlogsQueryType> {
+  async getQueryBlogsAuthUser(
+    query: any,
+    userId: string,
+  ): Promise<BlogsQueryType> {
     return Promise.resolve(undefined);
   }
 
-  getQueryBlogsSA(query: any): Promise<BlogsQueryTypeSA> {
+  async getQueryBlogsSA(query: any): Promise<BlogsQueryTypeSA> {
     return Promise.resolve(undefined);
   }
 
-  getQueryCommentsByPostId(
+  async getQueryCommentsByPostId(
     query: any,
     postId: string,
     userId: string,
@@ -49,11 +52,11 @@ export class QueryRepositoryTypeorm extends IQueryRepository {
     return Promise.resolve(undefined);
   }
 
-  getQueryPosts(query: any, userId: string): Promise<PostQueryType> {
+  async getQueryPosts(query: any, userId: string): Promise<PostQueryType> {
     return Promise.resolve(undefined);
   }
 
-  getQueryPostsBlogsId(
+  async getQueryPostsBlogsId(
     query: any,
     blogId: string,
     userId: string,
@@ -61,9 +64,9 @@ export class QueryRepositoryTypeorm extends IQueryRepository {
     return Promise.resolve(undefined);
   }
 
-  getQuerySortUsers(query: any): Promise<UserQueryType> {
+  async getQuerySortUsers(query: any): Promise<UserQueryType> {
     return Promise.resolve(undefined);
   }
 
-  returnObject(query, totalCount, sortArrayUsers) {}
+  async returnObject(query, totalCount, sortArrayUsers) {}
 }

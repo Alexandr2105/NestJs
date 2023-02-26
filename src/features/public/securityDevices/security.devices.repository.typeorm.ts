@@ -4,38 +4,38 @@ import { DeviceInfoDto } from './dto/device.info.dto';
 import { CountAttemptDocument } from '../../../common/schemas/count.attempt.schema';
 
 export class SecurityDevicesRepositoryTypeorm extends ISecurityDevicesRepository {
-  createCountAttempt(countAttempt: CountAttemptDocument) {}
+  async createCountAttempt(countAttempt: CountAttemptDocument) {}
 
-  delAllDevicesExcludeCurrent(deviceId: string, userId: string) {}
+  async delAllDevicesExcludeCurrent(deviceId: string, userId: string) {}
 
-  delAllDevicesUser(userId: string) {}
+  async delAllDevicesUser(userId: string) {}
 
-  delDevice(deviceId: string): Promise<boolean> {
+  async delDevice(deviceId: string): Promise<boolean> {
     return Promise.resolve(false);
   }
 
-  delOldRefreshTokenData(date: number) {}
+  async delOldRefreshTokenData(date: number) {}
 
-  getAllDevicesUser(userId: string): Promise<DeviceInfoDto[]> {
+  async getAllDevicesUser(userId: string): Promise<DeviceInfoDto[]> {
     return Promise.resolve([]);
   }
 
-  getDevice(deviceId: string) {}
+  async getDevice(deviceId: string) {}
 
-  getInfoAboutDeviceUser(
+  async getInfoAboutDeviceUser(
     userId: string,
     deviceId: string,
   ): Promise<RefreshTokenDocument> {
     return Promise.resolve(undefined);
   }
 
-  getIpDevice(ip: string) {}
+  async getIpDevice(ip: string) {}
 
-  save(infoRefreshToken: RefreshTokenDocument) {}
+  async save(infoRefreshToken: RefreshTokenDocument) {}
 
-  updateCountAttempt(countAttempt: number, ip: string) {}
+  async updateCountAttempt(countAttempt: number, ip: string) {}
 
-  updateCountAttemptMany(
+  async updateCountAttemptMany(
     countAttempt: number,
     iat: number,
     method: string,

@@ -1,29 +1,51 @@
 import { IBlogsRepository } from './i.blogs.repository';
 import { BanUsersForBlogDocument } from './schema/ban.users.for.blog.schema';
 import { BlogDocument } from './schema/blogs.schema';
+import { Repository } from 'typeorm';
+import { BlogEntity } from './entity/blog.entity';
+import { BanUsersForBlogEntity } from './entity/ban.users.for.blog.entity';
 
 export class BlogsRepositoryTypeorm extends IBlogsRepository {
-  deleteBanUsers(userId: string) {}
-
-  deleteBlogId(id: string): Promise<boolean> {
-    return Promise.resolve(false);
+  constructor(
+    private readonly blogsRepository: Repository<BlogEntity>,
+    private readonly banUsersForBlog: Repository<BanUsersForBlogEntity>,
+  ) {
+    super();
   }
 
-  getBanBlogs(idBlog: string) {}
-
-  getBanUsersForBlogs(blogId: string): Promise<BanUsersForBlogDocument[]> {
-    return Promise.resolve([]);
+  async deleteBanUsers(userId: string) {
+    await this.banUsersForBlog.delete(userId);
   }
 
-  getBlogId(id: string): Promise<BlogDocument | false> {
-    return Promise.resolve(undefined);
+  async deleteBlogId(id: string): Promise<boolean> {
+    const result = await this.blogsRepository.delete(id);
+    return result.affected === 1;
   }
 
-  getBlogIdSpecial(id: string): Promise<BlogDocument | false> {
-    return Promise.resolve(undefined);
+  async getBanBlogs(idBlog: string) {
+    return this.banUsersForBlog.findOneBy({ blogId: idBlog });
   }
 
-  save(blog: BlogDocument) {}
+  async getBanUsersForBlogs(blogId: string): Promise<BanUsersForBlogEntity[]> {
+    return this.banUsersForBlog.findBy({ blogId: blogId });
+  }
 
-  saveBanUser(banUser: BanUsersForBlogDocument) {}
+  async getBlogId(id: string): Promise<BlogEntity | false> {
+    return this.blogsRepository.findOneBy({ id: id });
+  }
+
+  async getBlogIdSpecial(id: string): Promise<BlogEntity | false> {
+    return this.blogsRepository.findOne({
+      where: { id: id },
+      select: { banDate: false, banStatus: false, userId: false },
+    });
+  }
+
+  async save(blog: BlogDocument) {
+    await this.blogsRepository.save(blog);
+  }
+
+  async saveBanUser(banUser: BanUsersForBlogDocument) {
+    await this.banUsersForBlog.save(banUser);
+  }
 }

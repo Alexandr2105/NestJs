@@ -5,43 +5,43 @@ import { User, UserDocument } from './schema/user';
 import { EmailConfirmationDocument } from '../../../common/schemas/email.confirmation.schema';
 
 export class UsersRepositoryTypeorm extends IUsersRepository {
-  deleteBanUsers(userId: string) {}
+  async deleteBanUsers(userId: string) {}
 
-  deleteUser(id: string): Promise<boolean> {
+  async deleteUser(id: string): Promise<boolean> {
     return Promise.resolve(false);
   }
 
-  findLoginOrEmail(logOrEmail: string): Promise<UserDocument> {
+  async findLoginOrEmail(logOrEmail: string): Promise<UserDocument> {
     return Promise.resolve(undefined);
   }
 
-  getBanUser(userId: string) {}
+  async getBanUser(userId: string) {}
 
-  getBanUsers() {}
+  async getBanUsers() {}
 
-  getConfByUserId(userId: string) {}
+  async getConfByUserId(userId: string) {}
 
-  getUserByCode(code: string): Promise<EmailConfirmationDocument> {
+  async getUserByCode(code: string): Promise<EmailConfirmationDocument> {
     return Promise.resolve(undefined);
   }
 
-  getUserByEmail(email: string) {}
+  async getUserByEmail(email: string) {}
 
-  getUserByIdAll(id: string) {}
+  async getUserByIdAll(id: string) {}
 
-  getUserId(id: string): Promise<UserDocument | false> {
+  async getUserId(id: string): Promise<UserDocument | false> {
     return Promise.resolve(undefined);
   }
 
-  save(user: User) {}
+  async save(user: User) {}
 
-  saveBan(banInfo: BanUsersDocument) {}
+  async saveBan(banInfo: BanUsersDocument) {}
 
-  setConfirm(body: EmailResending, newCode: string): Promise<boolean> {
+  async setConfirm(body: EmailResending, newCode: string): Promise<boolean> {
     return Promise.resolve(false);
   }
 
-  updateEmailConfirmation(id: string): Promise<boolean> {
+  async updateEmailConfirmation(id: string): Promise<boolean> {
     return Promise.resolve(false);
   }
 }
