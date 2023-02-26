@@ -98,6 +98,16 @@ import { PostsRepositorySql } from './features/public/posts/posts.repository.sql
 import { GetBlogIdUseCase } from './features/public/blogs/aplication/useCases/get.blog.id.use.case';
 import { BlogsRepositorySql } from './features/public/blogs/blogs.repository.sql';
 import { CheckPostId } from './common/customValidators/check.post.id';
+import { BlogEntity } from './features/public/blogs/entity/blog.entity';
+import { UserEntity } from './features/sa/users/entity/user.entity';
+import { PostEntity } from './features/public/posts/entity/post.entity';
+import { CommentEntity } from './features/public/comments/entity/comment.entity';
+import { LikeStatusEntity } from './common/entity/like.status.entity';
+import { EmailConfirmationEntity } from './common/entity/email.confirmation.entity';
+import { RefreshTokenDataEntity } from './common/entity/refresh.token.data.entities';
+import { CountAttemptEntity } from './common/entity/count.attempt.entity';
+import { BanUsersForBlogEntity } from './features/public/blogs/entity/ban.users.for.blog.entity';
+import { BanUsersEntity } from './features/sa/users/entity/banUsers.entity';
 
 const Strategies = [LocalStrategy, JwtStrategy, BasicStrategy, RefreshStrategy];
 const Validators = [
@@ -204,6 +214,41 @@ const AbstractClassesMongo = [
   { provide: ICommentsRepository, useClass: CommentsRepositoryMongo },
   { provide: IPostsRepository, useClass: PostsRepositoryMongo },
 ];
+// const AbstractClassesTypeOrm = [
+//   {
+//     provide: IBlogsRepository,
+//     useClass: BlogsRepositoryTypeOrm,
+//   },
+//   {
+//     provide: IAuthRepository,
+//     useClass: AuthRepositoryTypeOrm,
+//   },
+//   {
+//     provide: ITestingRepository,
+//     useClass: TestingRepositoryTypeOrm,
+//   },
+//   {
+//     provide: ISecurityDevicesRepository,
+//     useClass: SecurityDevicesRepositoryTypeOrm,
+//   },
+//   { provide: IUsersRepository, useClass: UsersRepositoryTypeOrm },
+//   { provide: IQueryRepository, useClass: QueryRepositoryTypeOrm },
+//   { provide: ICommentsRepository, useClass: CommentsRepositoryTypeOrm },
+//   { provide: IPostsRepository, useClass: PostsRepositoryTypeOrm },
+// ];
+
+const entities = [
+  BlogEntity,
+  UserEntity,
+  PostEntity,
+  CommentEntity,
+  LikeStatusEntity,
+  EmailConfirmationEntity,
+  RefreshTokenDataEntity,
+  CountAttemptEntity,
+  BanUsersForBlogEntity,
+  BanUsersEntity,
+];
 
 @Module({
   imports: [
@@ -248,8 +293,9 @@ const AbstractClassesMongo = [
         username: configService.get('POSTGRES_USERNAME') || 'postgres',
         password: configService.get('POSTGRES_PASSWORD') || 'sa',
         database: configService.get('POSTGRES_DATABASE') || 'tube',
-        entities: [],
-        synchronize: false,
+        entities: entities,
+        autoLoadEntities: true,
+        synchronize: true,
       }),
       inject: [ConfigService],
     }),
@@ -283,6 +329,7 @@ const AbstractClassesMongo = [
     ...SqlRepositories,
     ...MongoRepositories,
     ...AbstractClassesSql,
+    // ...AbstractClassesTypeOrm,
   ],
 })
 export class Modules {}

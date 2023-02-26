@@ -3,16 +3,6 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { Modules } from './modules';
-import { User } from './features/sa/users/schema/user';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { Blog } from './features/public/blogs/schema/blogs.schema';
-import { LikesModel } from './common/schemas/like.type.schema';
-import { EmailConfirmation } from './common/schemas/email.confirmation.schema';
-import { RefreshTokenData } from './common/schemas/refresh.token.data.schema';
-import { Post } from './features/public/posts/schema/posts.schema';
-import { CountAttempt } from './common/schemas/count.attempt.schema';
-import { BanUsers } from './features/sa/users/schema/banUsers';
-import { Comment } from './features/public/comments/schema/comment.schema';
 import { MongooseModule } from '@nestjs/mongoose';
 
 @Module({
@@ -28,17 +18,17 @@ import { MongooseModule } from '@nestjs/mongoose';
       inject: [ConfigService],
     }),
     Modules,
-    TypeOrmModule.forFeature([
-      Blog,
-      Post,
-      User,
-      Comment,
-      LikesModel,
-      EmailConfirmation,
-      RefreshTokenData,
-      CountAttempt,
-      BanUsers,
-    ]),
+    // TypeOrmModule.forFeature([
+    // Blog,
+    // Post,
+    // User,
+    // Comment,
+    // LikesModel,
+    // EmailConfirmation,
+    // RefreshTokenData,
+    // CountAttempt,
+    // BanUsers,
+    // ]),
   ],
   controllers: [AppController],
   providers: [AppService],
