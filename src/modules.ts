@@ -108,6 +108,14 @@ import { RefreshTokenDataEntity } from './common/entity/refresh.token.data.entit
 import { CountAttemptEntity } from './common/entity/count.attempt.entity';
 import { BanUsersForBlogEntity } from './features/public/blogs/entity/ban.users.for.blog.entity';
 import { BanUsersEntity } from './features/sa/users/entity/banUsers.entity';
+import { BlogsRepositoryTypeorm } from './features/public/blogs/blogs.repository.typeorm';
+import { AuthRepositoryTypeorm } from './features/public/auth/auth.repository.typeorm';
+import { SecurityDevicesRepositoryTypeorm } from './features/public/securityDevices/security.devices.repository.typeorm';
+import { UsersRepositoryTypeorm } from './features/sa/users/users.repository.typeorm';
+import { QueryRepositoryTypeorm } from './features/public/queryReposytories/query.repository.typeorm';
+import { CommentsRepositoryTypeorm } from './features/public/comments/comments.repository.typeorm';
+import { PostsRepositoryTypeorm } from './features/public/posts/posts.repository.typeorm';
+import { TestingRepositoryTypeorm } from './testing/testing.repository.typeorm';
 
 const Strategies = [LocalStrategy, JwtStrategy, BasicStrategy, RefreshStrategy];
 const Validators = [
@@ -214,28 +222,29 @@ const AbstractClassesMongo = [
   { provide: ICommentsRepository, useClass: CommentsRepositoryMongo },
   { provide: IPostsRepository, useClass: PostsRepositoryMongo },
 ];
-// const AbstractClassesTypeOrm = [
-//   {
-//     provide: IBlogsRepository,
-//     useClass: BlogsRepositoryTypeOrm,
-//   },
-//   {
-//     provide: IAuthRepository,
-//     useClass: AuthRepositoryTypeOrm,
-//   },
-//   {
-//     provide: ITestingRepository,
-//     useClass: TestingRepositoryTypeOrm,
-//   },
-//   {
-//     provide: ISecurityDevicesRepository,
-//     useClass: SecurityDevicesRepositoryTypeOrm,
-//   },
-//   { provide: IUsersRepository, useClass: UsersRepositoryTypeOrm },
-//   { provide: IQueryRepository, useClass: QueryRepositoryTypeOrm },
-//   { provide: ICommentsRepository, useClass: CommentsRepositoryTypeOrm },
-//   { provide: IPostsRepository, useClass: PostsRepositoryTypeOrm },
-// ];
+
+const AbstractClassesTypeOrm = [
+  {
+    provide: IBlogsRepository,
+    useClass: BlogsRepositoryTypeorm,
+  },
+  {
+    provide: IAuthRepository,
+    useClass: AuthRepositoryTypeorm,
+  },
+  {
+    provide: ITestingRepository,
+    useClass: TestingRepositoryTypeorm,
+  },
+  {
+    provide: ISecurityDevicesRepository,
+    useClass: SecurityDevicesRepositoryTypeorm,
+  },
+  { provide: IUsersRepository, useClass: UsersRepositoryTypeorm },
+  { provide: IQueryRepository, useClass: QueryRepositoryTypeorm },
+  { provide: ICommentsRepository, useClass: CommentsRepositoryTypeorm },
+  { provide: IPostsRepository, useClass: PostsRepositoryTypeorm },
+];
 
 const entities = [
   BlogEntity,
@@ -329,7 +338,7 @@ const entities = [
     ...SqlRepositories,
     ...MongoRepositories,
     ...AbstractClassesSql,
-    // ...AbstractClassesTypeOrm,
+    ...AbstractClassesTypeOrm,
   ],
 })
 export class Modules {}
