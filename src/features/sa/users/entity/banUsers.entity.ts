@@ -12,7 +12,7 @@ export class BanUsersEntity {
   @Column()
   banDate: string;
 
-  @OneToOne(() => UserEntity)
+  @OneToOne(() => UserEntity, { onDelete: 'CASCADE' })
   @JoinColumn()
   user: UserEntity;
 }

@@ -22,10 +22,10 @@ export class PostEntity {
   @Column()
   userId: string;
 
-  @ManyToOne(() => UserEntity, (u) => u.posts)
+  @ManyToOne(() => UserEntity, (u) => u.posts, { onDelete: 'CASCADE' })
   user: UserEntity;
-  @ManyToOne(() => BlogEntity, (b) => b.posts)
+  @ManyToOne(() => BlogEntity, (b) => b.posts, { onDelete: 'CASCADE' })
   blog: BlogEntity;
-  @OneToMany(() => CommentEntity, (c) => c.post)
+  @OneToMany(() => CommentEntity, (c) => c.post, { onDelete: 'CASCADE' })
   comments: CommentEntity[];
 }

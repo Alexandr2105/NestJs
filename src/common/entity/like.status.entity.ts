@@ -14,6 +14,6 @@ export class LikeStatusEntity {
   @Column()
   createDate: string;
 
-  @ManyToOne(() => UserEntity, (u) => u.likeStatus)
+  @ManyToOne(() => UserEntity, (u) => u.likeStatus, { onDelete: 'CASCADE' })
   user: UserEntity;
 }

@@ -16,6 +16,6 @@ export class RefreshTokenDataEntity {
   @Column()
   userId: string;
 
-  @ManyToOne(() => UserEntity, (u) => u.device)
+  @ManyToOne(() => UserEntity, (u) => u.device, { onDelete: 'CASCADE' })
   user: UserEntity;
 }

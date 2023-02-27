@@ -24,10 +24,12 @@ export class BlogEntity {
   @Column()
   isMembership: boolean;
 
-  @OneToMany(() => PostEntity, (p) => p.user)
+  @OneToMany(() => PostEntity, (p) => p.user, { onDelete: 'CASCADE' })
   posts: PostEntity[];
-  @ManyToOne(() => UserEntity, (u) => u.blogs)
+  @ManyToOne(() => UserEntity, (u) => u.blogs, { onDelete: 'CASCADE' })
   user: UserEntity;
-  @OneToMany(() => BanUsersForBlogEntity, (banBlog) => banBlog.blog)
+  @OneToMany(() => BanUsersForBlogEntity, (banBlog) => banBlog.blog, {
+    onDelete: 'CASCADE',
+  })
   banInfoForBlogs: BanUsersForBlogEntity[];
 }

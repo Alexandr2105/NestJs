@@ -17,8 +17,8 @@ export class CommentEntity {
   @Column()
   createdAt: string;
 
-  @ManyToOne(() => UserEntity, (u) => u.comments)
+  @ManyToOne(() => UserEntity, (u) => u.comments, { onDelete: 'CASCADE' })
   user: UserEntity;
-  @ManyToOne(() => PostEntity, (p) => p.comments)
+  @ManyToOne(() => PostEntity, (p) => p.comments, { onDelete: 'CASCADE' })
   post: PostEntity;
 }

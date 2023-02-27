@@ -15,8 +15,8 @@ export class BanUsersForBlogEntity {
   @Column()
   banDate: string;
 
-  @ManyToOne(() => UserEntity)
+  @ManyToOne(() => UserEntity, { onDelete: 'CASCADE' })
   user: UserEntity;
-  @ManyToOne(() => BlogEntity)
+  @ManyToOne(() => BlogEntity, { onDelete: 'CASCADE' })
   blog: BlogEntity;
 }

@@ -21,16 +21,20 @@ export class UserEntity {
   @Column()
   ban: boolean;
 
-  @OneToMany(() => BlogEntity, (b) => b.user)
+  @OneToMany(() => BlogEntity, (b) => b.user, { onDelete: 'CASCADE' })
   blogs: BlogEntity[];
-  @OneToMany(() => PostEntity, (p) => p.user)
+  @OneToMany(() => PostEntity, (p) => p.user, { onDelete: 'CASCADE' })
   posts: PostEntity[];
-  @OneToMany(() => CommentEntity, (c) => c.user)
+  @OneToMany(() => CommentEntity, (c) => c.user, { onDelete: 'CASCADE' })
   comments: CommentEntity[];
-  @OneToMany(() => LikeStatusEntity, (l) => l.user)
+  @OneToMany(() => LikeStatusEntity, (l) => l.user, { onDelete: 'CASCADE' })
   likeStatus: LikeStatusEntity[];
-  @OneToMany(() => RefreshTokenDataEntity, (r) => r.user)
+  @OneToMany(() => RefreshTokenDataEntity, (r) => r.user, {
+    onDelete: 'CASCADE',
+  })
   device: RefreshTokenDataEntity[];
-  @OneToMany(() => BanUsersForBlogEntity, (banBlog) => banBlog.user)
+  @OneToMany(() => BanUsersForBlogEntity, (banBlog) => banBlog.user, {
+    onDelete: 'CASCADE',
+  })
   banInfoForBlogs: BanUsersForBlogEntity[];
 }

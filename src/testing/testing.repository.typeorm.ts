@@ -41,15 +41,25 @@ export class TestingRepositoryTypeorm extends ITestingRepository {
   }
 
   async deleteAllCollection() {
-    await this.blogsCollection.clear();
-    await this.postsCollection.clear();
-    await this.usersCollection.clear();
-    await this.commentsCollection.clear();
-    await this.registrationUsersCollection.clear();
-    await this.refreshTokenDataCollection.clear();
-    await this.countAttemptCollection.clear();
-    await this.likeInfoCollection.clear();
-    await this.banUsers.clear();
-    await this.banUsersForBlogsCollection.clear();
+    await this.registrationUsersCollection.query(
+      `DELETE FROM public."email_confirmation_entity"`,
+    );
+    await this.usersCollection.query(`DELETE FROM public."user_entity"`);
+    await this.refreshTokenDataCollection.query(
+      `DELETE FROM public."refresh_token_data_entity"`,
+    );
+    await this.countAttemptCollection.query(
+      `DELETE FROM public."count_attempt_entity"`,
+    );
+    await this.likeInfoCollection.query(
+      `DELETE FROM public."like_status_entity"`,
+    );
+    await this.banUsers.query(`DELETE FROM public."ban_users_entity"`);
+    await this.banUsersForBlogsCollection.query(
+      `DELETE FROM public."ban_users_for_blog_entity"`,
+    );
+    await this.commentsCollection.query(`DELETE FROM public."comment_entity"`);
+    await this.postsCollection.query(`DELETE FROM public."post_entity"`);
+    await this.blogsCollection.query(`DELETE FROM public."blog_entity"`);
   }
 }

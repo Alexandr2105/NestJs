@@ -12,7 +12,7 @@ export class EmailConfirmationEntity {
   @Column()
   isConfirmed: boolean;
 
-  @OneToOne(() => UserEntity)
+  @OneToOne(() => UserEntity, { onDelete: 'CASCADE' })
   @JoinColumn()
   user: UserEntity;
 }
