@@ -9,10 +9,10 @@ import { IPostsRepository } from './i.posts.repository';
 @Injectable()
 export class PostsRepositoryMongo extends IPostsRepository {
   constructor(
-    protected usersRepository: IUsersRepository,
-    @InjectModel('posts') protected postsCollection: Model<PostDocument>,
+    private readonly usersRepository: IUsersRepository,
+    @InjectModel('posts') private readonly postsCollection: Model<PostDocument>,
     @InjectModel('likeStatuses')
-    protected likeInfoCollection: Model<LikesModelDocument>,
+    private readonly likeInfoCollection: Model<LikesModelDocument>,
   ) {
     super();
   }
