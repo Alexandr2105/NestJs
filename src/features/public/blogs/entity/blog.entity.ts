@@ -19,7 +19,7 @@ export class BlogEntity {
   userId: string;
   @Column()
   banStatus: boolean;
-  @Column()
+  @Column({ default: null })
   banDate: string;
   @Column()
   isMembership: boolean;

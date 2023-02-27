@@ -42,7 +42,14 @@ export class BlogsRepositoryTypeorm extends IBlogsRepository {
   async getBlogIdSpecial(id: string): Promise<BlogEntity | false> {
     return this.blogsRepository.findOne({
       where: { id: id },
-      select: { banDate: false, banStatus: false, userId: false },
+      select: {
+        id: true,
+        name: true,
+        description: true,
+        websiteUrl: true,
+        createdAt: true,
+        isMembership: true,
+      },
     });
   }
 
