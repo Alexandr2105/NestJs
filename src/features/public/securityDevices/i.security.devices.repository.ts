@@ -1,5 +1,4 @@
 import { RefreshTokenDocument } from '../../../common/schemas/refresh.token.data.schema';
-import { DeviceInfoDto } from './dto/device.info.dto';
 import { CountAttemptDocument } from '../../../common/schemas/count.attempt.schema';
 
 export abstract class ISecurityDevicesRepository {
@@ -7,12 +6,9 @@ export abstract class ISecurityDevicesRepository {
   abstract delAllDevicesExcludeCurrent(deviceId: string, userId: string);
   abstract delDevice(deviceId: string): Promise<boolean>;
   abstract delAllDevicesUser(userId: string);
-  abstract getAllDevicesUser(userId: string): Promise<DeviceInfoDto[]>;
+  abstract getAllDevicesUser(userId: string);
   abstract delOldRefreshTokenData(date: number);
-  abstract getInfoAboutDeviceUser(
-    userId: string,
-    deviceId: string,
-  ): Promise<RefreshTokenDocument>;
+  abstract getInfoAboutDeviceUser(userId: string, deviceId: string);
   abstract getDevice(deviceId: string);
   abstract getIpDevice(ip: string);
   abstract createCountAttempt(countAttempt: CountAttemptDocument);

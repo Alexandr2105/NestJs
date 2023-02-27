@@ -178,6 +178,7 @@ const SqlRepositories = [
   CommentsRepositorySql,
   PostsRepositorySql,
 ];
+// const TypeOrmRepository=[]
 const AbstractClassesSql = [
   {
     provide: IBlogsRepository,
