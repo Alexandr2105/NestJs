@@ -178,7 +178,16 @@ const SqlRepositories = [
   CommentsRepositorySql,
   PostsRepositorySql,
 ];
-// const TypeOrmRepository=[]
+const TypeOrmRepository = [
+  AuthRepositoryTypeorm,
+  BlogsRepositoryTypeorm,
+  TestingRepositoryTypeorm,
+  SecurityDevicesRepositoryTypeorm,
+  UsersRepositoryTypeorm,
+  QueryRepositoryTypeorm,
+  CommentsRepositoryTypeorm,
+  PostsRepositoryTypeorm,
+];
 const AbstractClassesSql = [
   {
     provide: IBlogsRepository,
@@ -338,6 +347,7 @@ const entities = [
     ...UseCases,
     ...SqlRepositories,
     ...MongoRepositories,
+    ...TypeOrmRepository,
     ...AbstractClassesSql,
   ],
 })
