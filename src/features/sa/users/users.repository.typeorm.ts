@@ -7,11 +7,17 @@ import { UserEntity } from './entity/user.entity';
 import { EmailConfirmationEntity } from '../../../common/entity/email.confirmation.entity';
 import { BanUsersEntity } from './entity/banUsers.entity';
 import { add } from 'date-fns';
+import { Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
 
+@Injectable()
 export class UsersRepositoryTypeorm extends IUsersRepository {
   constructor(
+    @InjectRepository(UserEntity)
     private readonly usersCollection: Repository<UserEntity>,
+    @InjectRepository(EmailConfirmationEntity)
     private readonly registrationUsersCollection: Repository<EmailConfirmationEntity>,
+    @InjectRepository(BanUsersEntity)
     private readonly banUsers: Repository<BanUsersEntity>,
   ) {
     super();

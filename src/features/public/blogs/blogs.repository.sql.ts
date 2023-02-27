@@ -3,7 +3,9 @@ import { BlogDocument } from './schema/blogs.schema';
 import { BanUsersForBlogDocument } from './schema/ban.users.for.blog.schema';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
+import { Injectable } from '@nestjs/common';
 
+@Injectable()
 export class BlogsRepositorySql extends IBlogsRepository {
   constructor(@InjectDataSource() private readonly dataSource: DataSource) {
     super();

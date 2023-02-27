@@ -178,7 +178,7 @@ const SqlRepositories = [
   CommentsRepositorySql,
   PostsRepositorySql,
 ];
-const TypeOrmRepository = [
+const TypeOrmRepositories = [
   AuthRepositoryTypeorm,
   BlogsRepositoryTypeorm,
   TestingRepositoryTypeorm,
@@ -210,6 +210,7 @@ const AbstractClassesSql = [
   { provide: ICommentsRepository, useClass: CommentsRepositorySql },
   { provide: IPostsRepository, useClass: PostsRepositorySql },
 ];
+
 const AbstractClassesMongo = [
   {
     provide: IBlogsRepository,
@@ -312,12 +313,13 @@ const entities = [
         username: configService.get('POSTGRES_USERNAME') || 'postgres',
         password: configService.get('POSTGRES_PASSWORD') || 'sa',
         database: configService.get('POSTGRES_DATABASE') || 'tube',
-        entities: entities,
+        // entities: [...entities],
         autoLoadEntities: true,
         synchronize: true,
       }),
       inject: [ConfigService],
     }),
+    TypeOrmModule.forFeature(entities),
   ],
   controllers: [
     BlogsController,
@@ -347,7 +349,7 @@ const entities = [
     ...UseCases,
     ...SqlRepositories,
     ...MongoRepositories,
-    ...TypeOrmRepository,
+    ...TypeOrmRepositories,
     ...AbstractClassesSql,
   ],
 })

@@ -8,7 +8,9 @@ import {
   PostQueryType,
   UserQueryType,
 } from '../../../common/helper/allTypes';
+import { Injectable } from '@nestjs/common';
 
+@Injectable()
 export class QueryRepositoryTypeorm extends IQueryRepository {
   async getQueryAllBannedUsersForBlog(
     query: any,

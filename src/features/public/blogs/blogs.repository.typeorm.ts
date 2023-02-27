@@ -4,10 +4,15 @@ import { BlogDocument } from './schema/blogs.schema';
 import { Repository } from 'typeorm';
 import { BlogEntity } from './entity/blog.entity';
 import { BanUsersForBlogEntity } from './entity/ban.users.for.blog.entity';
+import { Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
 
+@Injectable()
 export class BlogsRepositoryTypeorm extends IBlogsRepository {
   constructor(
+    @InjectRepository(BlogEntity)
     private readonly blogsRepository: Repository<BlogEntity>,
+    @InjectRepository(BanUsersForBlogEntity)
     private readonly banUsersForBlog: Repository<BanUsersForBlogEntity>,
   ) {
     super();

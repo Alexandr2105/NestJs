@@ -5,11 +5,16 @@ import { IUsersRepository } from '../../sa/users/i.users.repository';
 import { Not, Repository } from 'typeorm';
 import { PostEntity } from './entity/post.entity';
 import { LikeStatusEntity } from '../../../common/entity/like.status.entity';
+import { Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
 
+@Injectable()
 export class PostsRepositoryTypeorm extends IPostsRepository {
   constructor(
     private readonly usersRepository: IUsersRepository,
+    @InjectRepository(PostEntity)
     private readonly postsCollection: Repository<PostEntity>,
+    @InjectRepository(LikeStatusEntity)
     private readonly likeInfoCollection: Repository<LikeStatusEntity>,
   ) {
     super();

@@ -10,18 +10,31 @@ import { BanUsersEntity } from '../features/sa/users/entity/banUsers.entity';
 import { BanUsersForBlogEntity } from '../features/public/blogs/entity/ban.users.for.blog.entity';
 import { RefreshTokenDataEntity } from '../common/entity/refresh.token.data.entities';
 import { LikeStatusEntity } from '../common/entity/like.status.entity';
+import { Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
 
+@Injectable()
 export class TestingRepositoryTypeorm extends ITestingRepository {
   constructor(
+    @InjectRepository(CommentEntity)
     private readonly commentsCollection: Repository<CommentEntity>,
+    @InjectRepository(EmailConfirmationEntity)
     private readonly registrationUsersCollection: Repository<EmailConfirmationEntity>,
+    @InjectRepository(RefreshTokenDataEntity)
     private readonly refreshTokenDataCollection: Repository<RefreshTokenDataEntity>,
+    @InjectRepository(CountAttemptEntity)
     private readonly countAttemptCollection: Repository<CountAttemptEntity>,
+    @InjectRepository(LikeStatusEntity)
     private readonly likeInfoCollection: Repository<LikeStatusEntity>,
+    @InjectRepository(UserEntity)
     private readonly usersCollection: Repository<UserEntity>,
+    @InjectRepository(PostEntity)
     private readonly postsCollection: Repository<PostEntity>,
+    @InjectRepository(BlogEntity)
     private readonly blogsCollection: Repository<BlogEntity>,
+    @InjectRepository(BanUsersEntity)
     private readonly banUsers: Repository<BanUsersEntity>,
+    @InjectRepository(BanUsersForBlogEntity)
     private readonly banUsersForBlogsCollection: Repository<BanUsersForBlogEntity>,
   ) {
     super();

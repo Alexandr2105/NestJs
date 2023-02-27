@@ -5,10 +5,15 @@ import { CountAttemptDocument } from '../../../common/schemas/count.attempt.sche
 import { LessThan, Not, Repository } from 'typeorm';
 import { RefreshTokenDataEntity } from '../../../common/entity/refresh.token.data.entities';
 import { CountAttemptEntity } from '../../../common/entity/count.attempt.entity';
+import { Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
 
+@Injectable()
 export class SecurityDevicesRepositoryTypeorm extends ISecurityDevicesRepository {
   constructor(
+    @InjectRepository(RefreshTokenDataEntity)
     private readonly refreshTokenDataCollection: Repository<RefreshTokenDataEntity>,
+    @InjectRepository(CountAttemptEntity)
     private readonly countAttemptCollection: Repository<CountAttemptEntity>,
   ) {
     super();

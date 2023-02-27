@@ -5,11 +5,16 @@ import { IUsersRepository } from '../../sa/users/i.users.repository';
 import { Not, Repository } from 'typeorm';
 import { CommentEntity } from './entity/comment.entity';
 import { LikeStatusEntity } from '../../../common/entity/like.status.entity';
+import { Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
 
+@Injectable()
 export class CommentsRepositoryTypeorm extends ICommentsRepository {
   constructor(
     private readonly usersRepository: IUsersRepository,
+    @InjectRepository(CommentEntity)
     private readonly commentsCollection: Repository<CommentEntity>,
+    @InjectRepository(LikeStatusEntity)
     private readonly likeInfoCollection: Repository<LikeStatusEntity>,
   ) {
     super();
