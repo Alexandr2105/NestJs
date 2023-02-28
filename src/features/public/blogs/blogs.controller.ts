@@ -13,6 +13,7 @@ import { GetBlogIdSpecialCommand } from './aplication/useCases/get.blog.id.speci
 import { IQueryRepository } from '../queryReposytories/i.query.repository';
 import { IBlogsRepository } from './i.blogs.repository';
 import { GetBlogIdCommand } from './aplication/useCases/get.blog.id.use.case';
+import { CheckBlogId } from '../../blogger/blogs/dto/blogger.dto';
 
 @Controller('blogs')
 export class BlogsController {
@@ -42,11 +43,11 @@ export class BlogsController {
 
   @Get('/:blogId/posts')
   async getPostsForBlog(
-    @Param('blogId') blogId: string,
+    @Param() param: CheckBlogId,
     @Query() dataQuery,
     @Headers() header,
   ) {
-    const banBlog = await this.blogsRepository.getBanBlogs(blogId);
+    const banBlog = await this.blogsRepository.getBanBlogs(param.blogId);
     if (banBlog) {
       throw new NotFoundException();
     }
@@ -55,17 +56,15 @@ export class BlogsController {
       const info: any = this.jwtService.getUserIdByToken(
         header.authorization?.split(' ')[1],
       );
-      const post = await this.queryRepository.getQueryPostsBlogsId(
+      return await this.queryRepository.getQueryPostsBlogsId(
         query,
-        blogId,
+        param.blogId,
         info,
       );
-      if (post.items.length === 0) throw new NotFoundException();
-      return post;
     } else {
       const post = await this.queryRepository.getQueryPostsBlogsId(
         query,
-        blogId,
+        param.blogId,
         'null',
       );
       if (post.items.length === 0) throw new NotFoundException();

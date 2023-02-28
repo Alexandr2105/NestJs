@@ -60,9 +60,10 @@ export class SecurityDevicesRepositoryTypeorm extends ISecurityDevicesRepository
     });
   }
 
-  async getDevice(deviceId: string): Promise<boolean> {
-    const result = await this.refreshTokenDataCollection.delete(deviceId);
-    return result.affected === 1;
+  async getDevice(deviceId: string): Promise<RefreshTokenDataEntity> {
+    return this.refreshTokenDataCollection.findOneBy({
+      deviceId: deviceId,
+    });
   }
 
   async getInfoAboutDeviceUser(
