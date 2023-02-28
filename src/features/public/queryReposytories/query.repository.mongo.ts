@@ -37,10 +37,10 @@ export class QueryRepositoryMongo extends IQueryRepository {
     private readonly commentsCollection: Model<CommentDocument>,
     @InjectModel('likeStatuses')
     private readonly likeInfoCollection: Model<LikesModelDocument>,
-    @InjectModel('banUsers') protected banUsers: Model<BanUsers>,
-    private readonly queryCount: QueryCount,
+    @InjectModel('banUsers') private readonly banUsers: Model<BanUsers>,
     @InjectModel('banUsersForBlogs')
     private readonly banUsersForBlogsCollection: Model<BanUsersForBlogDocument>,
+    private readonly queryCount: QueryCount,
     private readonly commentsRepository: ICommentsRepository,
     private readonly postsRepository: IPostsRepository,
     private readonly usersRepository: IUsersRepository,

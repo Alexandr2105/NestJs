@@ -9,9 +9,21 @@ import {
   UserQueryType,
 } from '../../../common/helper/allTypes';
 import { Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { BlogEntity } from '../blogs/entity/blog.entity';
+import { Repository } from 'typeorm';
+import { QueryCount } from '../../../common/helper/query.count';
 
 @Injectable()
 export class QueryRepositoryTypeorm extends IQueryRepository {
+  constructor(
+    private readonly queryCount: QueryCount,
+    @InjectRepository(BlogEntity)
+    private readonly blogsRepository: Repository<BlogEntity>,
+  ) {
+    super();
+  }
+
   async getQueryAllBannedUsersForBlog(
     query: any,
     blogId: string,
@@ -32,7 +44,29 @@ export class QueryRepositoryTypeorm extends IQueryRepository {
   }
 
   async getQueryBlogs(query: any): Promise<BlogsQueryType> {
-    return Promise.resolve(undefined);
+    const allBlogs = await this.blogsRepository.find({
+      select: {
+        id: true,
+        name: true,
+        description: true,
+        websiteUrl: true,
+        createdAt: true,
+        isMembership: true,
+      },
+      order: { [query.sortBy]: query.sortDirection },
+      skip: this.queryCount.skipHelper(query.pageNumber, query.pageSize),
+      take: query.pageSize,
+    });
+    return {
+      pagesCount: this.queryCount.pagesCountHelper(
+        allBlogs.length,
+        query.pageSize,
+      ),
+      page: query.pageNumber,
+      pageSize: query.pageSize,
+      totalCount: allBlogs.length,
+      items: allBlogs,
+    };
   }
 
   async getQueryBlogsAuthUser(
