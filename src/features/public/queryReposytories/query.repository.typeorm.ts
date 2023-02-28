@@ -11,15 +11,20 @@ import {
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { BlogEntity } from '../blogs/entity/blog.entity';
-import { Repository } from 'typeorm';
+import { And, Not, Repository } from 'typeorm';
 import { QueryCount } from '../../../common/helper/query.count';
+import { PostEntity } from '../posts/entity/post.entity';
+import { IUsersRepository } from '../../sa/users/i.users.repository';
 
 @Injectable()
 export class QueryRepositoryTypeorm extends IQueryRepository {
   constructor(
     private readonly queryCount: QueryCount,
+    private readonly usersRepository: IUsersRepository,
     @InjectRepository(BlogEntity)
     private readonly blogsRepository: Repository<BlogEntity>,
+    @InjectRepository(PostEntity)
+    private readonly postsRepository: Repository<PostEntity>,
   ) {
     super();
   }
@@ -92,12 +97,54 @@ export class QueryRepositoryTypeorm extends IQueryRepository {
     return Promise.resolve(undefined);
   }
 
-  async getQueryPostsBlogsId(
-    query: any,
-    blogId: string,
-    userId: string,
-  ): Promise<PostQueryType> {
-    return Promise.resolve(undefined);
+  async getQueryPostsBlogsId(query: any, blogId: string, userId: string) {
+    const allPosts = await this.postsRepository.find({
+      where: {
+        blogId: blogId,
+        user: { ban: false },
+      },
+      select: {
+        id: true,
+        title: true,
+        shortDescription: true,
+        content: true,
+        blogId: true,
+        blogName: true,
+        createdAt: true,
+      },
+      order: { [query.sortBy]: query.sortDirection },
+      skip: this.queryCount.skipHelper(query.pageNumber, query.pageSize),
+      take: query.pageSize,
+    });
+    return allPosts;
+    // const allPosts = await this.postsRepository.createQueryBuilder('p');
+    // .addSelect((asd) => {
+    //   return asd.select('COUNT(*)', 'qwer').from('user', 'u');
+    //    .where('p.blogId=:a', { a: blogId })
+    //    .andWhere('u.ban=:b', { b: false });
+    // })
+    // .leftJoin('p.user', 'u')
+    // .where('p.blogId=:a', { a: blogId })
+    // .andWhere('u.ban=:b', { b: false })
+    // .leftJoinAndMapMany(
+    //   'u.extendedLikesInfo',
+    //   'u.likeStatus',
+    //   'l',
+    //   "l.status='Like'",
+    // );
+
+    // console.log(allPosts.getSql());
+    // return allPosts;
+    // return {
+    //   pagesCount: this.queryCount.pagesCountHelper(
+    //     allPosts.length,
+    //     query.pageSize,
+    //   ),
+    //   page: query.pageNumber,
+    //   pageSize: query.pageSize,
+    //   totalCount: allPosts.length,
+    //   items: allPosts,
+    // };
   }
 
   async getQuerySortUsers(query: any): Promise<UserQueryType> {

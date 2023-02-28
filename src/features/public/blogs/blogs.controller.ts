@@ -62,13 +62,11 @@ export class BlogsController {
         info,
       );
     } else {
-      const post = await this.queryRepository.getQueryPostsBlogsId(
+      return await this.queryRepository.getQueryPostsBlogsId(
         query,
         param.blogId,
         'null',
       );
-      if (post.items.length === 0) throw new NotFoundException();
-      return post;
     }
   }
 }

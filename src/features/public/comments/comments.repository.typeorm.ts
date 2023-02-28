@@ -2,7 +2,7 @@ import { ICommentsRepository } from './i.comments.repository';
 import { LikesModel } from '../../../common/schemas/like.type.schema';
 import { CommentDocument } from './schema/comment.schema';
 import { IUsersRepository } from '../../sa/users/i.users.repository';
-import { Not, Repository } from 'typeorm';
+import { Repository } from 'typeorm';
 import { CommentEntity } from './entity/comment.entity';
 import { LikeStatusEntity } from '../../../common/entity/like.status.entity';
 import { Injectable } from '@nestjs/common';
@@ -29,15 +29,12 @@ export class CommentsRepositoryTypeorm extends ICommentsRepository {
   }
 
   async getDislikeInfo(idComment: string): Promise<number | undefined> {
-    const banUsers = await this.usersRepository.getBanUsers();
-    const allLikes = await this.likeInfoCollection.findBy({
-      id: idComment,
-      status: 'Dislike',
-      userId: Not(
-        banUsers.map((a) => {
-          return a.id;
-        }),
-      ),
+    const allLikes = await this.likeInfoCollection.find({
+      where: {
+        id: idComment,
+        status: 'Dislike',
+        user: { ban: false },
+      },
     });
     if (allLikes) {
       return allLikes.length;
@@ -51,15 +48,12 @@ export class CommentsRepositoryTypeorm extends ICommentsRepository {
   }
 
   async getLikesInfo(idComment: string): Promise<number> {
-    const banUsers = await this.usersRepository.getBanUsers();
-    const allLikes = await this.likeInfoCollection.findBy({
-      id: idComment,
-      status: 'Like',
-      userId: Not(
-        banUsers.map((a) => {
-          return a.id;
-        }),
-      ),
+    const allLikes = await this.likeInfoCollection.find({
+      where: {
+        id: idComment,
+        status: 'Like',
+        user: { ban: false },
+      },
     });
     if (allLikes) {
       return allLikes.length;
