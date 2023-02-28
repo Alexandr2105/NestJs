@@ -11,7 +11,7 @@ import {
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { BlogEntity } from '../blogs/entity/blog.entity';
-import { And, Not, Repository } from 'typeorm';
+import { Repository } from 'typeorm';
 import { QueryCount } from '../../../common/helper/query.count';
 import { PostEntity } from '../posts/entity/post.entity';
 import { IUsersRepository } from '../../sa/users/i.users.repository';
