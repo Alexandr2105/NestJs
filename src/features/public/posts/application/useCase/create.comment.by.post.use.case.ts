@@ -31,7 +31,7 @@ export class CreateCommentByPostUseCase {
     if (!post) return false;
     const newComment = new this.commentsCollection();
     newComment.content = command.content;
-    newComment.idPost = post.id;
+    newComment.postId = post.id;
     newComment.userId = command.userId;
     newComment.userLogin = command.userLogin;
     newComment.id = +new Date() + '';

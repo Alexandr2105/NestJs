@@ -483,7 +483,7 @@ export class QueryRepositoryMongo extends IQueryRepository {
       totalCount: totalCount,
       items: await Promise.all(
         sortArrayComments.map(async (a) => {
-          const comment = arrayPosts.find((b) => a.idPost === b.id);
+          const comment = arrayPosts.find((b) => a.postId === b.id);
           const likeInfo = await this.commentsRepository.getLikesInfo(a.userId);
           const dislikeInfo = await this.commentsRepository.getDislikeInfo(
             a.userId,

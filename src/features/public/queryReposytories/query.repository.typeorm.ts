@@ -98,11 +98,8 @@ export class QueryRepositoryTypeorm extends IQueryRepository {
   }
 
   async getQueryPostsBlogsId(query: any, blogId: string, userId: string) {
-    const allPosts = await this.postsRepository.find({
-      where: {
-        blogId: blogId,
-        user: { ban: false },
-      },
+    const allPost = await this.postsRepository.find({
+      where: { blogId: blogId, user: { ban: false } },
       select: {
         id: true,
         title: true,
@@ -112,39 +109,51 @@ export class QueryRepositoryTypeorm extends IQueryRepository {
         blogName: true,
         createdAt: true,
       },
+      relations: { likeStatus: true },
       order: { [query.sortBy]: query.sortDirection },
       skip: this.queryCount.skipHelper(query.pageNumber, query.pageSize),
       take: query.pageSize,
     });
-    return allPosts;
-    // const allPosts = await this.postsRepository.createQueryBuilder('p');
-    // .addSelect((asd) => {
-    //   return asd.select('COUNT(*)', 'qwer').from('user', 'u');
-    //    .where('p.blogId=:a', { a: blogId })
-    //    .andWhere('u.ban=:b', { b: false });
-    // })
-    // .leftJoin('p.user', 'u')
-    // .where('p.blogId=:a', { a: blogId })
-    // .andWhere('u.ban=:b', { b: false })
-    // .leftJoinAndMapMany(
-    //   'u.extendedLikesInfo',
-    //   'u.likeStatus',
-    //   'l',
-    //   "l.status='Like'",
-    // );
-
-    // console.log(allPosts.getSql());
-    // return allPosts;
-    // return {
-    //   pagesCount: this.queryCount.pagesCountHelper(
-    //     allPosts.length,
-    //     query.pageSize,
-    //   ),
-    //   page: query.pageNumber,
-    //   pageSize: query.pageSize,
-    //   totalCount: allPosts.length,
-    //   items: allPosts,
-    // };
+    return {
+      pagesCount: this.queryCount.pagesCountHelper(
+        allPost.length,
+        query.pageSize,
+      ),
+      page: query.pageNumber,
+      pageSize: query.pageSize,
+      totalCount: allPost.length,
+      items: allPost.map((a) => {
+        const like = a.likeStatus.filter((l) => l.status === 'Like');
+        const dislike = a.likeStatus.filter((d) => d.status === 'Dislike');
+        const myStatus = a.likeStatus.find((m) => m.userId === userId);
+        const sort = a.likeStatus.sort((a, b) => {
+          return b.createDate.localeCompare(a.createDate);
+        });
+        const newestLikes = sort.splice(0, 3).map((a) => {
+          return {
+            addedAt: a.createDate,
+            userId: a.userId,
+            login: a.login,
+          };
+        });
+        const extendedLikesInfo = {
+          likesCount: like.length,
+          dislikesCount: dislike.length,
+          myStatus: myStatus?.status === undefined ? 'None' : myStatus.status,
+          newestLikes,
+        };
+        return {
+          id: a.id,
+          title: a.title,
+          shortDescription: a.shortDescription,
+          content: a.content,
+          blogId: a.blogId,
+          blogName: a.blogName,
+          createdAt: a.createdAt,
+          extendedLikesInfo,
+        };
+      }),
+    };
   }
 
   async getQuerySortUsers(query: any): Promise<UserQueryType> {

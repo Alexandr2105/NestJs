@@ -1,6 +1,9 @@
 import { IPostsRepository } from './i.posts.repository';
 import { PostDocument } from './schema/posts.schema';
-import { LikesModelDocument } from '../../../common/schemas/like.type.schema';
+import {
+  LikesModel,
+  LikesModelDocument,
+} from '../../../common/schemas/like.type.schema';
 import { IUsersRepository } from '../../sa/users/i.users.repository';
 import { Not, Repository } from 'typeorm';
 import { PostEntity } from './entity/post.entity';
@@ -21,7 +24,15 @@ export class PostsRepositoryTypeorm extends IPostsRepository {
   }
 
   async createLikeStatus(likeStatus: LikesModelDocument): Promise<boolean> {
-    await this.likeInfoCollection.save(likeStatus);
+    const newModel = {
+      id: +new Date() + '',
+      userId: likeStatus.userId,
+      login: likeStatus.login,
+      status: likeStatus.status,
+      createDate: likeStatus.createDate,
+      postId: likeStatus.id,
+    };
+    await this.likeInfoCollection.save(newModel);
     return true;
   }
 

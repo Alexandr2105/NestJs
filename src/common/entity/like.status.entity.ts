@@ -1,4 +1,12 @@
-import { Column, Entity, ManyToOne, PrimaryColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  JoinTable,
+  ManyToMany,
+  ManyToOne,
+  OneToMany,
+  PrimaryColumn,
+} from 'typeorm';
 import { UserEntity } from '../../features/sa/users/entity/user.entity';
 import { PostEntity } from '../../features/public/posts/entity/post.entity';
 import { CommentEntity } from '../../features/public/comments/entity/comment.entity';
@@ -15,11 +23,15 @@ export class LikeStatusEntity {
   status: string;
   @Column()
   createDate: string;
+  @Column({ default: null })
+  postId: string;
+  @Column({ default: null })
+  commentId: string;
 
   @ManyToOne(() => UserEntity, (u) => u.likeStatus, { onDelete: 'CASCADE' })
   user: UserEntity;
-  @ManyToOne(() => PostEntity, (p) => p.id, { onDelete: 'CASCADE' })
+  @ManyToOne(() => PostEntity, (p) => p.likeStatus, { onDelete: 'CASCADE' })
   post: PostEntity;
-  @ManyToOne(() => CommentEntity, (c) => c.id, { onDelete: 'CASCADE' })
+  @ManyToOne(() => CommentEntity, (c) => c.likeStatus, { onDelete: 'CASCADE' })
   comment: CommentEntity;
 }

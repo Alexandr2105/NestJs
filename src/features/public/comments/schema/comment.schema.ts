@@ -8,7 +8,7 @@ export class Comment {
   @Prop({ required: true })
   id: string;
   @Prop({ required: true })
-  idPost: string;
+  postId: string;
   @Prop({ required: true })
   content: string;
   @Prop({ required: true })

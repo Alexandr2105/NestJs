@@ -313,7 +313,7 @@ const entities = [
         username: configService.get('POSTGRES_USERNAME') || 'postgres',
         password: configService.get('POSTGRES_PASSWORD') || 'sa',
         database: configService.get('POSTGRES_DATABASE') || 'tube',
-        // entities: [...entities],
+        entities: [...entities],
         autoLoadEntities: true,
         synchronize: true,
       }),

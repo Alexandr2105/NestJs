@@ -8,7 +8,7 @@ export class CommentEntity {
   @PrimaryColumn()
   id: string;
   @Column()
-  idPost: string;
+  postId: string;
   @Column()
   content: string;
   @Column()
@@ -22,6 +22,6 @@ export class CommentEntity {
   user: UserEntity;
   @ManyToOne(() => PostEntity, (p) => p.comments, { onDelete: 'CASCADE' })
   post: PostEntity;
-  @OneToMany(() => LikeStatusEntity, (l) => l.id, { onDelete: 'CASCADE' })
+  @OneToMany(() => LikeStatusEntity, (l) => l.comment, { onDelete: 'CASCADE' })
   likeStatus: LikeStatusEntity;
 }

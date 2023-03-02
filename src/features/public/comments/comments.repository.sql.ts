@@ -106,7 +106,7 @@ export class CommentsRepositorySql extends ICommentsRepository {
             VALUES($1,$2,$3,$4,$5,$6)`,
         [
           comment.id,
-          comment.idPost,
+          comment.postId,
           comment.content,
           comment.userId,
           comment.userLogin,

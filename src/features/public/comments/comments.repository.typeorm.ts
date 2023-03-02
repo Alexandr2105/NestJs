@@ -31,7 +31,7 @@ export class CommentsRepositoryTypeorm extends ICommentsRepository {
   async getDislikeInfo(idComment: string): Promise<number | undefined> {
     const allLikes = await this.likeInfoCollection.find({
       where: {
-        id: idComment,
+        commentId: idComment,
         status: 'Dislike',
         user: { ban: false },
       },
@@ -50,7 +50,7 @@ export class CommentsRepositoryTypeorm extends ICommentsRepository {
   async getLikesInfo(idComment: string): Promise<number> {
     const allLikes = await this.likeInfoCollection.find({
       where: {
-        id: idComment,
+        commentId: idComment,
         status: 'Like',
         user: { ban: false },
       },
@@ -68,7 +68,7 @@ export class CommentsRepositoryTypeorm extends ICommentsRepository {
   ): Promise<string | undefined> {
     const commentInfo = await this.likeInfoCollection.findOneBy({
       userId: userId,
-      id: commentId,
+      commentId: commentId,
     });
     if (commentInfo) {
       return commentInfo.status.toString();
@@ -82,7 +82,12 @@ export class CommentsRepositoryTypeorm extends ICommentsRepository {
   }
 
   async setLikeStatus(likeInfo: LikesModel): Promise<boolean> {
-    const info = await this.likeInfoCollection.save(likeInfo);
+    const newModel = {
+      ...likeInfo,
+      id: +new Date() + '',
+      commentId: likeInfo.id,
+    };
+    const info = await this.likeInfoCollection.save(newModel);
     return !!info;
   }
 

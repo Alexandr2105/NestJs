@@ -1,4 +1,4 @@
-import { Column, Entity, OneToMany, PrimaryColumn } from 'typeorm';
+import { Column, Entity, ManyToMany, OneToMany, PrimaryColumn } from 'typeorm';
 import { BlogEntity } from '../../../public/blogs/entity/blog.entity';
 import { PostEntity } from '../../../public/posts/entity/post.entity';
 import { CommentEntity } from '../../../public/comments/entity/comment.entity';
