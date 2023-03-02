@@ -23,5 +23,5 @@ export class CommentEntity {
   @ManyToOne(() => PostEntity, (p) => p.comments, { onDelete: 'CASCADE' })
   post: PostEntity;
   @OneToMany(() => LikeStatusEntity, (l) => l.comment, { onDelete: 'CASCADE' })
-  likeStatus: LikeStatusEntity;
+  likeStatus: LikeStatusEntity[];
 }

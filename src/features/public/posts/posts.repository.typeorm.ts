@@ -5,7 +5,7 @@ import {
   LikesModelDocument,
 } from '../../../common/schemas/like.type.schema';
 import { IUsersRepository } from '../../sa/users/i.users.repository';
-import { Not, Repository } from 'typeorm';
+import { Any, In, Not, Repository } from 'typeorm';
 import { PostEntity } from './entity/post.entity';
 import { LikeStatusEntity } from '../../../common/entity/like.status.entity';
 import { Injectable } from '@nestjs/common';
@@ -45,7 +45,7 @@ export class PostsRepositoryTypeorm extends IPostsRepository {
     const banUsers = await this.usersRepository.getBanUsers();
     return this.likeInfoCollection.find({
       where: {
-        id: postId,
+        postId: postId,
         status: 'Like',
         userId: Not(
           banUsers.map((a) => {
@@ -63,7 +63,7 @@ export class PostsRepositoryTypeorm extends IPostsRepository {
   async getDislikeInfo(idPost: string): Promise<number | undefined> {
     const banUsers = await this.usersRepository.getBanUsers();
     const allDislikes = await this.likeInfoCollection.findBy({
-      id: idPost,
+      postId: idPost,
       status: 'Dislike',
       userId: Not(
         banUsers.map((a) => {
@@ -82,8 +82,8 @@ export class PostsRepositoryTypeorm extends IPostsRepository {
 
   async getLikesInfo(idPost: string): Promise<number> {
     const banUsers = await this.usersRepository.getBanUsers();
-    const allDislikes = await this.likeInfoCollection.findBy({
-      id: idPost,
+    const allLikes = await this.likeInfoCollection.findBy({
+      postId: idPost,
       status: 'Like',
       userId: Not(
         banUsers.map((a) => {
@@ -91,8 +91,8 @@ export class PostsRepositoryTypeorm extends IPostsRepository {
         }),
       ),
     });
-    if (allDislikes) {
-      return allDislikes.length;
+    if (allLikes) {
+      return allLikes.length;
     }
   }
 
@@ -102,7 +102,7 @@ export class PostsRepositoryTypeorm extends IPostsRepository {
   ): Promise<string | undefined> {
     const commentInfo = await this.likeInfoCollection.findOneBy({
       userId: userId,
-      id: postId,
+      postId: postId,
     });
     if (commentInfo) {
       return commentInfo.status.toString();
