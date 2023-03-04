@@ -18,3 +18,8 @@ export class UserIdForBlogDto {
   @Validate(CheckUserIdSa)
   id: string;
 }
+
+export class CheckIdForBlogBanUser {
+  @Validate(CheckBlogIdForBlog)
+  blogId: string;
+}

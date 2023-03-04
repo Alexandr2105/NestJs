@@ -13,11 +13,13 @@ import { QueryCount } from '../../../common/helper/query.count';
 import { JwtAuthGuard } from '../../../common/guard/jwt.auth.guard';
 import {
   BanUsersForBlogDto,
+  CheckIdForBlogBanUser,
   UserIdForBlogDto,
 } from './dto/users.for.blogger.dto';
 import { CommandBus } from '@nestjs/cqrs';
 import { UpdateBanStatusForBlogCommand } from './application/useCases/update.ban.status.for.blog.use.case';
 import { IQueryRepository } from '../../public/queryReposytories/i.query.repository';
+import { CheckBlogIdForBlog } from '../../../common/customValidators/check.blog.id.for.blog';
 
 @Controller('blogger/users')
 export class UsersControllerBlogger {
@@ -32,12 +34,12 @@ export class UsersControllerBlogger {
   async getAllBannedUsersForBlog(
     @Query() queryData,
     @Req() req,
-    @Param() param,
+    @Param() param: CheckIdForBlogBanUser,
   ) {
     const query = this.query.queryCheckHelper(queryData);
     return await this.queryRepository.getQueryAllBannedUsersForBlog(
       query,
-      param.id,
+      param.blogId,
       req.user.id,
     );
   }
