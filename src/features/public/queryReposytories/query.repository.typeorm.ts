@@ -120,7 +120,41 @@ export class QueryRepositoryTypeorm extends IQueryRepository {
   }
 
   async getQueryAllUsers(query: any): Promise<UserQueryType> {
-    return Promise.resolve(undefined);
+    const users = await this.usersRepository.find({
+      where: [
+        { login: ILike(`%${query.searchLoginTerm}%`) },
+        { email: ILike(`%${query.searchEmailTerm}%`) },
+      ],
+      select: { banUsers: { banDate: true, isBanned: true, banReason: true } },
+      relations: { banUsers: true },
+      order: { [query.sortBy]: query.sortDirection },
+      skip: this.queryCount.skipHelper(query.pageNumber, query.pageSize),
+      take: query.pageSize,
+    });
+    // return this.returnObject(query, users.length, users.length);
+    return {
+      pagesCount: this.queryCount.pagesCountHelper(
+        users.length,
+        query.pageSize,
+      ),
+      page: query.pageNumber,
+      pageSize: query.pageSize,
+      totalCount: users.length,
+      items: users.map((a) => {
+        const { banUsers, ...all } = a;
+        return {
+          id: a.id,
+          login: a.login,
+          email: a.email,
+          createdAt: a.createdAt,
+          // banInfo: {
+          //   isBanned:  || false,
+          //   banDate: a.banUsersbanInfo?.banDate || null,
+          //   banReason: banInfo?.banReason || null,
+          // },
+        };
+      }),
+    };
   }
 
   async getQueryBlogs(query: any): Promise<BlogsQueryType> {
@@ -184,7 +218,34 @@ export class QueryRepositoryTypeorm extends IQueryRepository {
   }
 
   async getQueryBlogsSA(query: any): Promise<BlogsQueryTypeSA> {
-    return Promise.resolve(undefined);
+    const blogs = await this.blogsRepository.find({
+      where: { name: ILike(`%${query.searchNameTerm}%`) },
+      relations: { user: true },
+      select: { user: { login: true } },
+      order: { [query.sortBy]: query.sortDirection },
+      skip: this.queryCount.skipHelper(query.pageNumber, query.pageSize),
+      take: query.pageSize,
+    });
+    return {
+      pagesCount: this.queryCount.pagesCountHelper(
+        blogs.length,
+        query.pageSize,
+      ),
+      page: query.pageNumber,
+      pageSize: query.pageSize,
+      totalCount: blogs.length,
+      items: blogs.map((a) => {
+        const { user, banStatus, userId, banDate, ...all } = a;
+        return {
+          ...all,
+          blogOwnerInfo: {
+            userId: userId,
+            userLogin: user.login,
+          },
+          banInfo: { isBanned: banStatus, banDate },
+        };
+      }),
+    };
   }
 
   async getQueryCommentsByPostId(
@@ -356,8 +417,62 @@ export class QueryRepositoryTypeorm extends IQueryRepository {
   }
 
   async getQuerySortUsers(query: any): Promise<UserQueryType> {
-    return Promise.resolve(undefined);
+    const users = await this.usersRepository.find({
+      where: [
+        {
+          login: ILike(`%${query.searchLoginTerm}%`),
+          ban: query.banStatus === 'banned',
+        },
+        {
+          email: ILike(`%${query.searchEmailTerm}%`),
+          ban: query.banStatus === 'banned',
+        },
+      ],
+      order: { [query.sortBy]: query.sortDirection },
+      skip: this.queryCount.skipHelper(query.pageNumber, query.pageSize),
+      take: query.pageSize,
+    });
+    return this.returnObject(query, users.length, users);
+    return {
+      pagesCount: this.queryCount.pagesCountHelper(
+        users.length,
+        query.pageSize,
+      ),
+      page: query.pageNumber,
+      pageSize: query.pageSize,
+      totalCount: users.length,
+      items: users.map((a) => {
+        console.log(a.banUsers);
+        const { banUsers, ...all } = a;
+        return {
+          ...all,
+          banInfo: {
+            ...banUsers,
+          },
+        };
+      }),
+    };
   }
 
-  async returnObject(query, totalCount, sortArrayUsers) {}
+  // async returnObject(query, totalCount, sortArrayUsers) {
+  //   return {
+  //     pagesCount: this.queryCount.pagesCountHelper(totalCount, query.pageSize),
+  //     page: query.pageNumber,
+  //     pageSize: query.pageSize,
+  //     totalCount: totalCount,
+  //     items: sortArrayUsers.map((a) => {
+  //       return {
+  //         id: a.id,
+  //         login: a.login,
+  //         email: a.email,
+  //         createdAt: a.createdAt,
+  //         banInfo: {
+  //           isBanned: a.banUsers?.isBanned || false,
+  //           banDate: a.banUsers?.banDate || null,
+  //           banReason: a.banUsers?.banReason || null,
+  //         },
+  //       };
+  //     }),
+  //   };
+  // }
 }
