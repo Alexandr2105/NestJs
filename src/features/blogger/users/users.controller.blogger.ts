@@ -19,7 +19,6 @@ import {
 import { CommandBus } from '@nestjs/cqrs';
 import { UpdateBanStatusForBlogCommand } from './application/useCases/update.ban.status.for.blog.use.case';
 import { IQueryRepository } from '../../public/queryReposytories/i.query.repository';
-import { CheckBlogIdForBlog } from '../../../common/customValidators/check.blog.id.for.blog';
 
 @Controller('blogger/users')
 export class UsersControllerBlogger {

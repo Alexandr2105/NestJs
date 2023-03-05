@@ -14,7 +14,6 @@ import { BlogEntity } from '../blogs/entity/blog.entity';
 import { ILike, Repository } from 'typeorm';
 import { QueryCount } from '../../../common/helper/query.count';
 import { PostEntity } from '../posts/entity/post.entity';
-import { IUsersRepository } from '../../sa/users/i.users.repository';
 import { CommentEntity } from '../comments/entity/comment.entity';
 import { UserEntity } from '../../sa/users/entity/user.entity';
 
@@ -52,7 +51,7 @@ export class QueryRepositoryTypeorm extends IQueryRepository {
         createdAt: true,
         banInfoForBlogs: { isBanned: true, banDate: true, banReason: true },
       },
-      relations: { blogs: true, banInfoForBlogs: true },
+      relations: { banInfoForBlogs: true },
       order: { [query.sortBy]: query.sortDirection },
       skip: this.queryCount.skipHelper(query.pageNumber, query.pageSize),
       take: query.pageSize,
@@ -63,10 +62,10 @@ export class QueryRepositoryTypeorm extends IQueryRepository {
       pageSize: query.pageSize,
       totalCount: user.length,
       items: user.map((a) => {
+        const { banInfoForBlogs, createdAt, ...all } = a;
         return {
-          id: a.id,
-          login: a.login,
-          banInfo: a.banInfoForBlogs[0],
+          ...all,
+          banInfo: banInfoForBlogs[0],
         };
       }),
     };
@@ -210,7 +209,6 @@ export class QueryRepositoryTypeorm extends IQueryRepository {
       skip: this.queryCount.skipHelper(query.pageNumber, query.pageSize),
       take: query.pageSize,
     });
-
     return {
       pagesCount: this.queryCount.pagesCountHelper(
         comments.length,
@@ -255,7 +253,7 @@ export class QueryRepositoryTypeorm extends IQueryRepository {
         blogId: true,
         blogName: true,
         createdAt: true,
-        likeStatus: { userId: true, status: true, createDate: true },
+        likeStatus: { userId: true, login: true, createDate: true },
       },
       relations: { likeStatus: true },
       order: {
@@ -274,10 +272,11 @@ export class QueryRepositoryTypeorm extends IQueryRepository {
       pageSize: query.pageSize,
       totalCount: allPosts.length,
       items: allPosts.map((a) => {
-        const like = a.likeStatus.filter((l) => l.status === 'Like');
-        const dislike = a.likeStatus.filter((d) => d.status === 'Dislike');
-        const myStatus = a.likeStatus.find((m) => m.userId === userId);
-        const newestLikes = a.likeStatus.splice(0, 3).map((a) => {
+        const { likeStatus, ...all } = a;
+        const like = likeStatus.filter((l) => l.status === 'Like');
+        const dislike = likeStatus.filter((d) => d.status === 'Dislike');
+        const myStatus = likeStatus.find((m) => m.userId === userId);
+        const newestLikes = likeStatus.splice(0, 3).map((a) => {
           return {
             addedAt: a.createDate,
             userId: a.userId,
@@ -285,13 +284,7 @@ export class QueryRepositoryTypeorm extends IQueryRepository {
           };
         });
         return {
-          id: a.id,
-          title: a.title,
-          shortDescription: a.shortDescription,
-          content: a.content,
-          blogId: a.blogId,
-          blogName: a.blogName,
-          createdAt: a.createdAt,
+          ...all,
           extendedLikesInfo: {
             likesCount: like.length,
             dislikesCount: dislike.length,
@@ -318,7 +311,7 @@ export class QueryRepositoryTypeorm extends IQueryRepository {
         blogId: true,
         blogName: true,
         createdAt: true,
-        likeStatus: { status: true, userId: true, createDate: true },
+        likeStatus: { login: true, userId: true, createDate: true },
       },
       relations: { likeStatus: true },
       order: {
@@ -337,10 +330,11 @@ export class QueryRepositoryTypeorm extends IQueryRepository {
       pageSize: query.pageSize,
       totalCount: allPost.length,
       items: allPost.map((a) => {
-        const like = a.likeStatus.filter((l) => l.status === 'Like');
-        const dislike = a.likeStatus.filter((d) => d.status === 'Dislike');
-        const myStatus = a.likeStatus.find((m) => m.userId === userId);
-        const newestLikes = a.likeStatus.splice(0, 3).map((a) => {
+        const { likeStatus, ...all } = a;
+        const like = likeStatus.filter((l) => l.status === 'Like');
+        const dislike = likeStatus.filter((d) => d.status === 'Dislike');
+        const myStatus = likeStatus.find((m) => m.userId === userId);
+        const newestLikes = likeStatus.splice(0, 3).map((a) => {
           return {
             addedAt: a.createDate,
             userId: a.userId,
@@ -354,13 +348,7 @@ export class QueryRepositoryTypeorm extends IQueryRepository {
           newestLikes,
         };
         return {
-          id: a.id,
-          title: a.title,
-          shortDescription: a.shortDescription,
-          content: a.content,
-          blogId: a.blogId,
-          blogName: a.blogName,
-          createdAt: a.createdAt,
+          ...all,
           extendedLikesInfo,
         };
       }),
