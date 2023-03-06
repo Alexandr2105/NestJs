@@ -30,7 +30,7 @@ import { SaveInfoAboutDevicesUserCommand } from '../securityDevices/application/
 import { CreateEmailConfirmationCommand } from './application/useCase/create.email.confirmation.use.cae';
 import { GetNewConfirmationCodeCommand } from './application/useCase/get.new.confirmation.code.use.case';
 import { IUsersRepository } from '../../sa/users/i.users.repository';
-import { CountAttemptGuard } from '../../../common/guard/count.attempt.guard';
+// import { CountAttemptGuard } from '../../../common/guard/count.attempt.guard';
 
 @Controller('auth')
 export class AuthController {
@@ -44,7 +44,7 @@ export class AuthController {
   ) {}
 
   @UseGuards(LocalAuthGuard)
-  @UseGuards(CountAttemptGuard)
+  // @UseGuards(CountAttemptGuard)
   @HttpCode(200)
   @Post('login')
   async loginUser(@Request() req, @Body() body: LoginDto, @Res() res) {
@@ -66,7 +66,7 @@ export class AuthController {
     await this.devicesService.delOldRefreshTokenData(+new Date());
     res.cookie('refreshToken', refreshToken, {
       httpOnly: true,
-      secure: true,
+      // secure: true,
     });
     res.send(accessToken);
   }
@@ -83,7 +83,7 @@ export class AuthController {
       };
   }
 
-  @UseGuards(CountAttemptGuard)
+  // @UseGuards(CountAttemptGuard)
   @HttpCode(204)
   @Post('registration-confirmation')
   async registrationConfirmation(@Body() body: RegistrationConformation) {
@@ -92,7 +92,7 @@ export class AuthController {
     await this.usersRepository.updateEmailConfirmation(userByCode?.userId);
   }
 
-  @UseGuards(CountAttemptGuard)
+  // @UseGuards(CountAttemptGuard)
   @HttpCode(204)
   @Post('registration')
   async registration(@Body() body: CreateUserDto) {
@@ -103,7 +103,7 @@ export class AuthController {
       );
   }
 
-  @UseGuards(CountAttemptGuard)
+  // @UseGuards(CountAttemptGuard)
   @HttpCode(204)
   @Post('registration-email-resending')
   async registrationEmailResending(@Body() body: EmailResending) {
@@ -113,7 +113,7 @@ export class AuthController {
     await this.emailManager.sendEmailAndConfirm(body, newCode);
   }
 
-  @UseGuards(CountAttemptGuard)
+  // @UseGuards(CountAttemptGuard)
   @UseGuards(RefreshAuthGuard)
   @HttpCode(200)
   @Post('refresh-token')
@@ -137,7 +137,7 @@ export class AuthController {
     );
     res.cookie('refreshToken', refreshToken, {
       httpOnly: true,
-      secure: true,
+      // secure: true,
     });
     res.send(token);
   }
@@ -149,7 +149,7 @@ export class AuthController {
     if (result) res.sendStatus(204);
   }
 
-  @UseGuards(CountAttemptGuard)
+  // @UseGuards(CountAttemptGuard)
   @HttpCode(204)
   @Post('password-recovery')
   async passwordRecovery(@Body() body: EmailResending) {
@@ -159,7 +159,7 @@ export class AuthController {
     await this.emailManager.sendEmailPasswordRecovery(body, recoveryCode);
   }
 
-  @UseGuards(CountAttemptGuard)
+  // @UseGuards(CountAttemptGuard)
   @HttpCode(204)
   @Post('new-password')
   async createNewPassword(@Body() body: NewPassword) {
