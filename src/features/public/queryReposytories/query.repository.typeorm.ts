@@ -40,7 +40,7 @@ export class QueryRepositoryTypeorm extends IQueryRepository {
   ): Promise<BanUsersInfoForBlog> {
     const blog = await this.blogsRepository.findOneBy({ userId: ownerId });
     if (!blog) throw new ForbiddenException();
-    const user = await this.usersRepository.find({
+    const [sortUsers, totalCount] = await this.usersRepository.findAndCount({
       where: {
         banInfoForBlogs: { isBanned: true },
         login: ILike(`%${query.searchNameTerm}%`),
@@ -57,11 +57,11 @@ export class QueryRepositoryTypeorm extends IQueryRepository {
       take: query.pageSize,
     });
     return {
-      pagesCount: this.queryCount.pagesCountHelper(user.length, query.pageSize),
+      pagesCount: this.queryCount.pagesCountHelper(totalCount, query.pageSize),
       page: query.pageNumber,
       pageSize: query.pageSize,
-      totalCount: user.length,
-      items: user.map((a) => {
+      totalCount: totalCount,
+      items: sortUsers.map((a) => {
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const { banInfoForBlogs, createdAt, ...all } = a;
         return {
@@ -76,7 +76,7 @@ export class QueryRepositoryTypeorm extends IQueryRepository {
     query: any,
     userId: string,
   ): Promise<AllCommentsForAllPostsCurrentUserBlogs> {
-    const info = await this.commentsRepository.find({
+    const [info, totalCount] = await this.commentsRepository.findAndCount({
       where: { post: { userId: userId } },
       select: {
         createdAt: true,
@@ -93,10 +93,10 @@ export class QueryRepositoryTypeorm extends IQueryRepository {
       take: query.pageSize,
     });
     return {
-      pagesCount: this.queryCount.pagesCountHelper(info.length, query.pageSize),
+      pagesCount: this.queryCount.pagesCountHelper(totalCount, query.pageSize),
       page: query.pageNumber,
       pageSize: query.pageSize,
-      totalCount: info.length,
+      totalCount: totalCount,
       items: info.map((a) => {
         const like = a.likeStatus.filter((l) => l.status === 'Like');
         const dislike = a.likeStatus.filter((d) => d.status === 'Dislike');
@@ -121,7 +121,7 @@ export class QueryRepositoryTypeorm extends IQueryRepository {
   }
 
   async getQueryAllUsers(query: any): Promise<UserQueryType> {
-    const users = await this.usersRepository.find({
+    const [sortUsers, totalCount] = await this.usersRepository.findAndCount({
       where: [
         { login: ILike(`%${query.searchLoginTerm}%`) },
         { email: ILike(`%${query.searchEmailTerm}%`) },
@@ -138,11 +138,11 @@ export class QueryRepositoryTypeorm extends IQueryRepository {
       skip: this.queryCount.skipHelper(query.pageNumber, query.pageSize),
       take: query.pageSize,
     });
-    return this.returnObject(query, users.length, users);
+    return this.returnObject(query, totalCount, sortUsers);
   }
 
   async getQueryBlogs(query: any): Promise<BlogsQueryType> {
-    const allBlogs = await this.blogsRepository.find({
+    const [allBlogs, totalCount] = await this.blogsRepository.findAndCount({
       where: { name: ILike(`%${query.searchNameTerm}%`) },
       select: {
         id: true,
@@ -157,13 +157,10 @@ export class QueryRepositoryTypeorm extends IQueryRepository {
       take: query.pageSize,
     });
     return {
-      pagesCount: this.queryCount.pagesCountHelper(
-        allBlogs.length,
-        query.pageSize,
-      ),
+      pagesCount: this.queryCount.pagesCountHelper(totalCount, query.pageSize),
       page: query.pageNumber,
       pageSize: query.pageSize,
-      totalCount: allBlogs.length,
+      totalCount: totalCount,
       items: allBlogs,
     };
   }
@@ -172,7 +169,7 @@ export class QueryRepositoryTypeorm extends IQueryRepository {
     query: any,
     userId: string,
   ): Promise<BlogsQueryType> {
-    const allBlogs = await this.blogsRepository.find({
+    const [allBlogs, totalCount] = await this.blogsRepository.findAndCount({
       where: {
         userId: userId,
         name: ILike(`%${query.searchNameTerm}%`),
@@ -190,19 +187,16 @@ export class QueryRepositoryTypeorm extends IQueryRepository {
       take: query.pageSize,
     });
     return {
-      pagesCount: this.queryCount.pagesCountHelper(
-        allBlogs.length,
-        query.pageSize,
-      ),
+      pagesCount: this.queryCount.pagesCountHelper(totalCount, query.pageSize),
       page: query.pageNumber,
       pageSize: query.pageSize,
-      totalCount: allBlogs.length,
+      totalCount: totalCount,
       items: allBlogs,
     };
   }
 
   async getQueryBlogsSA(query: any): Promise<BlogsQueryTypeSA> {
-    const blogs = await this.blogsRepository.find({
+    const [blogs, totalCount] = await this.blogsRepository.findAndCount({
       where: { name: ILike(`%${query.searchNameTerm}%`) },
       relations: { user: true },
       select: { user: { login: true } },
@@ -211,13 +205,10 @@ export class QueryRepositoryTypeorm extends IQueryRepository {
       take: query.pageSize,
     });
     return {
-      pagesCount: this.queryCount.pagesCountHelper(
-        blogs.length,
-        query.pageSize,
-      ),
+      pagesCount: this.queryCount.pagesCountHelper(totalCount, query.pageSize),
       page: query.pageNumber,
       pageSize: query.pageSize,
-      totalCount: blogs.length,
+      totalCount: totalCount,
       items: blogs.map((a) => {
         const { user, banStatus, userId, banDate, ...all } = a;
         return {
@@ -237,7 +228,7 @@ export class QueryRepositoryTypeorm extends IQueryRepository {
     postId: string,
     userId: string,
   ): Promise<CommentsType | boolean> {
-    const comments = await this.commentsRepository.find({
+    const [comments, totalCount] = await this.commentsRepository.findAndCount({
       where: { postId: postId, user: { ban: false } },
       select: {
         id: true,
@@ -255,13 +246,10 @@ export class QueryRepositoryTypeorm extends IQueryRepository {
       take: query.pageSize,
     });
     return {
-      pagesCount: this.queryCount.pagesCountHelper(
-        comments.length,
-        query.pageSize,
-      ),
+      pagesCount: this.queryCount.pagesCountHelper(totalCount, query.pageSize),
       page: query.pageNumber,
       pageSize: query.pageSize,
-      totalCount: comments.length,
+      totalCount: totalCount,
       items: comments.map((a) => {
         const like = a.likeStatus.filter((l) => l.status === 'Like');
         const dislike = a.likeStatus.filter((d) => d.status === 'Dislike');
@@ -285,7 +273,7 @@ export class QueryRepositoryTypeorm extends IQueryRepository {
   }
 
   async getQueryPosts(query: any, userId: string): Promise<PostQueryType> {
-    const allPosts = await this.postsRepository.find({
+    const [allPosts, totalCount] = await this.postsRepository.findAndCount({
       where: {
         user: { ban: false },
         blog: { banStatus: false },
@@ -309,13 +297,10 @@ export class QueryRepositoryTypeorm extends IQueryRepository {
       take: query.pageSize,
     });
     return {
-      pagesCount: this.queryCount.pagesCountHelper(
-        allPosts.length,
-        query.pageSize,
-      ),
+      pagesCount: this.queryCount.pagesCountHelper(totalCount, query.pageSize),
       page: query.pageNumber,
       pageSize: query.pageSize,
-      totalCount: allPosts.length,
+      totalCount: totalCount,
       items: allPosts.map((a) => {
         const { likeStatus, ...all } = a;
         const like = likeStatus.filter((l) => l.status === 'Like');
@@ -346,7 +331,7 @@ export class QueryRepositoryTypeorm extends IQueryRepository {
     blogId: string,
     userId: string,
   ): Promise<PostQueryType> {
-    const allPost = await this.postsRepository.find({
+    const [allPosts, totalCount] = await this.postsRepository.findAndCount({
       where: { blogId: blogId, user: { ban: false } },
       select: {
         id: true,
@@ -367,14 +352,11 @@ export class QueryRepositoryTypeorm extends IQueryRepository {
       take: query.pageSize,
     });
     return {
-      pagesCount: this.queryCount.pagesCountHelper(
-        allPost.length,
-        query.pageSize,
-      ),
+      pagesCount: this.queryCount.pagesCountHelper(totalCount, query.pageSize),
       page: query.pageNumber,
       pageSize: query.pageSize,
-      totalCount: allPost.length,
-      items: allPost.map((a) => {
+      totalCount: totalCount,
+      items: allPosts.map((a) => {
         const { likeStatus, ...all } = a;
         const like = likeStatus.filter((l) => l.status === 'Like');
         const dislike = likeStatus.filter((d) => d.status === 'Dislike');
@@ -401,7 +383,7 @@ export class QueryRepositoryTypeorm extends IQueryRepository {
   }
 
   async getQuerySortUsers(query: any): Promise<UserQueryType> {
-    const users = await this.usersRepository.find({
+    const [sortUsers, totalCount] = await this.usersRepository.findAndCount({
       where: [
         {
           login: ILike(`%${query.searchLoginTerm}%`),
@@ -413,23 +395,26 @@ export class QueryRepositoryTypeorm extends IQueryRepository {
         },
       ],
       relations: { banUsers: true },
-      select: { banUsers: { banDate: true, isBanned: true, banReason: true } },
+      select: {
+        banUsers: { banDate: true, isBanned: true, banReason: true },
+        id: true,
+        login: true,
+        email: true,
+        createdAt: true,
+      },
       order: { [query.sortBy]: query.sortDirection },
       skip: this.queryCount.skipHelper(query.pageNumber, query.pageSize),
       take: query.pageSize,
     });
-    return this.returnObject(query, users.length, users);
+    return this.returnObject(query, totalCount, sortUsers);
   }
 
   async returnObject(query: any, totalCount: number, sortArrayUsers) {
     return {
-      pagesCount: this.queryCount.pagesCountHelper(
-        sortArrayUsers.length,
-        query.pageSize,
-      ),
+      pagesCount: this.queryCount.pagesCountHelper(totalCount, query.pageSize),
       page: query.pageNumber,
       pageSize: query.pageSize,
-      totalCount: sortArrayUsers.length,
+      totalCount: totalCount,
       items: sortArrayUsers.map((a) => {
         const { banUsers, ...all } = a;
         return {

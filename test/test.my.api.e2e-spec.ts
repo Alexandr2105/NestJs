@@ -870,6 +870,28 @@ describe('Create tests for sa', () => {
       .auth('admin', 'qwerty', { type: 'basic' })
       .expect(404);
   });
+
+  it('Создаю 12 пользователей и получаю их', async () => {
+    for (let a = 0; a < 12; a++) {
+      const user = {
+        login: `Alex${a}`,
+        password: 'QWERTY',
+        email: `5030553${a}@gmail.com`,
+      };
+      admin = await new Helper().user(user, 'admin', 'qwerty', test);
+    }
+    const info = await test
+      .get(`/sa/users`)
+      .auth('admin', 'qwerty', { type: 'basic' })
+      .expect(200);
+    expect(info.body).toEqual({
+      pagesCount: 2,
+      page: 1,
+      pageSize: 10,
+      totalCount: 13,
+      items: expect.any(Array),
+    });
+  });
 });
 
 describe('Create tests for all', () => {
