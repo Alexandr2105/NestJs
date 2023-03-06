@@ -4,9 +4,9 @@ import { UserEntity } from '../../features/sa/users/entity/user.entity';
 @Entity()
 export class RefreshTokenDataEntity {
   @Column()
-  iat: number;
+  iat: string;
   @Column()
-  exp: number;
+  exp: string;
   @PrimaryColumn()
   deviceId: string;
   @Column()

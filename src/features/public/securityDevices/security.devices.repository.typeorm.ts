@@ -1,7 +1,5 @@
 import { ISecurityDevicesRepository } from './i.security.devices.repository';
-import { RefreshTokenDocument } from '../../../common/schemas/refresh.token.data.schema';
 import { DeviceInfoDto } from './dto/device.info.dto';
-import { CountAttemptDocument } from '../../../common/schemas/count.attempt.schema';
 import { LessThan, Not, Repository } from 'typeorm';
 import { RefreshTokenDataEntity } from '../../../common/entity/refresh.token.data.entities';
 import { CountAttemptEntity } from '../../../common/entity/count.attempt.entity';
@@ -19,7 +17,7 @@ export class SecurityDevicesRepositoryTypeorm extends ISecurityDevicesRepository
     super();
   }
 
-  async createCountAttempt(countAttempt: CountAttemptDocument) {
+  async createCountAttempt(countAttempt: CountAttemptEntity) {
     await this.countAttemptCollection.save(countAttempt);
   }
 
@@ -42,7 +40,7 @@ export class SecurityDevicesRepositoryTypeorm extends ISecurityDevicesRepository
   async delOldRefreshTokenData(date: number) {
     const timeInSeconds = Math.round(date / 1000);
     await this.refreshTokenDataCollection.delete({
-      exp: LessThan(timeInSeconds),
+      exp: LessThan(timeInSeconds.toString()),
     });
   }
 
@@ -80,7 +78,7 @@ export class SecurityDevicesRepositoryTypeorm extends ISecurityDevicesRepository
     return this.countAttemptCollection.findOneBy({ ip: ip });
   }
 
-  async save(infoRefreshToken: RefreshTokenDocument) {
+  async save(infoRefreshToken: RefreshTokenDataEntity) {
     await this.refreshTokenDataCollection.save(infoRefreshToken);
   }
 
@@ -93,7 +91,7 @@ export class SecurityDevicesRepositoryTypeorm extends ISecurityDevicesRepository
 
   async updateCountAttemptMany(
     countAttempt: number,
-    iat: number,
+    iat: bigint,
     method: string,
     originalUrl: string,
     dataIpDevice: string,
@@ -102,7 +100,7 @@ export class SecurityDevicesRepositoryTypeorm extends ISecurityDevicesRepository
       { ip: dataIpDevice },
       {
         countAttempt: countAttempt,
-        iat: iat,
+        iat: '' + Number(iat),
         method: method,
         originalUrl: originalUrl,
       },

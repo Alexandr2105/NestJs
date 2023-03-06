@@ -5,7 +5,7 @@ export class CountAttemptEntity {
   @PrimaryColumn()
   ip: string;
   @Column()
-  iat: number;
+  iat: string;
   @Column()
   method: string;
   @Column()
