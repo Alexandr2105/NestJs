@@ -1,12 +1,4 @@
-import {
-  Column,
-  Entity,
-  JoinColumn,
-  ManyToMany,
-  OneToMany,
-  OneToOne,
-  PrimaryColumn,
-} from 'typeorm';
+import { Column, Entity, OneToMany, OneToOne, PrimaryColumn } from 'typeorm';
 import { BlogEntity } from '../../../public/blogs/entity/blog.entity';
 import { PostEntity } from '../../../public/posts/entity/post.entity';
 import { CommentEntity } from '../../../public/comments/entity/comment.entity';
@@ -46,8 +38,8 @@ export class UserEntity {
     onDelete: 'CASCADE',
   })
   banInfoForBlogs: BanUsersForBlogEntity[];
-  @OneToMany(() => BanUsersEntity, (ban) => ban.user, {
+  @OneToOne(() => BanUsersEntity, (ban) => ban.user, {
     onDelete: 'CASCADE',
   })
-  banUsers: BanUsersEntity[];
+  banUsers: BanUsersEntity;
 }

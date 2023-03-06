@@ -21,5 +21,5 @@ export class UserIdForBlogDto {
 
 export class CheckIdForBlogBanUser {
   @Validate(CheckBlogIdForBlog)
-  blogId: string;
+  id: string;
 }

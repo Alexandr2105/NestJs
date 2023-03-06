@@ -62,6 +62,7 @@ export class QueryRepositoryTypeorm extends IQueryRepository {
       pageSize: query.pageSize,
       totalCount: user.length,
       items: user.map((a) => {
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const { banInfoForBlogs, createdAt, ...all } = a;
         return {
           ...all,
@@ -125,36 +126,19 @@ export class QueryRepositoryTypeorm extends IQueryRepository {
         { login: ILike(`%${query.searchLoginTerm}%`) },
         { email: ILike(`%${query.searchEmailTerm}%`) },
       ],
-      select: { banUsers: { banDate: true, isBanned: true, banReason: true } },
       relations: { banUsers: true },
+      select: {
+        banUsers: { banDate: true, isBanned: true, banReason: true },
+        id: true,
+        login: true,
+        email: true,
+        createdAt: true,
+      },
       order: { [query.sortBy]: query.sortDirection },
       skip: this.queryCount.skipHelper(query.pageNumber, query.pageSize),
       take: query.pageSize,
     });
-    // return this.returnObject(query, users.length, users.length);
-    return {
-      pagesCount: this.queryCount.pagesCountHelper(
-        users.length,
-        query.pageSize,
-      ),
-      page: query.pageNumber,
-      pageSize: query.pageSize,
-      totalCount: users.length,
-      items: users.map((a) => {
-        const { banUsers, ...all } = a;
-        return {
-          id: a.id,
-          login: a.login,
-          email: a.email,
-          createdAt: a.createdAt,
-          // banInfo: {
-          //   isBanned:  || false,
-          //   banDate: a.banUsersbanInfo?.banDate || null,
-          //   banReason: banInfo?.banReason || null,
-          // },
-        };
-      }),
-    };
+    return this.returnObject(query, users.length, users);
   }
 
   async getQueryBlogs(query: any): Promise<BlogsQueryType> {
@@ -428,51 +412,35 @@ export class QueryRepositoryTypeorm extends IQueryRepository {
           ban: query.banStatus === 'banned',
         },
       ],
+      relations: { banUsers: true },
+      select: { banUsers: { banDate: true, isBanned: true, banReason: true } },
       order: { [query.sortBy]: query.sortDirection },
       skip: this.queryCount.skipHelper(query.pageNumber, query.pageSize),
       take: query.pageSize,
     });
     return this.returnObject(query, users.length, users);
+  }
+
+  async returnObject(query: any, totalCount: number, sortArrayUsers) {
     return {
       pagesCount: this.queryCount.pagesCountHelper(
-        users.length,
+        sortArrayUsers.length,
         query.pageSize,
       ),
       page: query.pageNumber,
       pageSize: query.pageSize,
-      totalCount: users.length,
-      items: users.map((a) => {
-        console.log(a.banUsers);
+      totalCount: sortArrayUsers.length,
+      items: sortArrayUsers.map((a) => {
         const { banUsers, ...all } = a;
         return {
           ...all,
           banInfo: {
-            ...banUsers,
+            isBanned: banUsers?.isBanned || false,
+            banDate: banUsers?.banDate || null,
+            banReason: banUsers?.banReason || null,
           },
         };
       }),
     };
   }
-
-  // async returnObject(query, totalCount, sortArrayUsers) {
-  //   return {
-  //     pagesCount: this.queryCount.pagesCountHelper(totalCount, query.pageSize),
-  //     page: query.pageNumber,
-  //     pageSize: query.pageSize,
-  //     totalCount: totalCount,
-  //     items: sortArrayUsers.map((a) => {
-  //       return {
-  //         id: a.id,
-  //         login: a.login,
-  //         email: a.email,
-  //         createdAt: a.createdAt,
-  //         banInfo: {
-  //           isBanned: a.banUsers?.isBanned || false,
-  //           banDate: a.banUsers?.banDate || null,
-  //           banReason: a.banUsers?.banReason || null,
-  //         },
-  //       };
-  //     }),
-  //   };
-  // }
 }
