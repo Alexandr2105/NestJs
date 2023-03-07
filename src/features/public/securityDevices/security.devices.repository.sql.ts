@@ -78,7 +78,7 @@ export class SecurityDevicesRepositorySql extends ISecurityDevicesRepository {
     const timeInSeconds = Math.round(date / 1000);
     await this.dataSource.query(
       `DELETE FROM public."RefreshTokenData"
-             WHERE "exp"=$1`,
+             WHERE "exp"<$1`,
       [timeInSeconds],
     );
   }
