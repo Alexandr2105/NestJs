@@ -49,7 +49,7 @@ export class SecurityDevicesRepositoryMongo extends ISecurityDevicesRepository {
       return {
         ip: a.ip,
         title: a.deviceName,
-        lastActiveDate: new Date(a.iat).toISOString(),
+        lastActiveDate: new Date(a.iat * 1000).toISOString(),
         deviceId: a.deviceId,
       };
     });
