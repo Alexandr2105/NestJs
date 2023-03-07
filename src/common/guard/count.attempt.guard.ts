@@ -61,7 +61,7 @@ export class CountAttemptGuard implements CanActivate {
       ) {
         await this.securityDevicesRepository.updateCountAttemptMany(
           1,
-          +new Date(),
+          Math.floor(+new Date() / 1000),
           req.method,
           req.originalUrl,
           dataIpDevice?.ip,
