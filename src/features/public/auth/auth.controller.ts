@@ -113,8 +113,8 @@ export class AuthController {
     await this.emailManager.sendEmailAndConfirm(body, newCode);
   }
 
-  @UseGuards(CountAttemptGuard)
   @UseGuards(RefreshAuthGuard)
+  @UseGuards(CountAttemptGuard)
   @HttpCode(200)
   @Post('refresh-token')
   async createRefreshToken(@Request() req, @Res() res) {
