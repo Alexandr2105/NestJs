@@ -1,11 +1,8 @@
 import { IPostsRepository } from './i.posts.repository';
 import { PostDocument } from './schema/posts.schema';
-import {
-  LikesModel,
-  LikesModelDocument,
-} from '../../../common/schemas/like.type.schema';
+import { LikesModelDocument } from '../../../common/schemas/like.type.schema';
 import { IUsersRepository } from '../../sa/users/i.users.repository';
-import { Any, In, Not, Repository } from 'typeorm';
+import { Any, Not, Repository } from 'typeorm';
 import { PostEntity } from './entity/post.entity';
 import { LikeStatusEntity } from '../../../common/entity/like.status.entity';
 import { Injectable } from '@nestjs/common';
@@ -48,9 +45,11 @@ export class PostsRepositoryTypeorm extends IPostsRepository {
         postId: postId,
         status: 'Like',
         userId: Not(
-          banUsers.map((a) => {
-            return a.id;
-          }),
+          Any(
+            banUsers.map((a) => {
+              return a.id;
+            }),
+          ),
         ),
       },
       order: {
@@ -66,9 +65,11 @@ export class PostsRepositoryTypeorm extends IPostsRepository {
       postId: idPost,
       status: 'Dislike',
       userId: Not(
-        banUsers.map((a) => {
-          return a.id;
-        }),
+        Any(
+          banUsers.map((a) => {
+            return a.id;
+          }),
+        ),
       ),
     });
     if (allDislikes) {
@@ -86,9 +87,11 @@ export class PostsRepositoryTypeorm extends IPostsRepository {
       postId: idPost,
       status: 'Like',
       userId: Not(
-        banUsers.map((a) => {
-          return a.id;
-        }),
+        Any(
+          banUsers.map((a) => {
+            return a.id;
+          }),
+        ),
       ),
     });
     if (allLikes) {
