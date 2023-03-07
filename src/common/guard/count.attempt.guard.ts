@@ -33,7 +33,7 @@ export class CountAttemptGuard implements CanActivate {
       await this.securityDevicesRepository.createCountAttempt(countAttempt);
       return true;
     }
-    if (+new Date() - dataIpDevice.iat > 10000) {
+    if (+new Date() - dataIpDevice.iat * 1000 > 10000) {
       await this.securityDevicesRepository.updateCountAttemptMany(
         1,
         Math.floor(+new Date() / 1000),
