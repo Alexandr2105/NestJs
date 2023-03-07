@@ -25,7 +25,7 @@ export class CountAttemptGuard implements CanActivate {
     if (!dataIpDevice) {
       const countAttempt = new this.countAttemptCollection({
         ip: req.ip,
-        iat: +new Date(),
+        iat: Math.floor(+new Date() / 1000),
         method: req.method,
         originalUrl: req.originalUrl,
         countAttempt: 1,
@@ -36,7 +36,7 @@ export class CountAttemptGuard implements CanActivate {
     if (+new Date() - dataIpDevice.iat > 10000) {
       await this.securityDevicesRepository.updateCountAttemptMany(
         1,
-        +new Date(),
+        Math.floor(+new Date() / 1000),
         req.method,
         req.originalUrl,
         dataIpDevice?.ip,

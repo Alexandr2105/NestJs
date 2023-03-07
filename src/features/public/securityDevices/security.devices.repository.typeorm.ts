@@ -40,7 +40,7 @@ export class SecurityDevicesRepositoryTypeorm extends ISecurityDevicesRepository
   async delOldRefreshTokenData(date: number) {
     const timeInSeconds = Math.round(date / 1000);
     await this.refreshTokenDataCollection.delete({
-      exp: LessThan(timeInSeconds.toString()),
+      exp: LessThan(timeInSeconds),
     });
   }
 
@@ -52,7 +52,7 @@ export class SecurityDevicesRepositoryTypeorm extends ISecurityDevicesRepository
       return {
         ip: a.ip,
         title: a.deviceName,
-        lastActiveDate: new Date(+a.iat * 1000).toISOString(),
+        lastActiveDate: new Date(a.iat * 1000).toISOString(),
         deviceId: a.deviceId,
       };
     });
@@ -91,7 +91,7 @@ export class SecurityDevicesRepositoryTypeorm extends ISecurityDevicesRepository
 
   async updateCountAttemptMany(
     countAttempt: number,
-    iat: bigint,
+    iat: number,
     method: string,
     originalUrl: string,
     dataIpDevice: string,
@@ -100,7 +100,7 @@ export class SecurityDevicesRepositoryTypeorm extends ISecurityDevicesRepository
       { ip: dataIpDevice },
       {
         countAttempt: countAttempt,
-        iat: '' + Number(iat),
+        iat: iat,
         method: method,
         originalUrl: originalUrl,
       },
