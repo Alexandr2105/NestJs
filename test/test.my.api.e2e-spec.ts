@@ -1575,3 +1575,195 @@ describe('Create tests for all', () => {
     await test.get(`/security/devices`).set('Cookie', cookies2).expect(401);
   });
 });
+
+describe('Quiz questions sa', () => {
+  jest.setTimeout(5 * 60 * 1000);
+  let app: INestApplication;
+  let test;
+  let question;
+
+  beforeAll(async () => {
+    const moduleFixture: TestingModule = await Test.createTestingModule({
+      imports: [AppModule],
+    }).compile();
+    app = moduleFixture.createNestApplication();
+    app = createApp(app);
+    await app.init();
+    test = request(app.getHttpServer());
+    return test.del('/testing/all-data').expect(204);
+  });
+
+  afterAll(async () => {
+    await app.close();
+  });
+
+  it('Получить все вопросы', async () => {
+    await test.get('/sa/quiz/questions').toEqual(401);
+    const allQuestions = await test
+      .get('/sa/quiz/questions')
+      .auth('admin', 'qwerty', { type: 'basic' })
+      .toEqual(200);
+    expect(allQuestions.body).toEqual({
+      pagesCount: 1,
+      page: 1,
+      pageSize: 10,
+      totalCount: 1,
+      items: [
+        {
+          id: allQuestions.body.id,
+          body: allQuestions.body.body,
+          correctAnswers: [allQuestions.body.correctAnswers],
+          published: allQuestions.body.published,
+          createdAt: expect.any(String),
+          updatedAt: expect.any(String),
+        },
+      ],
+    });
+  });
+
+  it('Создание вопроса', async () => {
+    await test
+      .post('/sa/quiz/questions')
+      .send({
+        body: 'stringstri',
+        correctAnswers: ['string'],
+      })
+      .toEqual(401);
+    const response = await test
+      .post('/sa/quiz/questions')
+      .auth('admin', 'qwerty', { type: 'basic' })
+      .send({
+        body: '',
+        correctAnswers: [],
+      })
+      .toEqual(400);
+    expect(response.body).toEqual({
+      errorsMessages: [
+        {
+          message: expect.any(String),
+          field: 'body',
+        },
+        {
+          message: expect.any(String),
+          field: 'correctAnswers',
+        },
+      ],
+    });
+    await test
+      .post('/sa/quiz/questions')
+      .auth('admin', 'qwerty', { type: 'basic' })
+      .send({
+        body: 'stringstri',
+        correctAnswers: ['string'],
+      })
+      .toEqual(201);
+    question = await test
+      .get('/sa/quiz/questions')
+      .auth('admin', 'qwerty', { type: 'basic' })
+      .toEqual(200);
+    expect(question.body).toEqual({
+      pagesCount: 1,
+      page: 1,
+      pageSize: 10,
+      totalCount: 1,
+      items: [
+        {
+          id: question.body.id,
+          body: 'stringstri',
+          correctAnswers: ['string'],
+          published: false,
+          createdAt: expect.any(String),
+          updatedAt: expect.any(String),
+        },
+      ],
+    });
+  });
+
+  it('Удаляем вопрос по id', async () => {
+    await test.delete(`/sa/quiz/questions/${question.body.id}`).toEqual(401);
+    await test
+      .delete(`/sa/quiz/questions/${question.body.id}`)
+      .auth('admin', 'qwerty', { type: 'basic' })
+      .toEqual(204);
+    await test
+      .delete(`/sa/quiz/questions/${question.body.id}`)
+      .auth('admin', 'qwerty', { type: 'basic' })
+      .toEqual(404);
+  });
+
+  it('Изменить вопрос по id', async () => {
+    await test
+      .put(`/sa/quiz/questions/${question.body.id}`)
+      .send({
+        body: 'update',
+        correctAnswers: ['update question'],
+      })
+      .toEqual(401);
+    await test
+      .put(`/sa/quiz/questions/123`)
+      .auth('admin', 'qwerty', { type: 'basic' })
+      .send({
+        body: 'update',
+        correctAnswers: ['update question'],
+      })
+      .toEqual(404);
+    const response = await test
+      .put(`/sa/quiz/questions/${question.body.id}`)
+      .send({
+        body: '',
+        correctAnswers: [],
+      })
+      .toEqual(400);
+    expect(response.body).toEqual({
+      errorsMessages: [
+        {
+          message: expect.any(String),
+          field: 'body',
+        },
+        {
+          message: expect.any(String),
+          field: 'correctAnswers',
+        },
+      ],
+    });
+    await test
+      .put(`/sa/quiz/questions/${question.body.id}`)
+      .auth('admin', 'qwerty', { type: 'basic' })
+      .send({
+        body: 'update',
+        correctAnswers: ['update question'],
+      })
+      .toEqual(204);
+  });
+
+  it('Делаем вопрос публичным или нет, по id', async () => {
+    await test
+      .put(`/sa/quiz/questions/${question.body.id}`)
+      .send({
+        published: true,
+      })
+      .toEqual(401);
+    const response = await test
+      .put(`/sa/quiz/questions/${question.body.id}`)
+      .auth('admin', 'qwerty', { type: 'basic' })
+      .send({
+        published: 'asdf',
+      })
+      .toEqual(400);
+    expect(response.body).toEqual({
+      errorsMessages: [
+        {
+          message: expect.any(String),
+          field: 'published',
+        },
+      ],
+    });
+    await test
+      .put(`/sa/quiz/questions/${question.body.id}`)
+      .auth('admin', 'qwerty', { type: 'basic' })
+      .send({
+        published: true,
+      })
+      .toEqual(204);
+  });
+});
