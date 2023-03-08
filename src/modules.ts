@@ -116,6 +116,18 @@ import { QueryRepositoryTypeorm } from './features/public/queryReposytories/quer
 import { CommentsRepositoryTypeorm } from './features/public/comments/comments.repository.typeorm';
 import { PostsRepositoryTypeorm } from './features/public/posts/posts.repository.typeorm';
 import { TestingRepositoryTypeorm } from './testing/testing.repository.typeorm';
+import { CheckQuestionId } from './common/customValidators/check.question.id';
+import { QuizQuestionsControllerSa } from './features/sa/quizQuestions/quiz.questions.controller.sa';
+import { CreateQuestionUseCase } from './features/sa/quizQuestions/aplication/useCase/create.question.use.case';
+import { QuizQuestionsRepositoryMongoSa } from './features/sa/quizQuestions/quiz.questions.repository.mongo.sa';
+import { QuizQuestionsRepositorySqlSa } from './features/sa/quizQuestions/quiz.questions.repository.sql.sa';
+import { QuizQuestionsRepositoryTypeormSa } from './features/sa/quizQuestions/quiz.questions.repository.typeorm.sa';
+import { IQuizQuestionsRepositorySa } from './features/sa/quizQuestions/i.quiz.questions.repository.sa';
+import { QuizQuestionEntity } from './features/sa/quizQuestions/entity/quiz.question.entity';
+import { QuestionSchema } from './features/sa/quizQuestions/schema/question.schema';
+import { DeleteQuestionSaUseCase } from './features/sa/quizQuestions/aplication/useCase/delete.question.sa.use.case';
+import { UpdateQuestionSaUseCase } from './features/sa/quizQuestions/aplication/useCase/update.question.sa.use.case';
+import { UpdateStatusForQuestionSaUseCase } from './features/sa/quizQuestions/aplication/useCase/update.status.for.question.sa.use.case';
 
 const Strategies = [LocalStrategy, JwtStrategy, BasicStrategy, RefreshStrategy];
 const Validators = [
@@ -132,6 +144,7 @@ const Validators = [
   CheckUserIdSa,
   CheckBlogIdSa,
   CheckPostId,
+  CheckQuestionId,
 ];
 const UseCases = [
   CreateBlogUseCase,
@@ -157,6 +170,10 @@ const UseCases = [
   UpdateBanStatusForBlogUseCase,
   UpdateBanStatusForBlogSaUseCase,
   GetBlogIdUseCase,
+  CreateQuestionUseCase,
+  DeleteQuestionSaUseCase,
+  UpdateQuestionSaUseCase,
+  UpdateStatusForQuestionSaUseCase,
 ];
 const MongoRepositories = [
   AuthRepositoryMongo,
@@ -167,6 +184,7 @@ const MongoRepositories = [
   QueryRepositoryMongo,
   CommentsRepositoryMongo,
   PostsRepositoryMongo,
+  QuizQuestionsRepositoryMongoSa,
 ];
 const SqlRepositories = [
   AuthRepositorySql,
@@ -177,6 +195,7 @@ const SqlRepositories = [
   QueryRepositorySql,
   CommentsRepositorySql,
   PostsRepositorySql,
+  QuizQuestionsRepositorySqlSa,
 ];
 const TypeOrmRepositories = [
   AuthRepositoryTypeorm,
@@ -187,6 +206,7 @@ const TypeOrmRepositories = [
   QueryRepositoryTypeorm,
   CommentsRepositoryTypeorm,
   PostsRepositoryTypeorm,
+  QuizQuestionsRepositoryTypeormSa,
 ];
 const AbstractClassesSql = [
   {
@@ -209,6 +229,10 @@ const AbstractClassesSql = [
   { provide: IQueryRepository, useClass: QueryRepositorySql },
   { provide: ICommentsRepository, useClass: CommentsRepositorySql },
   { provide: IPostsRepository, useClass: PostsRepositorySql },
+  {
+    provide: IQuizQuestionsRepositorySa,
+    useClass: QuizQuestionsRepositorySqlSa,
+  },
 ];
 
 const AbstractClassesMongo = [
@@ -232,6 +256,10 @@ const AbstractClassesMongo = [
   { provide: IQueryRepository, useClass: QueryRepositoryMongo },
   { provide: ICommentsRepository, useClass: CommentsRepositoryMongo },
   { provide: IPostsRepository, useClass: PostsRepositoryMongo },
+  {
+    provide: IQuizQuestionsRepositorySa,
+    useClass: QuizQuestionsRepositoryMongoSa,
+  },
 ];
 
 const AbstractClassesTypeorm = [
@@ -255,6 +283,10 @@ const AbstractClassesTypeorm = [
   { provide: IQueryRepository, useClass: QueryRepositoryTypeorm },
   { provide: ICommentsRepository, useClass: CommentsRepositoryTypeorm },
   { provide: IPostsRepository, useClass: PostsRepositoryTypeorm },
+  {
+    provide: IQuizQuestionsRepositorySa,
+    useClass: QuizQuestionsRepositoryTypeormSa,
+  },
 ];
 
 const entities = [
@@ -268,6 +300,7 @@ const entities = [
   CountAttemptEntity,
   BanUsersForBlogEntity,
   BanUsersEntity,
+  QuizQuestionEntity,
 ];
 
 @Module({
@@ -285,6 +318,7 @@ const entities = [
       { name: 'countAttempts', schema: CountAttemptSchema },
       { name: 'banUsers', schema: BunUserSchema },
       { name: 'banUsersForBlogs', schema: BanUsersForBlogSchema },
+      { name: 'quizQuestions', schema: QuestionSchema },
     ]),
     JwtModule.register({}),
     MailerModule.forRootAsync({
@@ -332,6 +366,7 @@ const entities = [
     BlogsControllerBlogger,
     BlogsControllerSa,
     UsersControllerBlogger,
+    QuizQuestionsControllerSa,
   ],
   providers: [
     QueryCount,
@@ -350,7 +385,7 @@ const entities = [
     ...SqlRepositories,
     ...MongoRepositories,
     ...TypeOrmRepositories,
-    ...AbstractClassesTypeorm,
+    ...AbstractClassesMongo,
   ],
 })
 export class Modules {}

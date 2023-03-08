@@ -11,6 +11,7 @@ import {
   BlogsQueryTypeSA,
   AllCommentsForAllPostsCurrentUserBlogs,
   BanUsersInfoForBlog,
+  AllQuestionsSa,
 } from '../../../common/helper/allTypes';
 import { QueryCount } from '../../../common/helper/query.count';
 import { InjectModel } from '@nestjs/mongoose';
@@ -26,6 +27,7 @@ import { IUsersRepository } from '../../sa/users/i.users.repository';
 import { IQueryRepository } from './i.query.repository';
 import { IPostsRepository } from '../posts/i.posts.repository';
 import { ICommentsRepository } from '../comments/i.comments.repository';
+import { QuestionDocument } from '../../sa/quizQuestions/schema/question.schema';
 
 @Injectable()
 export class QueryRepositoryMongo extends IQueryRepository {
@@ -40,6 +42,8 @@ export class QueryRepositoryMongo extends IQueryRepository {
     @InjectModel('banUsers') private readonly banUsers: Model<BanUsers>,
     @InjectModel('banUsersForBlogs')
     private readonly banUsersForBlogsCollection: Model<BanUsersForBlogDocument>,
+    @InjectModel('quizQuestions')
+    private readonly questions: Model<QuestionDocument>,
     private readonly queryCount: QueryCount,
     private readonly commentsRepository: ICommentsRepository,
     private readonly postsRepository: IPostsRepository,
@@ -561,6 +565,27 @@ export class QueryRepositoryMongo extends IQueryRepository {
             banDate: banInfo.banDate,
             banReason: banInfo.banReason,
           },
+        };
+      }),
+    };
+  }
+
+  async getAllQuestionSa(query: any): Promise<AllQuestionsSa> {
+    const totalCount = await this.questions.countDocuments({});
+    const allQuestions = await this.questions.find();
+    return {
+      pagesCount: this.queryCount.pagesCountHelper(totalCount, query.pageSize),
+      page: query.pageNumber,
+      pageSize: query.pageSize,
+      totalCount: totalCount,
+      items: allQuestions.map((a) => {
+        return {
+          id: a.id,
+          body: a.body,
+          correctAnswers: a.correctAnswers,
+          published: a.published,
+          createdAt: a.createdAt,
+          updatedAt: a.updatedAt,
         };
       }),
     };

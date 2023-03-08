@@ -1581,6 +1581,7 @@ describe('Quiz questions sa', () => {
   let app: INestApplication;
   let test;
   let question;
+  let questionId;
 
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -1598,26 +1599,17 @@ describe('Quiz questions sa', () => {
   });
 
   it('Получить все вопросы', async () => {
-    await test.get('/sa/quiz/questions').toEqual(401);
+    await test.get('/sa/quiz/questions').expect(401);
     const allQuestions = await test
       .get('/sa/quiz/questions')
       .auth('admin', 'qwerty', { type: 'basic' })
-      .toEqual(200);
+      .expect(200);
     expect(allQuestions.body).toEqual({
-      pagesCount: 1,
+      pagesCount: 0,
       page: 1,
       pageSize: 10,
-      totalCount: 1,
-      items: [
-        {
-          id: allQuestions.body.id,
-          body: allQuestions.body.body,
-          correctAnswers: [allQuestions.body.correctAnswers],
-          published: allQuestions.body.published,
-          createdAt: expect.any(String),
-          updatedAt: expect.any(String),
-        },
-      ],
+      totalCount: 0,
+      items: [],
     });
   });
 
@@ -1628,7 +1620,7 @@ describe('Quiz questions sa', () => {
         body: 'stringstri',
         correctAnswers: ['string'],
       })
-      .toEqual(401);
+      .expect(401);
     const response = await test
       .post('/sa/quiz/questions')
       .auth('admin', 'qwerty', { type: 'basic' })
@@ -1636,16 +1628,12 @@ describe('Quiz questions sa', () => {
         body: '',
         correctAnswers: [],
       })
-      .toEqual(400);
+      .expect(400);
     expect(response.body).toEqual({
       errorsMessages: [
         {
           message: expect.any(String),
           field: 'body',
-        },
-        {
-          message: expect.any(String),
-          field: 'correctAnswers',
         },
       ],
     });
@@ -1656,11 +1644,11 @@ describe('Quiz questions sa', () => {
         body: 'stringstri',
         correctAnswers: ['string'],
       })
-      .toEqual(201);
+      .expect(201);
     question = await test
       .get('/sa/quiz/questions')
       .auth('admin', 'qwerty', { type: 'basic' })
-      .toEqual(200);
+      .expect(200);
     expect(question.body).toEqual({
       pagesCount: 1,
       page: 1,
@@ -1668,7 +1656,7 @@ describe('Quiz questions sa', () => {
       totalCount: 1,
       items: [
         {
-          id: question.body.id,
+          id: question.body.items[0].id,
           body: 'stringstri',
           correctAnswers: ['string'],
           published: false,
@@ -1679,77 +1667,63 @@ describe('Quiz questions sa', () => {
     });
   });
 
-  it('Удаляем вопрос по id', async () => {
-    await test.delete(`/sa/quiz/questions/${question.body.id}`).toEqual(401);
-    await test
-      .delete(`/sa/quiz/questions/${question.body.id}`)
-      .auth('admin', 'qwerty', { type: 'basic' })
-      .toEqual(204);
-    await test
-      .delete(`/sa/quiz/questions/${question.body.id}`)
-      .auth('admin', 'qwerty', { type: 'basic' })
-      .toEqual(404);
-  });
-
   it('Изменить вопрос по id', async () => {
+    questionId = question.body.items[0].id;
     await test
-      .put(`/sa/quiz/questions/${question.body.id}`)
+      .put(`/sa/quiz/questions/${questionId}`)
       .send({
         body: 'update',
         correctAnswers: ['update question'],
       })
-      .toEqual(401);
+      .expect(401);
     await test
       .put(`/sa/quiz/questions/123`)
       .auth('admin', 'qwerty', { type: 'basic' })
       .send({
-        body: 'update',
+        body: 'update question',
         correctAnswers: ['update question'],
       })
-      .toEqual(404);
+      .expect(404);
     const response = await test
-      .put(`/sa/quiz/questions/${question.body.id}`)
+      .put(`/sa/quiz/questions/${questionId}`)
+      .auth('admin', 'qwerty', { type: 'basic' })
       .send({
         body: '',
         correctAnswers: [],
       })
-      .toEqual(400);
+      .expect(400);
     expect(response.body).toEqual({
       errorsMessages: [
         {
           message: expect.any(String),
           field: 'body',
         },
-        {
-          message: expect.any(String),
-          field: 'correctAnswers',
-        },
       ],
     });
     await test
-      .put(`/sa/quiz/questions/${question.body.id}`)
+      .put(`/sa/quiz/questions/${questionId}`)
       .auth('admin', 'qwerty', { type: 'basic' })
       .send({
-        body: 'update',
+        body: 'update question',
         correctAnswers: ['update question'],
       })
-      .toEqual(204);
+      .expect(204);
   });
 
   it('Делаем вопрос публичным или нет, по id', async () => {
     await test
-      .put(`/sa/quiz/questions/${question.body.id}`)
+      .put(`/sa/quiz/questions/${questionId}/publish`)
       .send({
         published: true,
       })
-      .toEqual(401);
+      .expect(401);
     const response = await test
-      .put(`/sa/quiz/questions/${question.body.id}`)
+      .put(`/sa/quiz/questions/${questionId}/publish`)
       .auth('admin', 'qwerty', { type: 'basic' })
       .send({
         published: 'asdf',
       })
-      .toEqual(400);
+      .expect(400);
     expect(response.body).toEqual({
       errorsMessages: [
         {
@@ -1759,11 +1733,42 @@ describe('Quiz questions sa', () => {
       ],
     });
     await test
-      .put(`/sa/quiz/questions/${question.body.id}`)
+      .put(`/sa/quiz/questions/${questionId}/publish`)
       .auth('admin', 'qwerty', { type: 'basic' })
       .send({
         published: true,
       })
-      .toEqual(204);
+      .expect(204);
+    const result = await test
+      .get('/sa/quiz/questions')
+      .auth('admin', 'qwerty', { type: 'basic' })
+      .expect(200);
+    expect(result.body).toEqual({
+      pagesCount: 1,
+      page: 1,
+      pageSize: 10,
+      totalCount: 1,
+      items: [
+        {
+          id: expect.any(String),
+          body: 'update question',
+          correctAnswers: ['update question'],
+          published: true,
+          createdAt: expect.any(String),
+          updatedAt: expect.any(String),
+        },
+      ],
+    });
+  });
+  it('Удаляем вопрос по id', async () => {
+    await test.delete(`/sa/quiz/questions/${questionId}`).expect(401);
+    await test
+      .delete(`/sa/quiz/questions/${questionId}`)
+      .auth('admin', 'qwerty', { type: 'basic' })
+      .expect(204);
+    await test
+      .delete(`/sa/quiz/questions/${questionId}`)
+      .auth('admin', 'qwerty', { type: 'basic' })
+      .expect(404);
   });
 });

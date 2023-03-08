@@ -148,3 +148,20 @@ type BanUsers = {
   login: string;
   banInfo: BanInfo;
 };
+
+export type AllQuestionsSa = {
+  pagesCount: number;
+  page: number;
+  pageSize: number;
+  totalCount: number;
+  items: QuestionsSa[];
+};
+
+type QuestionsSa = {
+  id: string;
+  body: string;
+  correctAnswers: string[];
+  published: boolean;
+  createdAt: string;
+  updatedAt: string;
+};

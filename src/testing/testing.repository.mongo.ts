@@ -12,6 +12,7 @@ import { LikesModelDocument } from '../common/schemas/like.type.schema';
 import { BanUsersDocument } from '../features/sa/users/schema/banUsers';
 import { BanUsersForBlogDocument } from '../features/public/blogs/schema/ban.users.for.blog.schema';
 import { ITestingRepository } from './i.testing.repository';
+import { QuestionDocument } from '../features/sa/quizQuestions/schema/question.schema';
 
 @Injectable()
 export class TestingRepositoryMongo extends ITestingRepository {
@@ -32,6 +33,8 @@ export class TestingRepositoryMongo extends ITestingRepository {
     @InjectModel('banUsers') private readonly banUsers: Model<BanUsersDocument>,
     @InjectModel('banUsersForBlogs')
     private readonly banUsersForBlogsCollection: Model<BanUsersForBlogDocument>,
+    @InjectModel('quizQuestions')
+    private readonly questions: Model<QuestionDocument>,
   ) {
     super();
   }
@@ -46,5 +49,6 @@ export class TestingRepositoryMongo extends ITestingRepository {
     await this.likeInfoCollection.deleteMany({});
     await this.banUsers.deleteMany({});
     await this.banUsersForBlogsCollection.deleteMany({});
+    await this.questions.deleteMany({});
   }
 }

@@ -14,4 +14,5 @@ export abstract class IQueryRepository {
     blogId: string,
     ownerId: string,
   );
+  abstract getAllQuestionSa(query: any);
 }

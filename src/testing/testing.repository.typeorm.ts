@@ -12,6 +12,7 @@ import { RefreshTokenDataEntity } from '../common/entity/refresh.token.data.enti
 import { LikeStatusEntity } from '../common/entity/like.status.entity';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { QuizQuestionEntity } from '../features/sa/quizQuestions/entity/quiz.question.entity';
 
 @Injectable()
 export class TestingRepositoryTypeorm extends ITestingRepository {
@@ -36,6 +37,8 @@ export class TestingRepositoryTypeorm extends ITestingRepository {
     private readonly banUsers: Repository<BanUsersEntity>,
     @InjectRepository(BanUsersForBlogEntity)
     private readonly banUsersForBlogsCollection: Repository<BanUsersForBlogEntity>,
+    @InjectRepository(QuizQuestionEntity)
+    private readonly questions: Repository<QuizQuestionEntity>,
   ) {
     super();
   }
@@ -61,5 +64,6 @@ export class TestingRepositoryTypeorm extends ITestingRepository {
     await this.commentsCollection.query(`DELETE FROM public."comment_entity"`);
     await this.postsCollection.query(`DELETE FROM public."post_entity"`);
     await this.blogsCollection.query(`DELETE FROM public."blog_entity"`);
+    await this.questions.query(`DELETE FROM public."quiz_question_entity"`);
   }
 }

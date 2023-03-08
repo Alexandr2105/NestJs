@@ -37,6 +37,11 @@ export class QueryCount {
       query.banStatus === undefined || query.banStatus === ''
         ? 'all'
         : query.banStatus;
+    const bodySearchTerm =
+      query.bodySearchTerm === '' || query.bodySearchTerm === undefined
+        ? 'all'
+        : query.bodySearchTerm;
+
     return {
       pageNumber,
       pageSize,
@@ -46,6 +51,7 @@ export class QueryCount {
       searchLoginTerm,
       searchEmailTerm,
       banStatus,
+      bodySearchTerm,
     };
   };
 }
