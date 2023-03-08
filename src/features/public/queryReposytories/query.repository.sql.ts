@@ -11,11 +11,7 @@ import {
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
 import { QueryCount } from '../../../common/helper/query.count';
-import {
-  ForbiddenException,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
+import { ForbiddenException, Injectable } from '@nestjs/common';
 import { ICommentsRepository } from '../comments/i.comments.repository';
 import { IPostsRepository } from '../posts/i.posts.repository';
 import { IUsersRepository } from '../../sa/users/i.users.repository';

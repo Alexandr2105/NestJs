@@ -143,7 +143,7 @@ export class QueryRepositoryTypeorm extends IQueryRepository {
 
   async getQueryBlogs(query: any): Promise<BlogsQueryType> {
     const [allBlogs, totalCount] = await this.blogsRepository.findAndCount({
-      where: { name: ILike(`%${query.searchNameTerm}%`) },
+      where: { name: ILike(`%${query.searchNameTerm}%`), banStatus: false },
       select: {
         id: true,
         name: true,

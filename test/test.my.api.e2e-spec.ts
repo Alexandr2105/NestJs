@@ -776,6 +776,27 @@ describe('Create tests for sa', () => {
     });
   });
 
+  it('Проверяем на ban blogs', async () => {
+    await test.get('/blogs/' + newBlog1.id).expect(404);
+    const info = await test.get(`/blogs`).expect(200);
+    expect(info.body).toEqual({
+      pagesCount: 1,
+      page: 1,
+      pageSize: 10,
+      totalCount: 1,
+      items: [
+        {
+          id: newBlog2.id,
+          name: newBlog2.name,
+          description: newBlog2.description,
+          websiteUrl: newBlog2.websiteUrl,
+          createdAt: newBlog2.createdAt,
+          isMembership: newBlog2.isMembership,
+        },
+      ],
+    });
+  });
+
   it('Баним пользователя по id', async () => {
     await test.put(`/sa/users/${banUser.id}/ban`).expect(401);
     const info = await test
