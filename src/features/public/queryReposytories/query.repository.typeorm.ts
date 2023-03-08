@@ -38,8 +38,8 @@ export class QueryRepositoryTypeorm extends IQueryRepository {
     blogId: string,
     ownerId: string,
   ): Promise<BanUsersInfoForBlog> {
-    const blog = await this.blogsRepository.findOneBy({ userId: ownerId });
-    if (!blog) throw new ForbiddenException();
+    const blog = await this.blogsRepository.findOneBy({ id: blogId });
+    if (blog.userId !== ownerId) throw new ForbiddenException();
     const [sortUsers, totalCount] = await this.usersRepository.findAndCount({
       where: {
         banInfoForBlogs: { isBanned: true },
