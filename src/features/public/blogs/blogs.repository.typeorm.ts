@@ -18,8 +18,8 @@ export class BlogsRepositoryTypeorm extends IBlogsRepository {
     super();
   }
 
-  async deleteBanUsers(userId: string) {
-    await this.banUsersForBlog.delete(userId);
+  async deleteBanUsers(userId: string, blogId: string) {
+    await this.banUsersForBlog.delete({ userId: userId, blogId: blogId });
   }
 
   async deleteBlogId(id: string): Promise<boolean> {

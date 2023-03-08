@@ -7,7 +7,7 @@ export abstract class IBlogsRepository {
   abstract deleteBlogId(id: string);
   abstract getBanBlogs(idBlog: string);
   abstract getBanUsersForBlogs(blogId: string);
-  abstract deleteBanUsers(userId: string);
+  abstract deleteBanUsers(userId: string, blogId: string);
   abstract saveBanUser(banUser: BanUsersForBlogDocument);
   abstract save(blog: BlogDocument);
 }

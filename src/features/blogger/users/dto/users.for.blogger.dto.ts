@@ -2,6 +2,7 @@ import { IsBoolean, Length, Validate } from 'class-validator';
 import { Transform } from 'class-transformer';
 import { CheckBlogIdForBlog } from '../../../../common/customValidators/check.blog.id.for.blog';
 import { CheckUserIdSa } from '../../../../common/customValidators/check.user.id.sa';
+import { CheckIdForBlog } from '../../../../common/customValidators/check.id.for.blog';
 
 export class BanUsersForBlogDto {
   @IsBoolean()
@@ -20,6 +21,6 @@ export class UserIdForBlogDto {
 }
 
 export class CheckIdForBlogBanUser {
-  @Validate(CheckBlogIdForBlog)
+  @Validate(CheckIdForBlog)
   id: string;
 }

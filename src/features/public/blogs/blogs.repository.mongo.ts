@@ -50,8 +50,11 @@ export class BlogsRepositoryMongo extends IBlogsRepository {
     return this.banUsersForBlogsCollection.find({ blogId: blogId });
   }
 
-  async deleteBanUsers(userId: string) {
-    await this.banUsersForBlogsCollection.deleteOne({ userId: userId });
+  async deleteBanUsers(userId: string, blogId: string) {
+    await this.banUsersForBlogsCollection.deleteOne({
+      userId: userId,
+      blogId: blogId,
+    });
   }
 
   async saveBanUser(banUser: BanUsersForBlogDocument) {

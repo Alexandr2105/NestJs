@@ -465,7 +465,7 @@ describe('Create tests for blogger', () => {
       .expect(403);
   });
 
-  it('Баним и разбаниваем пользователя', async () => {
+  it('Баним пользователя', async () => {
     const { accessToken } = expect.getState();
     await test
       .put(`/blogger/users/${banUser.id}/ban`)
@@ -535,6 +535,34 @@ describe('Create tests for blogger', () => {
       .get(`/blogger/users/blog/${newBlog2.id}`)
       .auth(token.accessToken, { type: 'bearer' })
       .expect(403);
+  });
+
+  it('Разбаниваем пользователя', async () => {
+    const { accessToken } = expect.getState();
+    await test
+      .put(`/blogger/users/${banUser.id}/ban`)
+      .auth(accessToken, { type: 'bearer' })
+      .send({
+        isBanned: false,
+        banReason: 'stringstringstringst',
+        blogId: newBlog2.id,
+      })
+      .expect(204);
+  });
+
+  it('Получить всех пользователей для blog', async () => {
+    const { accessToken } = expect.getState();
+    const info = await test
+      .get(`/blogger/users/blog/${newBlog2.id}`)
+      .auth(accessToken, { type: 'bearer' })
+      .expect(200);
+    expect(info.body).toEqual({
+      pagesCount: 0,
+      page: 1,
+      pageSize: 10,
+      totalCount: 0,
+      items: [],
+    });
   });
 
   it('Получаем все комментарии конкретного blog', async () => {

@@ -11,11 +11,11 @@ export class BlogsRepositorySql extends IBlogsRepository {
     super();
   }
 
-  async deleteBanUsers(userId: string) {
+  async deleteBanUsers(userId: string, blogId: string) {
     await this.dataSource.query(
       `DELETE FROM public."BanUsersForBlog"
-            WHERE "userId"=$1`,
-      [userId],
+            WHERE "userId"=$1 AND "blogId"=$2`,
+      [userId, blogId],
     );
   }
 
