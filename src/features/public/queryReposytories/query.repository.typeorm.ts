@@ -42,7 +42,7 @@ export class QueryRepositoryTypeorm extends IQueryRepository {
     if (blog.userId !== ownerId) throw new ForbiddenException();
     const [sortUsers, totalCount] = await this.usersRepository.findAndCount({
       where: {
-        banInfoForBlogs: { isBanned: true },
+        banInfoForBlogs: { blogId: `${blog.id}` },
         login: ILike(`%${query.searchNameTerm}%`),
       },
       select: {
