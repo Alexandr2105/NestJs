@@ -1635,6 +1635,10 @@ describe('Quiz questions sa', () => {
           message: expect.any(String),
           field: 'body',
         },
+        {
+          message: expect.any(String),
+          field: 'correctAnswers',
+        },
       ],
     });
     await test
@@ -1698,6 +1702,10 @@ describe('Quiz questions sa', () => {
           message: expect.any(String),
           field: 'body',
         },
+        {
+          message: expect.any(String),
+          field: 'correctAnswers',
+        },
       ],
     });
     await test
@@ -1760,6 +1768,7 @@ describe('Quiz questions sa', () => {
       ],
     });
   });
+
   it('Удаляем вопрос по id', async () => {
     await test.delete(`/sa/quiz/questions/${questionId}`).expect(401);
     await test
