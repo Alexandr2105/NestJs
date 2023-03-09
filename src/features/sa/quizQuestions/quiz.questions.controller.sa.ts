@@ -38,7 +38,11 @@ export class QuizQuestionsControllerSa {
   @Get()
   async getAllQuestion(@Query() dataQuery) {
     const query = this.queryCount.queryCheckHelper(dataQuery);
-    return this.queryRepository.getAllQuestionSa(query);
+    if (query.publishedStatus === '') {
+      return this.queryRepository.getAllQuestionSa(query);
+    } else {
+      return this.queryRepository.getAllQuestionSaSortStatus(query);
+    }
   }
 
   @UseGuards(BasicAuthGuard)

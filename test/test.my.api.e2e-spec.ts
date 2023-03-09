@@ -1679,6 +1679,45 @@ describe('Quiz questions sa', () => {
     });
   });
 
+  it('Создание второго вопроса и проверка queryRepository', async () => {
+    const question1 = await test
+      .post('/sa/quiz/questions')
+      .auth('admin', 'qwerty', { type: 'basic' })
+      .send({
+        body: 'stringstri123',
+        correctAnswers: ['string', 'asdfas'],
+      })
+      .expect(201);
+    const query = await test
+      .get('/sa/quiz/questions')
+      .auth('admin', 'qwerty', { type: 'basic' })
+      .expect(200);
+    expect(query.body).toEqual({
+      pagesCount: 1,
+      page: 1,
+      pageSize: 10,
+      totalCount: 2,
+      items: [
+        {
+          id: question1.body.id,
+          body: 'stringstri123',
+          correctAnswers: ['string', 'asdfas'],
+          published: false,
+          createdAt: expect.any(String),
+          updatedAt: null,
+        },
+        {
+          id: question.body.items[0].id,
+          body: 'stringstri',
+          correctAnswers: ['string'],
+          published: false,
+          createdAt: expect.any(String),
+          updatedAt: null,
+        },
+      ],
+    });
+  });
+
   it('Изменить вопрос по id', async () => {
     questionId = question.body.items[0].id;
     await test
@@ -1763,8 +1802,16 @@ describe('Quiz questions sa', () => {
       pagesCount: 1,
       page: 1,
       pageSize: 10,
-      totalCount: 1,
+      totalCount: 2,
       items: [
+        {
+          id: expect.any(String),
+          body: 'stringstri123',
+          correctAnswers: ['string', 'asdfas'],
+          published: false,
+          createdAt: expect.any(String),
+          updatedAt: null,
+        },
         {
           id: expect.any(String),
           body: 'update question',

@@ -571,8 +571,59 @@ export class QueryRepositoryMongo extends IQueryRepository {
   }
 
   async getAllQuestionSa(query: any): Promise<AllQuestionsSa> {
-    const totalCount = await this.questions.countDocuments({});
-    const allQuestions = await this.questions.find();
+    const totalCount = await this.questions.countDocuments({
+      body: {
+        $regex: query.bodySearchTerm,
+        $options: 'i',
+      },
+    });
+    const allQuestions = await this.questions
+      .find({
+        body: {
+          $regex: query.bodySearchTerm,
+          $options: 'i',
+        },
+      })
+      .sort({ [query.sortBy]: query.sortDirection })
+      .skip(this.queryCount.skipHelper(query.pageNumber, query.pageSize))
+      .limit(query.pageSize);
+    return {
+      pagesCount: this.queryCount.pagesCountHelper(totalCount, query.pageSize),
+      page: query.pageNumber,
+      pageSize: query.pageSize,
+      totalCount: totalCount,
+      items: allQuestions.map((a) => {
+        return {
+          id: a.id,
+          body: a.body,
+          correctAnswers: a.correctAnswers,
+          published: a.published,
+          createdAt: a.createdAt,
+          updatedAt: a.updatedAt,
+        };
+      }),
+    };
+  }
+
+  async getAllQuestionSaSortStatus(query: any): Promise<AllQuestionsSa> {
+    const totalCount = await this.questions.countDocuments({
+      body: {
+        $regex: query.bodySearchTerm,
+        $options: 'i',
+      },
+      published: query.publishedStatus,
+    });
+    const allQuestions = await this.questions
+      .find({
+        body: {
+          $regex: query.bodySearchTerm,
+          $options: 'i',
+        },
+        published: query.publishedStatus,
+      })
+      .sort({ [query.sortBy]: query.sortDirection })
+      .skip(this.queryCount.skipHelper(query.pageNumber, query.pageSize))
+      .limit(query.pageSize);
     return {
       pagesCount: this.queryCount.pagesCountHelper(totalCount, query.pageSize),
       page: query.pageNumber,

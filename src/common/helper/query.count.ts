@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { isBooleanString } from 'class-validator';
 
 @Injectable()
 export class QueryCount {
@@ -39,8 +40,20 @@ export class QueryCount {
         : query.banStatus;
     const bodySearchTerm =
       query.bodySearchTerm === '' || query.bodySearchTerm === undefined
-        ? 'all'
+        ? ''
         : query.bodySearchTerm;
+    let publishedStatus;
+    if (
+      query.publishedStatus === 'all' ||
+      query.publishedStatus === '' ||
+      query.publishedStatus === undefined
+    ) {
+      publishedStatus = '';
+    } else if (query.publishedStatus === 'published') {
+      publishedStatus = true;
+    } else if (query.publishedStatus === 'notPublished') {
+      publishedStatus = false;
+    }
 
     return {
       pageNumber,
@@ -52,6 +65,7 @@ export class QueryCount {
       searchEmailTerm,
       banStatus,
       bodySearchTerm,
+      publishedStatus,
     };
   };
 }

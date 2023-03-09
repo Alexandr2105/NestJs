@@ -15,4 +15,5 @@ export abstract class IQueryRepository {
     ownerId: string,
   );
   abstract getAllQuestionSa(query: any);
+  abstract getAllQuestionSaSortStatus(query: any);
 }

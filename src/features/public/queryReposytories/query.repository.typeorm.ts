@@ -432,4 +432,6 @@ export class QueryRepositoryTypeorm extends IQueryRepository {
   async getAllQuestionSa(query: any) {
     return false;
   }
+
+  getAllQuestionSaSortStatus(query: any) {}
 }

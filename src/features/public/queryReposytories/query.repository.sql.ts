@@ -608,4 +608,6 @@ export class QueryRepositorySql extends IQueryRepository {
   async getAllQuestionSa(query: any) {
     return false;
   }
+
+  getAllQuestionSaSortStatus(query: any) {}
 }
