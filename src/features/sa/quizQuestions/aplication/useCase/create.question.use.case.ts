@@ -18,12 +18,11 @@ export class CreateQuestionUseCase {
   ) {}
 
   async execute(command: CreateQuestionCommand): Promise<Question> {
-    const date = new Date().toISOString();
     const newQuestion = new this.quizQuestion(command.body);
     newQuestion.id = +new Date() + '';
     newQuestion.published = false;
-    newQuestion.createdAt = date;
-    newQuestion.updatedAt = date;
+    newQuestion.createdAt = new Date().toISOString();
+    newQuestion.updatedAt = null;
     await this.quizRepository.save(newQuestion);
     return newQuestion;
   }

@@ -17,7 +17,7 @@ export class Question {
   published: false;
   @Prop({ required: true })
   createdAt: string;
-  @Prop({ required: true })
+  @Prop({ required: false })
   updatedAt: string;
 }
 

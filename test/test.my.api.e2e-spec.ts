@@ -1626,7 +1626,7 @@ describe('Quiz questions sa', () => {
       .auth('admin', 'qwerty', { type: 'basic' })
       .send({
         body: '',
-        correctAnswers: [],
+        correctAnswers: ['', '', '', '', '', '', '', '', '', '', '', ''],
       })
       .expect(400);
     expect(response.body).toEqual({
@@ -1665,7 +1665,7 @@ describe('Quiz questions sa', () => {
           correctAnswers: ['string'],
           published: false,
           createdAt: expect.any(String),
-          updatedAt: expect.any(String),
+          updatedAt: null,
         },
       ],
     });
