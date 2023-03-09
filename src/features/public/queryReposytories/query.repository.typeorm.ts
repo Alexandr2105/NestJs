@@ -1,6 +1,7 @@
 import { IQueryRepository } from './i.query.repository';
 import {
   AllCommentsForAllPostsCurrentUserBlogs,
+  AllQuestionsSa,
   BanUsersInfoForBlog,
   BlogsQueryType,
   BlogsQueryTypeSA,
@@ -16,6 +17,7 @@ import { QueryCount } from '../../../common/helper/query.count';
 import { PostEntity } from '../posts/entity/post.entity';
 import { CommentEntity } from '../comments/entity/comment.entity';
 import { UserEntity } from '../../sa/users/entity/user.entity';
+import { QuizQuestionEntity } from '../../sa/quizQuestions/entity/quiz.question.entity';
 
 @Injectable()
 export class QueryRepositoryTypeorm extends IQueryRepository {
@@ -29,6 +31,8 @@ export class QueryRepositoryTypeorm extends IQueryRepository {
     private readonly postsRepository: Repository<PostEntity>,
     @InjectRepository(CommentEntity)
     private readonly commentsRepository: Repository<CommentEntity>,
+    @InjectRepository(QuizQuestionEntity)
+    private readonly questionsRepository: Repository<QuizQuestionEntity>,
   ) {
     super();
   }
@@ -429,9 +433,39 @@ export class QueryRepositoryTypeorm extends IQueryRepository {
     };
   }
 
-  async getAllQuestionSa(query: any) {
-    return false;
+  async getAllQuestionSa(query: any): Promise<AllQuestionsSa> {
+    const [sortQuestion, totalCount] =
+      await this.questionsRepository.findAndCount({
+        where: { body: ILike(`%${query.bodySearchTerm}%`) },
+        order: { [query.sortBy]: query.sortDirection },
+        skip: this.queryCount.skipHelper(query.pageNumber, query.pageSize),
+        take: query.pageSize,
+      });
+    return {
+      pagesCount: this.queryCount.pagesCountHelper(totalCount, query.pageSize),
+      page: query.pageNumber,
+      pageSize: query.pageSize,
+      totalCount: totalCount,
+      items: sortQuestion,
+    };
   }
-
-  getAllQuestionSaSortStatus(query: any) {}
+  async getAllQuestionSaSortStatus(query: any): Promise<AllQuestionsSa> {
+    const [sortQuestion, totalCount] =
+      await this.questionsRepository.findAndCount({
+        where: {
+          body: ILike(`%${query.bodySearchTerm}%`),
+          published: query.published,
+        },
+        order: { [query.sortBy]: query.sortDirection },
+        skip: this.queryCount.skipHelper(query.pageNumber, query.pageSize),
+        take: query.pageSize,
+      });
+    return {
+      pagesCount: this.queryCount.pagesCountHelper(totalCount, query.pageSize),
+      page: query.pageNumber,
+      pageSize: query.pageSize,
+      totalCount: totalCount,
+      items: sortQuestion,
+    };
+  }
 }

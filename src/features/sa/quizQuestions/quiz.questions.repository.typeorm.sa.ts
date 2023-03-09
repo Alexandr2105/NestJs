@@ -1,16 +1,34 @@
 import { IQuizQuestionsRepositorySa } from './i.quiz.questions.repository.sa';
-import { QuestionDocument } from './schema/question.schema';
+import { InjectRepository } from '@nestjs/typeorm';
+import { QuizQuestionEntity } from './entity/quiz.question.entity';
+import { Repository } from 'typeorm';
 
 export class QuizQuestionsRepositoryTypeormSa extends IQuizQuestionsRepositorySa {
-  constructor() {
+  constructor(
+    @InjectRepository(QuizQuestionEntity)
+    private readonly questionsRepository: Repository<QuizQuestionEntity>,
+  ) {
     super();
   }
 
-  async getQuestion(questionId: string) {}
+  async getQuestion(questionId: string) {
+    return this.questionsRepository.findOne({
+      where: { id: questionId },
+    });
+  }
 
-  getQuestionAllParameters(id: string) {}
+  getQuestionAllParameters(id: string) {
+    return this.questionsRepository.findOne({
+      where: { id: id },
+    });
+  }
 
-  async save(question: QuestionDocument) {}
+  async save(question: QuizQuestionEntity) {
+    await this.questionsRepository.save(question);
+  }
 
-  async deleteQuestionById(id: string) {}
+  async deleteQuestionById(id: string) {
+    const result = await this.questionsRepository.delete({ id: id });
+    return result.affected === 1;
+  }
 }
