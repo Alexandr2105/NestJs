@@ -8,6 +8,8 @@ export class QuizQuestionsRepositoryTypeormSa extends IQuizQuestionsRepositorySa
 
   async getQuestion(questionId: string) {}
 
+  getQuestionAllParameters(id: string) {}
+
   async save(question: QuestionDocument) {}
 
   async deleteQuestionById(id: string) {}

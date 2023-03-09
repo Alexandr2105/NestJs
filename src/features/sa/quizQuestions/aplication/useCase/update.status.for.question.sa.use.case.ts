@@ -12,7 +12,9 @@ export class UpdateStatusForQuestionSaUseCase {
   ) {}
 
   async execute(command: UpdateStatusForQuestionSaCommand) {
-    const question = await this.questionRepository.getQuestion(command.id);
+    const question = await this.questionRepository.getQuestionAllParameters(
+      command.id,
+    );
     question.published = command.status;
     question.updatedAt = new Date().toISOString();
     return this.questionRepository.save(question);

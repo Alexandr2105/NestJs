@@ -11,6 +11,10 @@ export class QuizQuestionsRepositoryMongoSa extends IQuizQuestionsRepositorySa {
     super();
   }
   async getQuestion(id: string) {
+    return this.quizQuestion.findOne({ id: id }).select('-_id -__v');
+  }
+
+  async getQuestionAllParameters(id: string) {
     return this.quizQuestion.findOne({ id: id });
   }
 

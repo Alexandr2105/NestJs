@@ -1641,7 +1641,7 @@ describe('Quiz questions sa', () => {
         },
       ],
     });
-    await test
+    const res = await test
       .post('/sa/quiz/questions')
       .auth('admin', 'qwerty', { type: 'basic' })
       .send({
@@ -1649,6 +1649,14 @@ describe('Quiz questions sa', () => {
         correctAnswers: ['string'],
       })
       .expect(201);
+    expect(res.body).toEqual({
+      id: res.body.id,
+      body: 'stringstri',
+      correctAnswers: ['string'],
+      published: false,
+      createdAt: expect.any(String),
+      updatedAt: null,
+    });
     question = await test
       .get('/sa/quiz/questions')
       .auth('admin', 'qwerty', { type: 'basic' })

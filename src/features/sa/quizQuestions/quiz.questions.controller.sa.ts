@@ -23,6 +23,7 @@ import { DeleteQuestionSaCommand } from './aplication/useCase/delete.question.sa
 import { UpdateQuestionSaCommand } from './aplication/useCase/update.question.sa.use.case';
 import { UpdateStatusForQuestionSaCommand } from './aplication/useCase/update.status.for.question.sa.use.case';
 import { IQueryRepository } from '../../public/queryReposytories/i.query.repository';
+import { IQuizQuestionsRepositorySa } from './i.quiz.questions.repository.sa';
 
 @Controller('sa/quiz/questions')
 export class QuizQuestionsControllerSa {
@@ -30,6 +31,7 @@ export class QuizQuestionsControllerSa {
     private readonly queryCount: QueryCount,
     private readonly commandBus: CommandBus,
     private readonly queryRepository: IQueryRepository,
+    private readonly questionsRepository: IQuizQuestionsRepositorySa,
   ) {}
 
   @UseGuards(BasicAuthGuard)
@@ -42,7 +44,10 @@ export class QuizQuestionsControllerSa {
   @UseGuards(BasicAuthGuard)
   @Post()
   async createQuestion(@Body() body: QuizQuestionsDto) {
-    await this.commandBus.execute(new CreateQuestionCommand(body));
+    const newQuestion = await this.commandBus.execute(
+      new CreateQuestionCommand(body),
+    );
+    return this.questionsRepository.getQuestion(newQuestion.id);
   }
 
   @HttpCode(204)

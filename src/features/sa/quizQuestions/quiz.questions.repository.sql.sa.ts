@@ -14,6 +14,8 @@ export class QuizQuestionsRepositorySqlSa extends IQuizQuestionsRepositorySa {
     // return this.quizQuestion.findOne({ id: id });
   }
 
+  getQuestionAllParameters(id: string) {}
+
   async save(question: QuestionDocument) {}
 
   async deleteQuestionById(id: string) {}

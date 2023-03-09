@@ -4,4 +4,5 @@ export abstract class IQuizQuestionsRepositorySa {
   abstract getQuestion(questionId: string);
   abstract save(question: QuestionDocument);
   abstract deleteQuestionById(id: string);
+  abstract getQuestionAllParameters(id: string);
 }

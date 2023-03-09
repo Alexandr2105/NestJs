@@ -13,7 +13,7 @@ export class UpdateQuestionSaUseCase {
   ) {}
 
   async execute(command: UpdateQuestionSaCommand): Promise<boolean> {
-    const question = await this.questionRepository.getQuestion(
+    const question = await this.questionRepository.getQuestionAllParameters(
       command.questionId,
     );
     question.body = command.body.body;
