@@ -1,22 +1,78 @@
 import { IQuizQuestionsRepositorySa } from './i.quiz.questions.repository.sa';
-import { QuestionDocument } from './schema/question.schema';
-import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { InjectDataSource } from '@nestjs/typeorm';
+import { DataSource } from 'typeorm';
+import { QuizQuestionEntity } from './entity/quiz.question.entity';
 
 export class QuizQuestionsRepositorySqlSa extends IQuizQuestionsRepositorySa {
-  constructor(
-    @InjectModel('quizQuestions')
-    private readonly quizQuestion: Model<QuestionDocument>,
-  ) {
+  constructor(@InjectDataSource() private readonly dataSource: DataSource) {
     super();
   }
   async getQuestion(id: string) {
-    // return this.quizQuestion.findOne({ id: id });
+    const question = await this.dataSource.query(
+      `SELECT * FROM public."QuizQuestions"
+            WHERE "id"=$1`,
+      [id],
+    );
+    if (question[0]) {
+      return question[0];
+    } else {
+      return false;
+    }
   }
 
-  getQuestionAllParameters(id: string) {}
+  async getQuestionAllParameters(id: string) {
+    const question = await this.dataSource.query(
+      `SELECT * FROM public."QuizQuestions" 
+            WHERE "id"=$1`,
+      [id],
+    );
+    if (question[0]) {
+      return question[0];
+    } else {
+      return false;
+    }
+  }
 
-  async save(question: QuestionDocument) {}
+  async save(question: QuizQuestionEntity) {
+    if (!(await this.getQuestion(question.id))) {
+      await this.dataSource.query(
+        `INSERT INTO public."QuizQuestions"(
+            "id", "body", "correctAnswers","published", "createdAt", "updatedAt")
+               VALUES ($1,$2,to_json($3::text[]), $4, $5, $6 )`,
+        // VALUES ($1,$2,jsonb_build_array($3::int[]), $4, $5, $6 )`,
+        // VALUES ($1,$2,json_build_array(${question.correctAnswers}),$3,$4,$5)`,
+        [
+          question.id,
+          question.body,
+          question.correctAnswers,
+          question.published,
+          question.createdAt,
+          question.updatedAt,
+        ],
+      );
+    } else {
+      await this.dataSource.query(
+        `UPDATE public."QuizQuestions"
+            SET "body"=$1, "correctAnswers"=to_json($2::text[]), "published"=$3, "createdAt"=$4, "updatedAt"=$5
+            WHERE "id"=$6`,
+        [
+          question.body,
+          question.correctAnswers,
+          question.published,
+          question.createdAt,
+          question.updatedAt,
+          question.id,
+        ],
+      );
+    }
+  }
 
-  async deleteQuestionById(id: string) {}
+  async deleteQuestionById(id: string): Promise<boolean> {
+    const result = await this.dataSource.query(
+      `DELETE FROM public."QuizQuestions"
+            WHERE "id"=$1`,
+      [id],
+    );
+    return result[1] === 1;
+  }
 }

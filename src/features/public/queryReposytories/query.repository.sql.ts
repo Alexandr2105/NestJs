@@ -1,6 +1,7 @@
 import { IQueryRepository } from './i.query.repository';
 import {
   AllCommentsForAllPostsCurrentUserBlogs,
+  AllQuestionsSa,
   BanUsersInfoForBlog,
   BlogsQueryType,
   BlogsQueryTypeSA,
@@ -605,9 +606,62 @@ export class QueryRepositorySql extends IQueryRepository {
     };
   }
 
-  async getAllQuestionSa(query: any) {
-    return false;
+  async getAllQuestionSa(query: any): Promise<AllQuestionsSa> {
+    const totalCount = await this.dataSource.query(
+      `SELECT count(*) FROM public."QuizQuestions"
+            WHERE "body" ILIKE $1`,
+      [`%${query.bodySearchTerm}%`],
+    );
+    const allQuestions = await this.dataSource.query(
+      `SELECT * FROM public."QuizQuestions"
+            WHERE "body" ILIKE $1
+            ORDER BY "${query.sortBy}" COLLATE "C" ${query.sortDirection}
+            LIMIT $2 OFFSET $3`,
+      [
+        `%${query.bodySearchTerm}%`,
+        query.pageSize,
+        this.queryCount.skipHelper(query.pageNumber, query.pageSize),
+      ],
+    );
+    return {
+      pagesCount: this.queryCount.pagesCountHelper(
+        totalCount[0].count,
+        query.pageSize,
+      ),
+      page: query.pageNumber,
+      pageSize: query.pageSize,
+      totalCount: +totalCount[0].count,
+      items: allQuestions,
+    };
   }
 
-  getAllQuestionSaSortStatus(query: any) {}
+  async getAllQuestionSaSortStatus(query: any) {
+    const totalCount = await this.dataSource.query(
+      `SELECT count(*) FROM public."QuizQuestions"
+            WHERE "body" ILIKE $1 AND "published"=$2`,
+      [query.bodySearchTerm, query.publishedStatus],
+    );
+    const allQuestions = await this.dataSource.query(
+      `SELECT * FROM public."QuizQuestions",
+            WHERE "body" ILIKE $1 AND "published"=$2
+            ORDER BY "${query.sortBy}" COLLATE "C" ${query.sortDirection}
+            LIMIT $3 OFFSET $4`,
+      [
+        query.bodySearchTerm,
+        query.publishedStatus,
+        query.pageSize,
+        this.queryCount.skipHelper(query.pageNumber, query.pageSize),
+      ],
+    );
+    return {
+      pagesCount: this.queryCount.pagesCountHelper(
+        totalCount[0].count,
+        query.pageSize,
+      ),
+      page: query.pageNumber,
+      pageSize: query.pageSize,
+      totalCount: totalCount[0].count,
+      items: allQuestions,
+    };
+  }
 }

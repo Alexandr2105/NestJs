@@ -16,7 +16,7 @@ export class QuizQuestionsDto {
   @ArrayNotEmpty()
   @ArrayMinSize(1)
   @MinLength(1, { each: true })
-  correctAnswers: string[];
+  correctAnswers: [];
 }
 
 export class QuizQuestionCheckId {

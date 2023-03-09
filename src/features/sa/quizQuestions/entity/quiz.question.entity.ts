@@ -6,7 +6,7 @@ export class QuizQuestionEntity {
   id: string;
   @Column()
   body: string;
-  @Column({ type: 'json' })
+  @Column('json')
   correctAnswers: [];
   @Column()
   published: boolean;
