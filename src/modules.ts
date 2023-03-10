@@ -128,6 +128,7 @@ import { QuestionSchema } from './features/sa/quizQuestions/schema/question.sche
 import { DeleteQuestionSaUseCase } from './features/sa/quizQuestions/aplication/useCase/delete.question.sa.use.case';
 import { UpdateQuestionSaUseCase } from './features/sa/quizQuestions/aplication/useCase/update.question.sa.use.case';
 import { UpdateStatusForQuestionSaUseCase } from './features/sa/quizQuestions/aplication/useCase/update.status.for.question.sa.use.case';
+import { CheckArrayCorrectAnswer } from './common/customValidators/check.array.correct.answer';
 
 const Strategies = [LocalStrategy, JwtStrategy, BasicStrategy, RefreshStrategy];
 const Validators = [
@@ -145,6 +146,7 @@ const Validators = [
   CheckBlogIdSa,
   CheckPostId,
   CheckQuestionId,
+  CheckArrayCorrectAnswer,
 ];
 const UseCases = [
   CreateBlogUseCase,

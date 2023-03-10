@@ -3,11 +3,11 @@ import {
   ArrayNotEmpty,
   IsBoolean,
   Length,
-  MinLength,
   Validate,
 } from 'class-validator';
 import { Transform } from 'class-transformer';
 import { CheckQuestionId } from '../../../../common/customValidators/check.question.id';
+import { CheckArrayCorrectAnswer } from '../../../../common/customValidators/check.array.correct.answer';
 
 export class QuizQuestionsDto {
   @Transform(({ value }) => value.trim())
@@ -15,7 +15,7 @@ export class QuizQuestionsDto {
   body: string;
   @ArrayNotEmpty()
   @ArrayMinSize(1)
-  @MinLength(1, { each: true })
+  @Validate(CheckArrayCorrectAnswer)
   correctAnswers: [];
 }
 

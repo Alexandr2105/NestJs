@@ -38,9 +38,7 @@ export class QuizQuestionsRepositorySqlSa extends IQuizQuestionsRepositorySa {
       await this.dataSource.query(
         `INSERT INTO public."QuizQuestions"(
             "id", "body", "correctAnswers","published", "createdAt", "updatedAt")
-               VALUES ($1,$2,to_json($3::text[]), $4, $5, $6 )`,
-        // VALUES ($1,$2,jsonb_build_array($3::int[]), $4, $5, $6 )`,
-        // VALUES ($1,$2,json_build_array(${question.correctAnswers}),$3,$4,$5)`,
+        VALUES ($1,$2,to_json($3::text[]), $4, $5, $6 )`,
         [
           question.id,
           question.body,
