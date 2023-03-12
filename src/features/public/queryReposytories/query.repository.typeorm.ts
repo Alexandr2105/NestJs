@@ -449,6 +449,7 @@ export class QueryRepositoryTypeorm extends IQueryRepository {
       items: sortQuestion,
     };
   }
+
   async getAllQuestionSaSortStatus(query: any): Promise<AllQuestionsSa> {
     const [sortQuestion, totalCount] =
       await this.questionsRepository.findAndCount({
