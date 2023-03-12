@@ -1,11 +1,4 @@
-import {
-  Column,
-  Entity,
-  ManyToMany,
-  ManyToOne,
-  OneToMany,
-  PrimaryColumn,
-} from 'typeorm';
+import { Column, Entity, ManyToOne, OneToMany, PrimaryColumn } from 'typeorm';
 import { UserEntity } from '../../../sa/users/entity/user.entity';
 import { BlogEntity } from '../../blogs/entity/blog.entity';
 import { CommentEntity } from '../../comments/entity/comment.entity';
