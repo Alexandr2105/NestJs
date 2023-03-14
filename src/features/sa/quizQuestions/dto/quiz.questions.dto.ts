@@ -16,7 +16,7 @@ export class QuizQuestionsDto {
   @ArrayNotEmpty()
   @ArrayMinSize(1)
   @Validate(CheckArrayCorrectAnswer)
-  correctAnswers: [];
+  correctAnswers: any[];
 }
 
 export class QuizQuestionCheckId {
