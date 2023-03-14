@@ -1836,3 +1836,227 @@ describe('Quiz questions sa', () => {
       .expect(404);
   });
 });
+
+describe('Pair quiz game all', () => {
+  let app: INestApplication;
+  let test;
+  let game1;
+
+  jest.setTimeout(5 * 60 * 1000);
+
+  const user1 = {
+    login: 'Alex',
+    password: 'QWERTY',
+    email: '5030553@gmail.com',
+  };
+  const user2 = {
+    login: 'Alex1',
+    password: 'QWERTY',
+    email: '50305531@gmail.com',
+  };
+  let player1: User = null;
+  let player2: User = null;
+
+  beforeAll(async () => {
+    const moduleFixture: TestingModule = await Test.createTestingModule({
+      imports: [AppModule],
+    }).compile();
+    app = moduleFixture.createNestApplication();
+    app = createApp(app);
+    await app.init();
+    test = request(app.getHttpServer());
+    return test.del('/testing/all-data').expect(204);
+  });
+
+  afterAll(async () => {
+    await app.close();
+  });
+
+  it('Создание двух пользователей и login user1 and user2', async () => {
+    player1 = await new Helper().user(user1, user1.login, user1.password, test);
+    player2 = await new Helper().user(user2, user2.login, user2.password, test);
+    const info1 = await test
+      .post('/auth/login')
+      .send({ loginOrEmail: user1.login, password: user1.password });
+    expect(info1.status).toBe(200);
+    const accessToken1 = info1.body;
+    expect(accessToken1).toEqual({
+      accessToken: expect.any(String),
+    });
+    expect.setState(accessToken1);
+    const info2 = await test
+      .post('/auth/login')
+      .send({ loginOrEmail: user1.login, password: user1.password });
+    expect(info2.status).toBe(200);
+    const accessToken2 = info2.body;
+    expect(accessToken2).toEqual({
+      accessToken: expect.any(String),
+    });
+    expect.setState(accessToken2);
+  });
+
+  it('Создание новой игры', async () => {
+    const { accessToken1 } = expect.getState();
+    await test.post('/pair-game-quiz/pairs/connection').expect(401);
+    game1 = await test
+      .post('/pair-game-quiz/pairs/connection')
+      .auth(accessToken1, { type: 'bearer' })
+      .expect(200);
+    expect(game1.body).toEqual({
+      id: game1.body.id,
+      firstPlayerProgress: {
+        answers: [],
+        player: {
+          id: player1.id,
+          login: player1.login,
+        },
+        score: 0,
+      },
+      secondPlayerProgress: null,
+      questions: null,
+      status: 'PendingSecondPlayer',
+      pairCreatedDate: new Date().toISOString(),
+      startGameDate: null,
+      finishGameDate: null,
+    });
+    await test
+      .post('/pair-game-quiz/pairs/connection')
+      .auth(accessToken1, { type: 'bearer' })
+      .expect(403);
+  });
+
+  it('Возвращаем текущую незавершенную пользовательскую игру', async () => {
+    const { accessToken1 } = expect.getState();
+    const { accessToken2 } = expect.getState();
+    await test.get('/pair-game-quiz/pairs/my-current').expect(401);
+    await test
+      .get('/pair-game-quiz/pairs/my-current')
+      .auth(accessToken1, { type: 'bearer' })
+      .expect(200);
+    await test
+      .get('/pair-game-quiz/pairs/my-current')
+      .auth(accessToken2, { type: 'bearer' })
+      .expect(404);
+  });
+
+  it('Возвращаем игру по id', async () => {
+    const { accessToken1 } = expect.getState();
+    const { accessToken2 } = expect.getState();
+    await test.get(`/pair-game-quiz/pairs/2345`).expect(401);
+    await test
+      .get(`/pair-game-quiz/pairs/2345`)
+      .auth(accessToken1, { type: 'bearer' })
+      .expect(404);
+    const infoGame = await test
+      .get(`/pair-game-quiz/pairs/${2345}`)
+      .auth(accessToken1, { type: 'bearer' })
+      .expect(400);
+    expect(infoGame.body).toEqual({
+      errorsMessages: [
+        {
+          message: expect.any(String),
+          field: 'id',
+        },
+      ],
+    });
+    await test
+      .get(`/pair-game-quiz/pairs/${game1.body.id}`)
+      .auth(accessToken2, { type: 'bearer' })
+      .expect(403);
+    const info = await test
+      .get(`/pair-game-quiz/pairs/${game1.body.id}`)
+      .auth(accessToken1, { type: 'bearer' })
+      .expect(200);
+    expect(info.body).toEqual({
+      id: game1.body.id,
+      firstPlayerProgress: {
+        answers: [],
+        player: {
+          id: player1.id,
+          login: player1.login,
+        },
+        score: 0,
+      },
+      secondPlayerProgress: null,
+      questions: null,
+      status: 'PendingSecondPlayer',
+      pairCreatedDate: new Date().toISOString(),
+      startGameDate: null,
+      finishGameDate: null,
+    });
+  });
+
+  it('Отправить ответ на следующий вопрос без ответа в активной паре', async () => {
+    const { accessToken1 } = expect.getState();
+    await test.post(`/pair-game-quiz/pairs/my-current/answers`).expect(401);
+    await test
+      .post(`/pair-game-quiz/pairs/my-current/answers`)
+      .send({
+        answer: 'string',
+      })
+      .auth(accessToken1, { type: 'bearer' })
+      .expect(403);
+  });
+
+  it('Подключение второго игрока к игре', async () => {
+    const { accessToken1 } = expect.getState();
+    const { accessToken2 } = expect.getState();
+    const info = await test
+      .post('/pair-game-quiz/pairs/connection')
+      .auth(accessToken2, { type: 'bearer' })
+      .expect(200);
+    expect(info.body).toEqual({
+      id: info.body.id,
+      firstPlayerProgress: {
+        answers: [
+          {
+            questionId: expect.any(String),
+            answerStatus: expect.any(String),
+            addedAt: expect.any(String),
+          },
+        ],
+        player: {
+          id: player1.id,
+          login: player1.login,
+        },
+        score: expect.any(Number),
+      },
+      secondPlayerProgress: {
+        answers: [
+          {
+            questionId: expect.any(String),
+            answerStatus: expect.any(String),
+            addedAt: expect.any(String),
+          },
+        ],
+        player: {
+          id: player2.id,
+          login: player2.login,
+        },
+        score: expect.any(Number),
+      },
+      questions: [
+        {
+          id: 'string',
+          body: 'string',
+        },
+      ],
+      status: 'Active',
+      pairCreatedDate: info.body.pairCreatedDate,
+      startGameDate: new Date().toISOString(),
+      finishGameDate: new Date().toISOString(),
+    });
+    const info1 = await test
+      .post(`/pair-game-quiz/pairs/my-current/answers`)
+      .send({
+        answer: 'string',
+      })
+      .auth(accessToken1, { type: 'bearer' })
+      .expect(200);
+    expect(info1.body).toEqual({
+      questionId: expect.any(String),
+      answerStatus: 'Correct',
+      addedAt: new Date().toISOString(),
+    });
+  });
+});
