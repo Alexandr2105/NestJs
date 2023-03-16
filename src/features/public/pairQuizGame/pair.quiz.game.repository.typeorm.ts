@@ -1,7 +1,7 @@
 import { IPairQuizGameRepository } from './i.pair.quiz.game.repository';
 import { PairQuizGameEntity } from './entity/pair.quiz.game.entity';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Not, Repository } from 'typeorm';
 
 export class PairQuizGameRepositoryTypeorm extends IPairQuizGameRepository {
   constructor(
@@ -19,17 +19,17 @@ export class PairQuizGameRepositoryTypeorm extends IPairQuizGameRepository {
     return this.quizGameCollection.findOneBy({ status: status });
   }
 
-  async getGameByStatusAndUserId(status: any, userId: string) {
-    return this.quizGameCollection.findOneBy([
-      { status: status, playerId1: userId },
-      { status: status, playerId2: userId },
-    ]);
-  }
+  // async getGameByStatusAndUserId(status: any, userId: string) {
+  //   return this.quizGameCollection.findOneBy([
+  //     { status: status, playerId1: userId },
+  //     { status: status, playerId2: userId },
+  //   ]);
+  // }
 
   async getUnfinishedGame(status: any, userId: string) {
     return this.quizGameCollection.findOneBy([
-      { status: status, playerId1: userId },
-      { status: status, playerId2: userId },
+      { status: Not(status), playerId1: userId },
+      { status: Not(status), playerId2: userId },
     ]);
   }
 

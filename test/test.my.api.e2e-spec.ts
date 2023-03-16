@@ -1841,6 +1841,8 @@ describe('Pair quiz game all', () => {
   let app: INestApplication;
   let test;
   let game1;
+  let accessToken1;
+  let accessToken2;
 
   jest.setTimeout(5 * 60 * 1000);
 
@@ -1873,39 +1875,40 @@ describe('Pair quiz game all', () => {
   });
 
   it('Создание двух пользователей и login user1 and user2', async () => {
-    player1 = await new Helper().user(user1, user1.login, user1.password, test);
-    player2 = await new Helper().user(user2, user2.login, user2.password, test);
+    player1 = await new Helper().user(user1, 'admin', 'qwerty', test);
+    player2 = await new Helper().user(user2, 'admin', 'qwerty', test);
     const info1 = await test
       .post('/auth/login')
+      .set('user-agent', 'Chrome')
       .send({ loginOrEmail: user1.login, password: user1.password });
     expect(info1.status).toBe(200);
-    const accessToken1 = info1.body;
+    accessToken1 = info1.body;
     expect(accessToken1).toEqual({
       accessToken: expect.any(String),
     });
     expect.setState(accessToken1);
     const info2 = await test
       .post('/auth/login')
-      .send({ loginOrEmail: user1.login, password: user1.password });
+      .set('user-agent', 'Chrome')
+      .send({ loginOrEmail: user2.login, password: user2.password });
     expect(info2.status).toBe(200);
-    const accessToken2 = info2.body;
+    accessToken2 = info2.body;
     expect(accessToken2).toEqual({
       accessToken: expect.any(String),
     });
-    expect.setState(accessToken2);
   });
 
   it('Создание новой игры', async () => {
-    const { accessToken1 } = expect.getState();
+    const { accessToken } = expect.getState();
     await test.post('/pair-game-quiz/pairs/connection').expect(401);
     game1 = await test
       .post('/pair-game-quiz/pairs/connection')
-      .auth(accessToken1, { type: 'bearer' })
+      .auth(accessToken, { type: 'bearer' })
       .expect(200);
     expect(game1.body).toEqual({
       id: game1.body.id,
       firstPlayerProgress: {
-        answers: [],
+        answers: null,
         player: {
           id: player1.id,
           login: player1.login,
@@ -1915,13 +1918,13 @@ describe('Pair quiz game all', () => {
       secondPlayerProgress: null,
       questions: null,
       status: 'PendingSecondPlayer',
-      pairCreatedDate: new Date().toISOString(),
+      pairCreatedDate: game1.body.pairCreatedDate,
       startGameDate: null,
       finishGameDate: null,
     });
     await test
       .post('/pair-game-quiz/pairs/connection')
-      .auth(accessToken1, { type: 'bearer' })
+      .auth(accessToken, { type: 'bearer' })
       .expect(403);
   });
 

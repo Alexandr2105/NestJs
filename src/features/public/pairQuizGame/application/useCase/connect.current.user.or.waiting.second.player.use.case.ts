@@ -20,21 +20,22 @@ export class ConnectCurrentUserOrWaitingSecondPlayerUseCase {
   ) {}
 
   async execute(command: ConnectCurrentUserOrWaitingSecondPlayerCommand) {
-    const checkUser = this.gamesRepository.getGameByStatusAndUserId(
-      'Active',
+    const checkUser = await this.gamesRepository.getUnfinishedGame(
+      'Finished',
       command.userId,
     );
     if (checkUser) throw new ForbiddenException();
-    const game = this.gamesRepository.getGameByStatus('PendingSecondPlayer');
+    const game = await this.gamesRepository.getGameByStatus(
+      'PendingSecondPlayer',
+    );
     if (!game) {
-      const newGame = new this.quizGameCollection(
-        command.userId,
-        command.login,
-      );
+      const newGame = new this.quizGameCollection(command);
       newGame.gameId = +new Date() + '';
       newGame.status = 'PendingSecondPlayer';
       newGame.scorePlayer1 = 0;
       newGame.pairCreatedDate = new Date().toISOString();
+      newGame.playerId1 = command.userId;
+      newGame.playerLogin1 = command.login;
       this.gamesRepository.save(newGame);
       return {
         id: newGame.gameId,

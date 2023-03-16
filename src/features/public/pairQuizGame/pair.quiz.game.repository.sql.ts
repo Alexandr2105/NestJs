@@ -34,23 +34,23 @@ export class PairQuizGameRepositorySql extends IPairQuizGameRepository {
     }
   }
 
-  async getGameByStatusAndUserId(status: string, userId: string) {
-    const game = await this.dataSource.query(
-      `SELECT * FROM public."PairQuizGame"
-            WHERE "status"=$1 AND ("playerId1"=$2 OR "playerId2"=$3)`,
-      [status, userId, userId],
-    );
-    if (game[0]) {
-      return game[0];
-    } else {
-      return false;
-    }
-  }
+  // async getGameByStatusAndUserId(status: string, userId: string) {
+  //   const game = await this.dataSource.query(
+  //     `SELECT * FROM public."PairQuizGame"
+  //           WHERE "status"=$1 AND ("playerId1"=$2 OR "playerId2"=$3)`,
+  //     [status, userId, userId],
+  //   );
+  //   if (game[0]) {
+  //     return game[0];
+  //   } else {
+  //     return false;
+  //   }
+  // }
 
   async getUnfinishedGame(status: string, userId: string) {
     const game = await this.dataSource.query(
       `SELECT * FROM public."PairQuizGame"
-            WHERE "status"=$1 AND ("playerId1"=$2 OR "playerId2"=$3)`,
+            WHERE "status"!=$1 AND ("playerId1"=$2 OR "playerId2"=$3)`,
       [status, userId, userId],
     );
     if (game[0]) {

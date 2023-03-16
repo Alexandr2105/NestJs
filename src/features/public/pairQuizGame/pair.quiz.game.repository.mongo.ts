@@ -18,16 +18,16 @@ export class PairQuizGameRepositoryMongo extends IPairQuizGameRepository {
     return this.quizGameCollection.findOne({ status: status });
   }
 
-  async getGameByStatusAndUserId(status: string, userId: string) {
-    return this.quizGameCollection.findOne({
-      status: status,
-      $or: [{ playerId2: userId }, { playerId1: userId }],
-    });
-  }
+  // async getGameByStatusAndUserId(status: string, userId: string) {
+  //   return this.quizGameCollection.findOne({
+  //     status: status,
+  //     $or: [{ playerId2: userId }, { playerId1: userId }],
+  //   });
+  // }
 
   async getUnfinishedGame(status: string, userId: string) {
     return this.quizGameCollection.findOne({
-      status: status,
+      status: { $ne: status },
       $or: [{ playerId2: userId }, { playerId1: userId }],
     });
   }

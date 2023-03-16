@@ -13,6 +13,10 @@ import { BanUsersDocument } from '../features/sa/users/schema/banUsers';
 import { BanUsersForBlogDocument } from '../features/public/blogs/schema/ban.users.for.blog.schema';
 import { ITestingRepository } from './i.testing.repository';
 import { QuestionDocument } from '../features/sa/quizQuestions/schema/question.schema';
+import {
+  PairQuizGameDocument,
+  PairQuizGameSchema,
+} from '../features/public/pairQuizGame/schema/pair.quiz.game.schema';
 
 @Injectable()
 export class TestingRepositoryMongo extends ITestingRepository {
@@ -35,6 +39,8 @@ export class TestingRepositoryMongo extends ITestingRepository {
     private readonly banUsersForBlogsCollection: Model<BanUsersForBlogDocument>,
     @InjectModel('quizQuestions')
     private readonly questions: Model<QuestionDocument>,
+    @InjectModel('infoQuizQuestionsGames')
+    private readonly infoQuizQuestionsGames: Model<PairQuizGameDocument>,
   ) {
     super();
   }
@@ -50,5 +56,6 @@ export class TestingRepositoryMongo extends ITestingRepository {
     await this.banUsers.deleteMany({});
     await this.banUsersForBlogsCollection.deleteMany({});
     await this.questions.deleteMany({});
+    await this.infoQuizQuestionsGames.deleteMany({});
   }
 }

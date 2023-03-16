@@ -12,8 +12,8 @@ export class SendResultAnswerUseCase {
   constructor(private readonly gamesRepository: IPairQuizGameRepository) {}
 
   async execute(command: SendResultAnswerCommand) {
-    const gameInfo = this.gamesRepository.getGameByStatusAndUserId(
-      'Active',
+    const gameInfo = this.gamesRepository.getUnfinishedGame(
+      'Finished',
       command.userId,
     );
     if (!gameInfo) throw new ForbiddenException();

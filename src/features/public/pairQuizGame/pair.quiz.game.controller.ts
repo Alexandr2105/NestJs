@@ -1,4 +1,12 @@
-import { Body, Controller, Get, Post, Req, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  HttpCode,
+  Post,
+  Req,
+  UseGuards,
+} from '@nestjs/common';
 import { JwtAuthGuard } from '../../../common/guard/jwt.auth.guard';
 import { CommandBus } from '@nestjs/cqrs';
 import { ConnectCurrentUserOrWaitingSecondPlayerCommand } from './application/useCase/connect.current.user.or.waiting.second.player.use.case';
@@ -15,6 +23,7 @@ export class PairQuizGameController {
     private readonly usersService: UsersService,
   ) {}
 
+  @HttpCode(200)
   @UseGuards(JwtAuthGuard)
   @Post('connection')
   async connectionToGame(@Req() req) {
@@ -28,6 +37,7 @@ export class PairQuizGameController {
     );
   }
 
+  @HttpCode(200)
   @UseGuards(JwtAuthGuard)
   @Post('my-current/answers')
   async sendAnswer(@Req() req, @Body() body: PairQuizGameDto) {
