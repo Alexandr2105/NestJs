@@ -26,4 +26,8 @@ export class QuizQuestionsRepositoryMongoSa extends IQuizQuestionsRepositorySa {
     const result = await this.quizQuestion.deleteOne({ id: id });
     return result.deletedCount === 1;
   }
+
+  async getRandomQuestions(count: number) {
+    return this.quizQuestion.find().limit(-1).skip(count);
+  }
 }

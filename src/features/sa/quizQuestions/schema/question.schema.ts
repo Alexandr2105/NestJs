@@ -12,7 +12,7 @@ export class Question {
   body: string;
   @Prop({ required: true })
   @IsArray()
-  correctAnswers: string[];
+  correctAnswers: any[];
   @Prop({ required: true })
   published: false;
   @Prop({ required: true })

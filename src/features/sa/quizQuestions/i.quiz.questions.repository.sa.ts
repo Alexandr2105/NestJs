@@ -6,4 +6,5 @@ export abstract class IQuizQuestionsRepositorySa {
   abstract save(question: QuestionDocument | QuizQuestionEntity);
   abstract deleteQuestionById(id: string);
   abstract getQuestionAllParameters(id: string);
+  abstract getRandomQuestions(count: number);
 }

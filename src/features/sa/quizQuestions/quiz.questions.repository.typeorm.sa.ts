@@ -31,4 +31,13 @@ export class QuizQuestionsRepositoryTypeormSa extends IQuizQuestionsRepositorySa
     const result = await this.questionsRepository.delete({ id: id });
     return result.affected === 1;
   }
+
+  async getRandomQuestions(count: number) {
+    return this.questionsRepository
+      .createQueryBuilder('QuizQuestions')
+      .select()
+      .orderBy('RANDOM()')
+      .take(count)
+      .getMany();
+  }
 }

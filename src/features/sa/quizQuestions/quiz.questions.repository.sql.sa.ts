@@ -73,4 +73,13 @@ export class QuizQuestionsRepositorySqlSa extends IQuizQuestionsRepositorySa {
     );
     return result[1] === 1;
   }
+
+  async getRandomQuestions(count: number) {
+    return this.dataSource.query(
+      `SELECT * FROM public."QuizQuestions"
+            ORDER BY RAND() 
+            LIMIT $1`,
+      [count],
+    );
+  }
 }

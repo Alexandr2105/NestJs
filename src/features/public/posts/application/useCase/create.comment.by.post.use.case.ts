@@ -1,8 +1,5 @@
 import { CommandHandler } from '@nestjs/cqrs';
-import {
-  Comment,
-  CommentDocument,
-} from '../../../comments/schema/comment.schema';
+import { CommentDocument } from '../../../comments/schema/comment.schema';
 import { Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
 import { IPostsRepository } from '../../i.posts.repository';

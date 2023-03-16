@@ -129,6 +129,17 @@ import { DeleteQuestionSaUseCase } from './features/sa/quizQuestions/aplication/
 import { UpdateQuestionSaUseCase } from './features/sa/quizQuestions/aplication/useCase/update.question.sa.use.case';
 import { UpdateStatusForQuestionSaUseCase } from './features/sa/quizQuestions/aplication/useCase/update.status.for.question.sa.use.case';
 import { CheckArrayCorrectAnswer } from './common/customValidators/check.array.correct.answer';
+import { PairQuizGameSchema } from './features/public/pairQuizGame/schema/pair.quiz.game.schema';
+import { PairQuizGameEntity } from './features/public/pairQuizGame/entity/pair.quiz.game.entity';
+import { PairQuizGameController } from './features/public/pairQuizGame/pair.quiz.game.controller';
+import { PairQuizGameRepositoryMongo } from './features/public/pairQuizGame/pair.quiz.game.repository.mongo';
+import { PairQuizGameRepositorySql } from './features/public/pairQuizGame/pair.quiz.game.repository.sql';
+import { PairQuizGameRepositoryTypeorm } from './features/public/pairQuizGame/pair.quiz.game.repository.typeorm';
+import { IPairQuizGameRepository } from './features/public/pairQuizGame/i.pair.quiz.game.repository';
+import { ConnectCurrentUserOrWaitingSecondPlayerUseCase } from './features/public/pairQuizGame/application/useCase/connect.current.user.or.waiting.second.player.use.case';
+import { GetGameByIdUseCase } from './features/public/pairQuizGame/application/useCase/get.game.by.id.use.case';
+import { GetMyCurrentUseCase } from './features/public/pairQuizGame/application/useCase/get.my.current.use.case';
+import { SendResultAnswerUseCase } from './features/public/pairQuizGame/application/useCase/send.result.answer.use.case';
 
 const Strategies = [LocalStrategy, JwtStrategy, BasicStrategy, RefreshStrategy];
 const Validators = [
@@ -176,6 +187,10 @@ const UseCases = [
   DeleteQuestionSaUseCase,
   UpdateQuestionSaUseCase,
   UpdateStatusForQuestionSaUseCase,
+  ConnectCurrentUserOrWaitingSecondPlayerUseCase,
+  GetGameByIdUseCase,
+  GetMyCurrentUseCase,
+  SendResultAnswerUseCase,
 ];
 const MongoRepositories = [
   AuthRepositoryMongo,
@@ -187,6 +202,7 @@ const MongoRepositories = [
   CommentsRepositoryMongo,
   PostsRepositoryMongo,
   QuizQuestionsRepositoryMongoSa,
+  PairQuizGameRepositoryMongo,
 ];
 const SqlRepositories = [
   AuthRepositorySql,
@@ -198,6 +214,7 @@ const SqlRepositories = [
   CommentsRepositorySql,
   PostsRepositorySql,
   QuizQuestionsRepositorySqlSa,
+  PairQuizGameRepositorySql,
 ];
 const TypeOrmRepositories = [
   AuthRepositoryTypeorm,
@@ -209,6 +226,7 @@ const TypeOrmRepositories = [
   CommentsRepositoryTypeorm,
   PostsRepositoryTypeorm,
   QuizQuestionsRepositoryTypeormSa,
+  PairQuizGameRepositoryTypeorm,
 ];
 const AbstractClassesSql = [
   {
@@ -235,6 +253,7 @@ const AbstractClassesSql = [
     provide: IQuizQuestionsRepositorySa,
     useClass: QuizQuestionsRepositorySqlSa,
   },
+  { provide: IPairQuizGameRepository, useClass: PairQuizGameRepositorySql },
 ];
 
 const AbstractClassesMongo = [
@@ -262,6 +281,7 @@ const AbstractClassesMongo = [
     provide: IQuizQuestionsRepositorySa,
     useClass: QuizQuestionsRepositoryMongoSa,
   },
+  { provide: IPairQuizGameRepository, useClass: PairQuizGameRepositoryMongo },
 ];
 
 const AbstractClassesTypeorm = [
@@ -289,6 +309,7 @@ const AbstractClassesTypeorm = [
     provide: IQuizQuestionsRepositorySa,
     useClass: QuizQuestionsRepositoryTypeormSa,
   },
+  { provide: IPairQuizGameRepository, useClass: PairQuizGameRepositoryTypeorm },
 ];
 
 const entities = [
@@ -303,6 +324,7 @@ const entities = [
   BanUsersForBlogEntity,
   BanUsersEntity,
   QuizQuestionEntity,
+  PairQuizGameEntity,
 ];
 
 @Module({
@@ -321,6 +343,7 @@ const entities = [
       { name: 'banUsers', schema: BunUserSchema },
       { name: 'banUsersForBlogs', schema: BanUsersForBlogSchema },
       { name: 'quizQuestions', schema: QuestionSchema },
+      { name: 'infoQuizQuestionsGames', schema: PairQuizGameSchema },
     ]),
     JwtModule.register({}),
     MailerModule.forRootAsync({
@@ -369,6 +392,7 @@ const entities = [
     BlogsControllerSa,
     UsersControllerBlogger,
     QuizQuestionsControllerSa,
+    PairQuizGameController,
   ],
   providers: [
     QueryCount,
