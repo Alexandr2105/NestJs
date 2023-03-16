@@ -19,7 +19,7 @@ export class GetMyCurrentUseCase {
 
   async execute(command: GetMyCurrentUseCommand) {
     const game = await this.gamesRepository.getUnfinishedGame(
-      'Active',
+      'Finished',
       command.userId,
     );
     if (game) {

@@ -55,15 +55,14 @@ export class ConnectCurrentUserOrWaitingSecondPlayerUseCase {
         finishGameDate: null,
       };
     } else {
-      const randomQuestions = await this.quizGameRepository.getRandomQuestions(
-        5,
-      );
+      const randomQuestionsAndAnswers =
+        await this.quizGameRepository.getRandomQuestions(5);
       game.playerId2 = command.userId;
       game.playerLogin2 = command.login;
       game.status = 'Active';
       game.startGameDate = new Date().toISOString();
-      game.questions = { id: randomQuestions.id, body: randomQuestions.body };
-      game.allAnswers = randomQuestions.correctAnswers;
+      game.questions = randomQuestionsAndAnswers.randomQuestions;
+      game.allAnswers = randomQuestionsAndAnswers.correctAnswers;
       await this.gamesRepository.save(game);
       return {
         id: game.gameId,
@@ -83,12 +82,7 @@ export class ConnectCurrentUserOrWaitingSecondPlayerUseCase {
           },
           score: 0,
         },
-        questions: [
-          {
-            id: game.questions.id,
-            body: game.questions.body,
-          },
-        ],
+        questions: game.questions,
         status: game.status,
         pairCreatedDate: game.pairCreatedDate,
         startGameDate: game.startGameDate,

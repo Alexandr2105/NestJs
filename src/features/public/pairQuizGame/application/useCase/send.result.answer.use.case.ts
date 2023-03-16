@@ -12,7 +12,7 @@ export class SendResultAnswerUseCase {
   constructor(private readonly gamesRepository: IPairQuizGameRepository) {}
 
   async execute(command: SendResultAnswerCommand) {
-    const gameInfo = this.gamesRepository.getUnfinishedGame(
+    const gameInfo = await this.gamesRepository.getUnfinishedGame(
       'Finished',
       command.userId,
     );
@@ -21,7 +21,7 @@ export class SendResultAnswerUseCase {
       if (gameInfo.playerCount1 > gameInfo.questions.length - 1)
         throw new ForbiddenException();
       const result = gameInfo.allAnswers[gameInfo.playerCount1].includes(
-        command.body,
+        command.body.answer,
       );
       if (result) {
         gameInfo.answersPlayer1.push({
@@ -47,13 +47,13 @@ export class SendResultAnswerUseCase {
         }
         gameInfo.status = 'Finished';
       }
-      this.gamesRepository.save(gameInfo);
-      return gameInfo.answersPlayer1[gameInfo.playerCount1];
+      await this.gamesRepository.save(gameInfo);
+      return gameInfo.answersPlayer1[gameInfo.playerCount1 - 1];
     } else {
       if (gameInfo.playerCount2 > gameInfo.questions.length - 1)
         throw new ForbiddenException();
       const result = gameInfo.allAnswers[gameInfo.playerCount2].includes(
-        command.body,
+        command.body.answer,
       );
       if (result) {
         gameInfo.answersPlayer2.push({
@@ -79,8 +79,8 @@ export class SendResultAnswerUseCase {
         }
         gameInfo.status = 'Finished';
       }
-      this.gamesRepository.save(gameInfo);
-      return gameInfo.answersPlayer2[gameInfo.playerCount2];
+      await this.gamesRepository.save(gameInfo);
+      return gameInfo.answersPlayer2[gameInfo.playerCount2 - 1];
     }
   }
 }

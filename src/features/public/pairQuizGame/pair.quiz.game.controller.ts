@@ -3,6 +3,7 @@ import {
   Controller,
   Get,
   HttpCode,
+  Param,
   Post,
   Req,
   UseGuards,
@@ -13,7 +14,7 @@ import { ConnectCurrentUserOrWaitingSecondPlayerCommand } from './application/us
 import { UsersService } from '../../sa/users/application/users.service';
 import { GetMyCurrentUseCommand } from './application/useCase/get.my.current.use.case';
 import { GetGameByIdCommand } from './application/useCase/get.game.by.id.use.case';
-import { PairQuizGameDto } from './dto/pair.quiz.game.dto';
+import { CheckGameIdDto, PairQuizGameDto } from './dto/pair.quiz.game.dto';
 import { SendResultAnswerCommand } from './application/useCase/send.result.answer.use.case';
 
 @Controller('pair-game-quiz/pairs')
@@ -54,9 +55,12 @@ export class PairQuizGameController {
     return await this.commandBus.execute(new GetMyCurrentUseCommand(userId));
   }
 
+  @UseGuards(JwtAuthGuard)
   @Get(':id')
-  async getGameById(@Req() req) {
+  async getGameById(@Req() req, @Param() param: CheckGameIdDto) {
     const userId = req.user.id;
-    return await this.commandBus.execute(new GetGameByIdCommand(userId));
+    return await this.commandBus.execute(
+      new GetGameByIdCommand(userId, param.id),
+    );
   }
 }

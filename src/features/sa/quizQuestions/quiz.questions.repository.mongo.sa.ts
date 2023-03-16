@@ -28,6 +28,15 @@ export class QuizQuestionsRepositoryMongoSa extends IQuizQuestionsRepositorySa {
   }
 
   async getRandomQuestions(count: number) {
-    return this.quizQuestion.find().limit(-1).skip(count);
+    const randomQuestionsAll = await this.quizQuestion.aggregate([
+      { $sample: { size: count } },
+    ]);
+    const randomQuestions = [];
+    const correctAnswers = [];
+    for (const a of randomQuestionsAll) {
+      randomQuestions.push({ id: a.id, body: a.body });
+      correctAnswers.push(a.correctAnswers);
+    }
+    return { randomQuestions, correctAnswers };
   }
 }

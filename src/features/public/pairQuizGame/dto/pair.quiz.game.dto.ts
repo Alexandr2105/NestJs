@@ -1,6 +1,13 @@
 import { Transform } from 'class-transformer';
+import { Length } from 'class-validator';
 
 export class PairQuizGameDto {
   @Transform(({ value }) => value.trim())
-  answer: string;
+  answer: string | number;
+}
+
+export class CheckGameIdDto {
+  @Transform(({ value }) => value.trim())
+  @Length(13)
+  id: string;
 }
