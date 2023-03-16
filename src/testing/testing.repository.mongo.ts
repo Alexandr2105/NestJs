@@ -13,10 +13,7 @@ import { BanUsersDocument } from '../features/sa/users/schema/banUsers';
 import { BanUsersForBlogDocument } from '../features/public/blogs/schema/ban.users.for.blog.schema';
 import { ITestingRepository } from './i.testing.repository';
 import { QuestionDocument } from '../features/sa/quizQuestions/schema/question.schema';
-import {
-  PairQuizGameDocument,
-  PairQuizGameSchema,
-} from '../features/public/pairQuizGame/schema/pair.quiz.game.schema';
+import { PairQuizGameDocument } from '../features/public/pairQuizGame/schema/pair.quiz.game.schema';
 
 @Injectable()
 export class TestingRepositoryMongo extends ITestingRepository {
