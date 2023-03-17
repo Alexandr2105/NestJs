@@ -16,12 +16,15 @@ import { GetMyCurrentUseCommand } from './application/useCase/get.my.current.use
 import { GetGameByIdCommand } from './application/useCase/get.game.by.id.use.case';
 import { CheckGameIdDto, PairQuizGameDto } from './dto/pair.quiz.game.dto';
 import { SendResultAnswerCommand } from './application/useCase/send.result.answer.use.case';
+import { BasicAuthGuard } from '../../../common/guard/basic.auth.guard';
+import { IPairQuizGameRepository } from './i.pair.quiz.game.repository';
 
 @Controller('pair-game-quiz/pairs')
 export class PairQuizGameController {
   constructor(
     private readonly commandBus: CommandBus,
     private readonly usersService: UsersService,
+    private readonly test: IPairQuizGameRepository,
   ) {}
 
   @HttpCode(200)
@@ -62,5 +65,11 @@ export class PairQuizGameController {
     return await this.commandBus.execute(
       new GetGameByIdCommand(userId, param.id),
     );
+  }
+
+  @UseGuards(BasicAuthGuard)
+  @Get('test-my-current/:id')
+  async returnUnfinishedUserGameForTest(@Param('id') id) {
+    return this.test.getUnfinishedUserGameForTest(id);
   }
 }

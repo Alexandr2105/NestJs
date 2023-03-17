@@ -63,6 +63,7 @@ export class ConnectCurrentUserOrWaitingSecondPlayerUseCase {
       game.startGameDate = new Date().toISOString();
       game.questions = randomQuestionsAndAnswers.randomQuestions;
       game.allAnswers = randomQuestionsAndAnswers.correctAnswers;
+      game.scorePlayer2 = 0;
       await this.gamesRepository.save(game);
       return {
         id: game.gameId,

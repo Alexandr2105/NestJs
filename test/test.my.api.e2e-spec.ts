@@ -1929,10 +1929,27 @@ describe('Pair quiz game all', () => {
 
   it('Возвращаем текущую незавершенную пользовательскую игру', async () => {
     await test.get('/pair-game-quiz/pairs/my-current').expect(401);
-    await test
+    const game = await test
       .get('/pair-game-quiz/pairs/my-current')
       .auth(accessToken1.accessToken, { type: 'bearer' })
       .expect(200);
+    expect(game.body).toEqual({
+      id: game.body.id,
+      firstPlayerProgress: {
+        answers: null,
+        player: {
+          id: expect.any(String),
+          login: 'Alex',
+        },
+        score: 0,
+      },
+      secondPlayerProgress: null,
+      questions: game.body.questions,
+      status: game.body.status,
+      pairCreatedDate: game.body.pairCreatedDate,
+      startGameDate: null,
+      finishGameDate: null,
+    });
     expect.setState(accessToken2);
     await test
       .get('/pair-game-quiz/pairs/my-current')
@@ -1970,7 +1987,7 @@ describe('Pair quiz game all', () => {
     expect(info.body).toEqual({
       id: game1.body.id,
       firstPlayerProgress: {
-        answers: [],
+        answers: null,
         player: {
           id: player1.id,
           login: player1.login,
@@ -2030,7 +2047,7 @@ describe('Pair quiz game all', () => {
           id: player1.id,
           login: player1.login,
         },
-        score: expect.any(Number),
+        score: 0,
       },
       secondPlayerProgress: {
         answers: null,
@@ -2038,7 +2055,7 @@ describe('Pair quiz game all', () => {
           id: player2.id,
           login: player2.login,
         },
-        score: expect.any(Number),
+        score: 0,
       },
       questions: expect.any(Array),
       status: 'Active',
@@ -2046,21 +2063,220 @@ describe('Pair quiz game all', () => {
       startGameDate: info.body.startGameDate,
       finishGameDate: null,
     });
-    const game = await test
-      .get(`/pair-game-quiz/pairs/my-current`)
-      .auth(accessToken2.accessToken, { type: 'bearer' })
+  });
+
+  it('Проверяем на проавильность работы игры', async () => {
+    const gameForId = await test
+      .get('/pair-game-quiz/pairs/my-current')
+      .auth(accessToken1.accessToken, { type: 'bearer' })
       .expect(200);
-    const info1 = await test
+    console.log(gameForId.body);
+    const game = await test
+      .get(`/pair-game-quiz/pairs/test-my-current/${gameForId.body.id}`)
+      .auth('admin', 'qwerty', { type: 'basic' })
+      .expect(200);
+    const info11 = await test
       .post(`/pair-game-quiz/pairs/my-current/answers`)
       .send({
         answer: game.body.allAnswers[0][0],
       })
       .auth(accessToken1.accessToken, { type: 'bearer' })
       .expect(200);
-    expect(info1.body).toEqual({
+    expect(info11.body).toEqual({
       questionId: expect.any(String),
       answerStatus: 'Correct',
-      addedAt: info1.body.addedAt,
+      addedAt: info11.body.addedAt,
+    });
+    const info12 = await test
+      .post(`/pair-game-quiz/pairs/my-current/answers`)
+      .send({
+        answer: 'string',
+      })
+      .auth(accessToken1.accessToken, { type: 'bearer' })
+      .expect(200);
+    expect(info12.body).toEqual({
+      questionId: expect.any(String),
+      answerStatus: 'Incorrect',
+      addedAt: info12.body.addedAt,
+    });
+    expect.setState(accessToken2);
+    const info21 = await test
+      .post(`/pair-game-quiz/pairs/my-current/answers`)
+      .send({
+        answer: game.body.allAnswers[0][0],
+      })
+      .auth(accessToken2.accessToken, { type: 'bearer' })
+      .expect(200);
+    expect(info21.body).toEqual({
+      questionId: expect.any(String),
+      answerStatus: 'Correct',
+      addedAt: info21.body.addedAt,
+    });
+    const info22 = await test
+      .post(`/pair-game-quiz/pairs/my-current/answers`)
+      .send({
+        answer: game.body.allAnswers[1][1],
+      })
+      .auth(accessToken2.accessToken, { type: 'bearer' })
+      .expect(200);
+    expect(info22.body).toEqual({
+      questionId: expect.any(String),
+      answerStatus: 'Correct',
+      addedAt: info22.body.addedAt,
+    });
+    expect.setState(accessToken1);
+    const info13 = await test
+      .post(`/pair-game-quiz/pairs/my-current/answers`)
+      .send({
+        answer: game.body.allAnswers[2][1],
+      })
+      .auth(accessToken1.accessToken, { type: 'bearer' })
+      .expect(200);
+    expect(info13.body).toEqual({
+      questionId: expect.any(String),
+      answerStatus: 'Correct',
+      addedAt: info13.body.addedAt,
+    });
+    const info14 = await test
+      .post(`/pair-game-quiz/pairs/my-current/answers`)
+      .send({
+        answer: game.body.allAnswers[3][0],
+      })
+      .auth(accessToken1.accessToken, { type: 'bearer' })
+      .expect(200);
+    expect(info14.body).toEqual({
+      questionId: expect.any(String),
+      answerStatus: 'Correct',
+      addedAt: info14.body.addedAt,
+    });
+    const info15 = await test
+      .post(`/pair-game-quiz/pairs/my-current/answers`)
+      .send({
+        answer: game.body.allAnswers[3][0],
+      })
+      .auth(accessToken1.accessToken, { type: 'bearer' })
+      .expect(200);
+    expect(info15.body).toEqual({
+      questionId: expect.any(String),
+      answerStatus: 'Incorrect',
+      addedAt: info15.body.addedAt,
+    });
+    expect.setState(accessToken2);
+    const info23 = await test
+      .post(`/pair-game-quiz/pairs/my-current/answers`)
+      .send({
+        answer: game.body.allAnswers[3][1],
+      })
+      .auth(accessToken2.accessToken, { type: 'bearer' })
+      .expect(200);
+    expect(info23.body).toEqual({
+      questionId: expect.any(String),
+      answerStatus: 'Incorrect',
+      addedAt: info23.body.addedAt,
+    });
+    const info24 = await test
+      .post(`/pair-game-quiz/pairs/my-current/answers`)
+      .send({
+        answer: game.body.allAnswers[2][0],
+      })
+      .auth(accessToken2.accessToken, { type: 'bearer' })
+      .expect(200);
+    expect(info24.body).toEqual({
+      questionId: expect.any(String),
+      answerStatus: 'Incorrect',
+      addedAt: info24.body.addedAt,
+    });
+    const info25 = await test
+      .post(`/pair-game-quiz/pairs/my-current/answers`)
+      .send({
+        answer: game.body.allAnswers[3][0],
+      })
+      .auth(accessToken2.accessToken, { type: 'bearer' })
+      .expect(200);
+    expect(info25.body).toEqual({
+      questionId: expect.any(String),
+      answerStatus: 'Incorrect',
+      addedAt: info25.body.addedAt,
+    });
+    const gameByIdFinish = await test
+      .get(`/pair-game-quiz/pairs/${gameForId.body.id}`)
+      .auth(accessToken1.accessToken, { type: 'bearer' })
+      .expect(200);
+    expect(gameByIdFinish.body).toEqual({
+      id: game.body.gameId,
+      firstPlayerProgress: {
+        answers: [
+          {
+            questionId: expect.any(String),
+            answerStatus: 'Correct',
+            addedAt: info11.body.addedAt,
+          },
+          {
+            questionId: expect.any(String),
+            answerStatus: 'Incorrect',
+            addedAt: info12.body.addedAt,
+          },
+          {
+            questionId: expect.any(String),
+            answerStatus: 'Correct',
+            addedAt: info13.body.addedAt,
+          },
+          {
+            questionId: expect.any(String),
+            answerStatus: 'Correct',
+            addedAt: info14.body.addedAt,
+          },
+          {
+            questionId: expect.any(String),
+            answerStatus: 'Incorrect',
+            addedAt: info15.body.addedAt,
+          },
+        ],
+        player: {
+          id: player1.id,
+          login: player1.login,
+        },
+        score: 4,
+      },
+      secondPlayerProgress: {
+        answers: [
+          {
+            questionId: expect.any(String),
+            answerStatus: 'Correct',
+            addedAt: info21.body.addedAt,
+          },
+          {
+            questionId: expect.any(String),
+            answerStatus: 'Correct',
+            addedAt: info22.body.addedAt,
+          },
+          {
+            questionId: expect.any(String),
+            answerStatus: 'Incorrect',
+            addedAt: info23.body.addedAt,
+          },
+          {
+            questionId: expect.any(String),
+            answerStatus: 'Incorrect',
+            addedAt: info24.body.addedAt,
+          },
+          {
+            questionId: expect.any(String),
+            answerStatus: 'Incorrect',
+            addedAt: info25.body.addedAt,
+          },
+        ],
+        player: {
+          id: player2.id,
+          login: player2.login,
+        },
+        score: 2,
+      },
+      questions: expect.any(Array),
+      status: 'Finished',
+      pairCreatedDate: game.body.pairCreatedDate,
+      startGameDate: game.body.startGameDate,
+      finishGameDate: game.body.finishGameDate,
     });
   });
 });

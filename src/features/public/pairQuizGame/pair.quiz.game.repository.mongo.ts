@@ -18,12 +18,9 @@ export class PairQuizGameRepositoryMongo extends IPairQuizGameRepository {
     return this.quizGameCollection.findOne({ status: status });
   }
 
-  // async getGameByStatusAndUserId(status: string, userId: string) {
-  //   return this.quizGameCollection.findOne({
-  //     status: status,
-  //     $or: [{ playerId2: userId }, { playerId1: userId }],
-  //   });
-  // }
+  async getUnfinishedUserGameForTest(gameId: string) {
+    return this.quizGameCollection.findOne({ gameId: gameId });
+  }
 
   async getUnfinishedGame(status: string, userId: string) {
     return this.quizGameCollection.findOne({

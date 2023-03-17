@@ -2,7 +2,7 @@ import { Transform } from 'class-transformer';
 import { Length } from 'class-validator';
 
 export class PairQuizGameDto {
-  @Transform(({ value }) => value.trim())
+  @Transform(({ value }) => value.toString().trim())
   answer: string | number;
 }
 

@@ -39,8 +39,8 @@ export class SendResultAnswerUseCase {
       }
       gameInfo.playerCount1++;
       if (gameInfo.playerCount1 === 5 && gameInfo.playerCount2 === 5) {
-        const result = gameInfo.answersPlayer2.filter((a) =>
-          a.answerStatus('Correct'),
+        const result = gameInfo.answersPlayer2.filter(
+          (a) => a.answerStatus === 'Correct',
         );
         if (result.length > 0) {
           gameInfo.scorePlayer2++;
@@ -71,8 +71,8 @@ export class SendResultAnswerUseCase {
       }
       gameInfo.playerCount2++;
       if (gameInfo.playerCount2 === 5 && gameInfo.playerCount1 === 5) {
-        const result = gameInfo.answersPlayer1.filter((a) =>
-          a.answerStatus('Correct'),
+        const result = gameInfo.answersPlayer1.filter(
+          (a) => a.answerStatus === 'Correct',
         );
         if (result.length > 0) {
           gameInfo.scorePlayer1++;

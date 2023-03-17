@@ -19,12 +19,9 @@ export class PairQuizGameRepositoryTypeorm extends IPairQuizGameRepository {
     return this.quizGameCollection.findOneBy({ status: status });
   }
 
-  // async getGameByStatusAndUserId(status: any, userId: string) {
-  //   return this.quizGameCollection.findOneBy([
-  //     { status: status, playerId1: userId },
-  //     { status: status, playerId2: userId },
-  //   ]);
-  // }
+  async getUnfinishedUserGameForTest(gameId: string) {
+    return this.quizGameCollection.findOneBy({ gameId: gameId });
+  }
 
   async getUnfinishedGame(status: any, userId: string) {
     return this.quizGameCollection.findOneBy([

@@ -23,7 +23,36 @@ export class GetMyCurrentUseCase {
       command.userId,
     );
     if (game) {
-      return game;
+      console.log(game);
+      return {
+        id: game.gameId,
+        firstPlayerProgress: {
+          answers:
+            game.answersPlayer1.length === 0 ? null : game.answersPlayer1,
+          player: {
+            id: game.playerId1,
+            login: game.playerLogin1,
+          },
+          score: game.scorePlayer1,
+        },
+        secondPlayerProgress:
+          game.playerId2 === null
+            ? null
+            : {
+                answers:
+                  game.answersPlayer2.length === 0 ? null : game.answersPlayer2,
+                player: {
+                  id: game.playerId2,
+                  login: game.playerLogin2,
+                },
+                score: game.scorePlayer2,
+              },
+        questions: game.questions.length === 0 ? null : game.questions,
+        status: game.status,
+        pairCreatedDate: game.pairCreatedDate,
+        startGameDate: game.startGameDate,
+        finishGameDate: game.finishGameDate,
+      };
     } else {
       throw new NotFoundException();
     }
