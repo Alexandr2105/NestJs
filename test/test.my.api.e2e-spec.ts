@@ -1646,13 +1646,13 @@ describe('Quiz questions sa', () => {
       .auth('admin', 'qwerty', { type: 'basic' })
       .send({
         body: 'stringstri',
-        correctAnswers: ['string'],
+        correctAnswers: [1, 'string'],
       })
       .expect(201);
     expect(res.body).toEqual({
       id: res.body.id,
       body: 'stringstri',
-      correctAnswers: ['string'],
+      correctAnswers: [1, 'string'],
       published: false,
       createdAt: expect.any(String),
       updatedAt: null,
@@ -1670,7 +1670,7 @@ describe('Quiz questions sa', () => {
         {
           id: question.body.items[0].id,
           body: 'stringstri',
-          correctAnswers: ['string'],
+          correctAnswers: [1, 'string'],
           published: false,
           createdAt: expect.any(String),
           updatedAt: null,
@@ -1709,7 +1709,7 @@ describe('Quiz questions sa', () => {
         {
           id: question.body.items[0].id,
           body: 'stringstri',
-          correctAnswers: ['string'],
+          correctAnswers: [1, 'string'],
           published: false,
           createdAt: expect.any(String),
           updatedAt: null,
@@ -1760,7 +1760,7 @@ describe('Quiz questions sa', () => {
       .auth('admin', 'qwerty', { type: 'basic' })
       .send({
         body: 'update question',
-        correctAnswers: ['update question'],
+        correctAnswers: [1, 'update question'],
       })
       .expect(204);
   });
@@ -1815,7 +1815,7 @@ describe('Quiz questions sa', () => {
         {
           id: expect.any(String),
           body: 'update question',
-          correctAnswers: ['update question'],
+          correctAnswers: [1, 'update question'],
           published: true,
           createdAt: expect.any(String),
           updatedAt: expect.any(String),

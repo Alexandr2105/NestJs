@@ -38,11 +38,11 @@ export class QuizQuestionsRepositorySqlSa extends IQuizQuestionsRepositorySa {
       await this.dataSource.query(
         `INSERT INTO public."QuizQuestions"(
             "id", "body", "correctAnswers","published", "createdAt", "updatedAt")
-        VALUES ($1,$2,to_json($3::text[]), $4, $5, $6 )`,
+        VALUES ($1,$2,$3, $4, $5, $6 )`,
         [
           question.id,
           question.body,
-          question.correctAnswers,
+          JSON.stringify(question.correctAnswers),
           question.published,
           question.createdAt,
           question.updatedAt,
@@ -51,11 +51,11 @@ export class QuizQuestionsRepositorySqlSa extends IQuizQuestionsRepositorySa {
     } else {
       await this.dataSource.query(
         `UPDATE public."QuizQuestions"
-            SET "body"=$1, "correctAnswers"=to_json($2::text[]), "published"=$3, "createdAt"=$4, "updatedAt"=$5
+            SET "body"=$1, "correctAnswers"=$2, "published"=$3, "createdAt"=$4, "updatedAt"=$5
             WHERE "id"=$6`,
         [
           question.body,
-          question.correctAnswers,
+          JSON.stringify(question.correctAnswers),
           question.published,
           question.createdAt,
           question.updatedAt,
@@ -75,11 +75,18 @@ export class QuizQuestionsRepositorySqlSa extends IQuizQuestionsRepositorySa {
   }
 
   async getRandomQuestions(count: number) {
-    return this.dataSource.query(
+    const randomQuestionsAll = await this.dataSource.query(
       `SELECT * FROM public."QuizQuestions"
             ORDER BY RAND() 
             LIMIT $1`,
       [count],
     );
+    const randomQuestions = [];
+    const correctAnswers = [];
+    for (const a of randomQuestionsAll) {
+      randomQuestions.push({ id: a.id, body: a.body });
+      correctAnswers.push(a.correctAnswers);
+    }
+    return { randomQuestions, correctAnswers };
   }
 }
