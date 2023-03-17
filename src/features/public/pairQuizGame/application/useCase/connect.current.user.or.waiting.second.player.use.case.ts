@@ -36,7 +36,7 @@ export class ConnectCurrentUserOrWaitingSecondPlayerUseCase {
       newGame.pairCreatedDate = new Date().toISOString();
       newGame.playerId1 = command.userId;
       newGame.playerLogin1 = command.login;
-      this.gamesRepository.save(newGame);
+      await this.gamesRepository.save(newGame);
       return {
         id: newGame.gameId,
         firstPlayerProgress: {

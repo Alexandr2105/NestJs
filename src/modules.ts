@@ -411,7 +411,7 @@ const entities = [
     ...SqlRepositories,
     ...MongoRepositories,
     ...TypeOrmRepositories,
-    ...AbstractClassesMongo,
+    ...AbstractClassesTypeorm,
   ],
 })
 export class Modules {}

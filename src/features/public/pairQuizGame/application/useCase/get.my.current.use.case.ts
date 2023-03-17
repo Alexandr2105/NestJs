@@ -23,7 +23,6 @@ export class GetMyCurrentUseCase {
       command.userId,
     );
     if (game) {
-      console.log(game);
       return {
         id: game.gameId,
         firstPlayerProgress: {

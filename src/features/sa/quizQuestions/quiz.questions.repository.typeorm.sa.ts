@@ -33,11 +33,18 @@ export class QuizQuestionsRepositoryTypeormSa extends IQuizQuestionsRepositorySa
   }
 
   async getRandomQuestions(count: number) {
-    return this.questionsRepository
+    const randomQuestionsAll = await this.questionsRepository
       .createQueryBuilder('QuizQuestions')
       .select()
       .orderBy('RANDOM()')
       .take(count)
       .getMany();
+    const randomQuestions = [];
+    const correctAnswers = [];
+    for (const a of randomQuestionsAll) {
+      randomQuestions.push({ id: a.id, body: a.body });
+      correctAnswers.push(a.correctAnswers);
+    }
+    return { randomQuestions, correctAnswers };
   }
 }

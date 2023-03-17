@@ -2070,7 +2070,6 @@ describe('Pair quiz game all', () => {
       .get('/pair-game-quiz/pairs/my-current')
       .auth(accessToken1.accessToken, { type: 'bearer' })
       .expect(200);
-    console.log(gameForId.body);
     const game = await test
       .get(`/pair-game-quiz/pairs/test-my-current/${gameForId.body.id}`)
       .auth('admin', 'qwerty', { type: 'basic' })
