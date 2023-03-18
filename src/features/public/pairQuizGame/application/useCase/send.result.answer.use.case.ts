@@ -78,6 +78,7 @@ export class SendResultAnswerUseCase {
           gameInfo.scorePlayer1++;
         }
         gameInfo.status = 'Finished';
+        gameInfo.finishGameDate = new Date().toISOString();
       }
       await this.gamesRepository.save(gameInfo);
       return gameInfo.answersPlayer2[gameInfo.playerCount2 - 1];

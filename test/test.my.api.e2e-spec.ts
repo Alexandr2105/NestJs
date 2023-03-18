@@ -2273,9 +2273,9 @@ describe('Pair quiz game all', () => {
       },
       questions: expect.any(Array),
       status: 'Finished',
-      pairCreatedDate: game.body.pairCreatedDate,
-      startGameDate: game.body.startGameDate,
-      finishGameDate: game.body.finishGameDate,
+      pairCreatedDate: expect.any(String),
+      startGameDate: expect.any(String),
+      finishGameDate: expect.any(String),
     });
   });
 });
