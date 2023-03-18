@@ -40,7 +40,7 @@ export class ConnectCurrentUserOrWaitingSecondPlayerUseCase {
       return {
         id: newGame.gameId,
         firstPlayerProgress: {
-          answers: null,
+          answers: [],
           player: {
             id: newGame.playerId1,
             login: newGame.playerLogin1,
@@ -68,7 +68,7 @@ export class ConnectCurrentUserOrWaitingSecondPlayerUseCase {
       return {
         id: game.gameId,
         firstPlayerProgress: {
-          answers: null,
+          answers: [],
           player: {
             id: game.playerId1,
             login: game.playerLogin1,
@@ -76,7 +76,7 @@ export class ConnectCurrentUserOrWaitingSecondPlayerUseCase {
           score: 0,
         },
         secondPlayerProgress: {
-          answers: null,
+          answers: [],
           player: {
             id: game.playerId2,
             login: game.playerLogin2,

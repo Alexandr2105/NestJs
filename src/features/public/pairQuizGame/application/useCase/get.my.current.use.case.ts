@@ -26,8 +26,7 @@ export class GetMyCurrentUseCase {
       return {
         id: game.gameId,
         firstPlayerProgress: {
-          answers:
-            game.answersPlayer1.length === 0 ? null : game.answersPlayer1,
+          answers: game.answersPlayer1,
           player: {
             id: game.playerId1,
             login: game.playerLogin1,
@@ -38,8 +37,7 @@ export class GetMyCurrentUseCase {
           game.playerId2 === null
             ? null
             : {
-                answers:
-                  game.answersPlayer2.length === 0 ? null : game.answersPlayer2,
+                answers: game.answersPlayer2,
                 player: {
                   id: game.playerId2,
                   login: game.playerLogin2,

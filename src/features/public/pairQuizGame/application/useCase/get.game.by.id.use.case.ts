@@ -18,7 +18,7 @@ export class GetGameByIdUseCase {
     return {
       id: game.gameId,
       firstPlayerProgress: {
-        answers: game.answersPlayer1.length === 0 ? null : game.answersPlayer1,
+        answers: game.answersPlayer1,
         player: {
           id: game.playerId1,
           login: game.playerLogin1,

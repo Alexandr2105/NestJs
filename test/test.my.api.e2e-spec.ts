@@ -1907,7 +1907,7 @@ describe('Pair quiz game all', () => {
     expect(game1.body).toEqual({
       id: game1.body.id,
       firstPlayerProgress: {
-        answers: null,
+        answers: [],
         player: {
           id: player1.id,
           login: player1.login,
@@ -1936,7 +1936,7 @@ describe('Pair quiz game all', () => {
     expect(game.body).toEqual({
       id: game.body.id,
       firstPlayerProgress: {
-        answers: null,
+        answers: [],
         player: {
           id: expect.any(String),
           login: 'Alex',
@@ -1987,7 +1987,7 @@ describe('Pair quiz game all', () => {
     expect(info.body).toEqual({
       id: game1.body.id,
       firstPlayerProgress: {
-        answers: null,
+        answers: [],
         player: {
           id: player1.id,
           login: player1.login,
@@ -2042,7 +2042,7 @@ describe('Pair quiz game all', () => {
     expect(info.body).toEqual({
       id: info.body.id,
       firstPlayerProgress: {
-        answers: null,
+        answers: [],
         player: {
           id: player1.id,
           login: player1.login,
@@ -2050,7 +2050,7 @@ describe('Pair quiz game all', () => {
         score: 0,
       },
       secondPlayerProgress: {
-        answers: null,
+        answers: [],
         player: {
           id: player2.id,
           login: player2.login,
