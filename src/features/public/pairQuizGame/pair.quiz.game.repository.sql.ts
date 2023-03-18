@@ -37,7 +37,7 @@ export class PairQuizGameRepositorySql extends IPairQuizGameRepository {
   async getUnfinishedUserGameForTest(gameId: string) {
     const game = await this.dataSource.query(
       `SELECT * FROM public."PairQuizGame"
-            WHERE "gameId"===$1`,
+            WHERE "gameId"=$1`,
       [gameId],
     );
     if (game[0]) {
@@ -96,8 +96,7 @@ export class PairQuizGameRepositorySql extends IPairQuizGameRepository {
             "playerId2"=$5,"playerLogin2"=$6,"answersPlayer2"=$7,"scorePlayer2"=$8,
             "questions"=$9,"allAnswers"=$10,"status"=$11,"pairCreatedDate"=$12,
             "startGameDate"=$13,"finishGameDate"=$14,"playerCount1"=$15,"playerCount2"=$16
-            WHERE "gameId"=$17,
-            VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17)`,
+            WHERE "gameId"=$17`,
         [
           newGame.playerId1,
           newGame.playerLogin1,

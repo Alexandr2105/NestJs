@@ -77,7 +77,7 @@ export class QuizQuestionsRepositorySqlSa extends IQuizQuestionsRepositorySa {
   async getRandomQuestions(count: number) {
     const randomQuestionsAll = await this.dataSource.query(
       `SELECT * FROM public."QuizQuestions"
-            ORDER BY RAND() 
+            ORDER BY RANDOM() 
             LIMIT $1`,
       [count],
     );
