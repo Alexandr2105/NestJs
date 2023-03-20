@@ -691,7 +691,7 @@ export class QueryRepositoryMongo extends IQueryRepository {
             score: a.scorePlayer1,
           },
           secondPlayerProgress: {
-            answers: a.answersPlayer1,
+            answers: a.answersPlayer2,
             player: {
               id: a.playerId2,
               login: a.playerLogin2,
