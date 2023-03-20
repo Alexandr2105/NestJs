@@ -2278,4 +2278,228 @@ describe('Pair quiz game all', () => {
       finishGameDate: expect.any(String),
     });
   });
+
+  it('Создаём игру номер 2', async () => {
+    const info1 = await test
+      .post('/auth/login')
+      .set('user-agent', 'Chrome')
+      .send({ loginOrEmail: user1.login, password: user1.password });
+    expect(info1.status).toBe(200);
+    accessToken1 = info1.body;
+    expect(accessToken1).toEqual({
+      accessToken: expect.any(String),
+    });
+    expect.setState(accessToken1);
+    const info2 = await test
+      .post('/auth/login')
+      .set('user-agent', 'Chrome')
+      .send({ loginOrEmail: user2.login, password: user2.password });
+    expect(info2.status).toBe(200);
+    accessToken2 = info2.body;
+    expect(accessToken2).toEqual({
+      accessToken: expect.any(String),
+    });
+    await test
+      .post('/pair-game-quiz/pairs/connection')
+      .auth(accessToken1.accessToken, { type: 'bearer' })
+      .expect(200);
+    expect.setState(accessToken2);
+    await test
+      .post('/pair-game-quiz/pairs/connection')
+      .auth(accessToken2.accessToken, { type: 'bearer' })
+      .expect(200);
+    const gameForId = await test
+      .get('/pair-game-quiz/pairs/my-current')
+      .auth(accessToken1.accessToken, { type: 'bearer' })
+      .expect(200);
+    const game = await test
+      .get(`/pair-game-quiz/pairs/test-my-current/${gameForId.body.id}`)
+      .auth('admin', 'qwerty', { type: 'basic' })
+      .expect(200);
+    await test
+      .post(`/pair-game-quiz/pairs/my-current/answers`)
+      .send({
+        answer: game.body.allAnswers[0][0],
+      })
+      .auth(accessToken1.accessToken, { type: 'bearer' })
+      .expect(200);
+    await test
+      .post(`/pair-game-quiz/pairs/my-current/answers`)
+      .send({
+        answer: 'string',
+      })
+      .auth(accessToken1.accessToken, { type: 'bearer' })
+      .expect(200);
+    expect.setState(accessToken2);
+    await test
+      .post(`/pair-game-quiz/pairs/my-current/answers`)
+      .send({
+        answer: game.body.allAnswers[0][0],
+      })
+      .auth(accessToken2.accessToken, { type: 'bearer' })
+      .expect(200);
+    await test
+      .post(`/pair-game-quiz/pairs/my-current/answers`)
+      .send({
+        answer: game.body.allAnswers[1][1],
+      })
+      .auth(accessToken2.accessToken, { type: 'bearer' })
+      .expect(200);
+    expect.setState(accessToken1);
+    await test
+      .post(`/pair-game-quiz/pairs/my-current/answers`)
+      .send({
+        answer: game.body.allAnswers[2][1],
+      })
+      .auth(accessToken1.accessToken, { type: 'bearer' })
+      .expect(200);
+    await test
+      .post(`/pair-game-quiz/pairs/my-current/answers`)
+      .send({
+        answer: game.body.allAnswers[3][0],
+      })
+      .auth(accessToken1.accessToken, { type: 'bearer' })
+      .expect(200);
+    await test
+      .post(`/pair-game-quiz/pairs/my-current/answers`)
+      .send({
+        answer: game.body.allAnswers[3][0],
+      })
+      .auth(accessToken1.accessToken, { type: 'bearer' })
+      .expect(200);
+    expect.setState(accessToken2);
+    await test
+      .post(`/pair-game-quiz/pairs/my-current/answers`)
+      .send({
+        answer: game.body.allAnswers[3][1],
+      })
+      .auth(accessToken2.accessToken, { type: 'bearer' })
+      .expect(200);
+    await test
+      .post(`/pair-game-quiz/pairs/my-current/answers`)
+      .send({
+        answer: game.body.allAnswers[2][0],
+      })
+      .auth(accessToken2.accessToken, { type: 'bearer' })
+      .expect(200);
+    await test
+      .post(`/pair-game-quiz/pairs/my-current/answers`)
+      .send({
+        answer: game.body.allAnswers[3][0],
+      })
+      .auth(accessToken2.accessToken, { type: 'bearer' })
+      .expect(200);
+  });
+
+  it('Создаём игру номер 3', async () => {
+    const info1 = await test
+      .post('/auth/login')
+      .set('user-agent', 'Chrome')
+      .send({ loginOrEmail: user1.login, password: user1.password });
+    expect(info1.status).toBe(200);
+    accessToken1 = info1.body;
+    expect(accessToken1).toEqual({
+      accessToken: expect.any(String),
+    });
+    expect.setState(accessToken1);
+    const info2 = await test
+      .post('/auth/login')
+      .set('user-agent', 'Chrome')
+      .send({ loginOrEmail: user2.login, password: user2.password });
+    expect(info2.status).toBe(200);
+    accessToken2 = info2.body;
+    expect(accessToken2).toEqual({
+      accessToken: expect.any(String),
+    });
+    await test
+      .post('/pair-game-quiz/pairs/connection')
+      .auth(accessToken1.accessToken, { type: 'bearer' })
+      .expect(200);
+    expect.setState(accessToken2);
+    await test
+      .post('/pair-game-quiz/pairs/connection')
+      .auth(accessToken2.accessToken, { type: 'bearer' })
+      .expect(200);
+    const gameForId = await test
+      .get('/pair-game-quiz/pairs/my-current')
+      .auth(accessToken1.accessToken, { type: 'bearer' })
+      .expect(200);
+    const game = await test
+      .get(`/pair-game-quiz/pairs/test-my-current/${gameForId.body.id}`)
+      .auth('admin', 'qwerty', { type: 'basic' })
+      .expect(200);
+    await test
+      .post(`/pair-game-quiz/pairs/my-current/answers`)
+      .send({
+        answer: game.body.allAnswers[0][0],
+      })
+      .auth(accessToken1.accessToken, { type: 'bearer' })
+      .expect(200);
+    await test
+      .post(`/pair-game-quiz/pairs/my-current/answers`)
+      .send({
+        answer: 'string',
+      })
+      .auth(accessToken1.accessToken, { type: 'bearer' })
+      .expect(200);
+    expect.setState(accessToken2);
+    await test
+      .post(`/pair-game-quiz/pairs/my-current/answers`)
+      .send({
+        answer: game.body.allAnswers[0][0],
+      })
+      .auth(accessToken2.accessToken, { type: 'bearer' })
+      .expect(200);
+    await test
+      .post(`/pair-game-quiz/pairs/my-current/answers`)
+      .send({
+        answer: game.body.allAnswers[1][1],
+      })
+      .auth(accessToken2.accessToken, { type: 'bearer' })
+      .expect(200);
+    expect.setState(accessToken1);
+    await test
+      .post(`/pair-game-quiz/pairs/my-current/answers`)
+      .send({
+        answer: game.body.allAnswers[2][1],
+      })
+      .auth(accessToken1.accessToken, { type: 'bearer' })
+      .expect(200);
+    await test
+      .post(`/pair-game-quiz/pairs/my-current/answers`)
+      .send({
+        answer: game.body.allAnswers[3][0],
+      })
+      .auth(accessToken1.accessToken, { type: 'bearer' })
+      .expect(200);
+    await test
+      .post(`/pair-game-quiz/pairs/my-current/answers`)
+      .send({
+        answer: game.body.allAnswers[3][0],
+      })
+      .auth(accessToken1.accessToken, { type: 'bearer' })
+      .expect(200);
+    expect.setState(accessToken2);
+    await test
+      .post(`/pair-game-quiz/pairs/my-current/answers`)
+      .send({
+        answer: game.body.allAnswers[3][1],
+      })
+      .auth(accessToken2.accessToken, { type: 'bearer' })
+      .expect(200);
+    await test
+      .post(`/pair-game-quiz/pairs/my-current/answers`)
+      .send({
+        answer: game.body.allAnswers[2][0],
+      })
+      .auth(accessToken2.accessToken, { type: 'bearer' })
+      .expect(200);
+    await test
+      .post(`/pair-game-quiz/pairs/my-current/answers`)
+      .send({
+        answer: game.body.allAnswers[3][0],
+      })
+      .auth(accessToken2.accessToken, { type: 'bearer' })
+      .expect(200);
+  });
 });

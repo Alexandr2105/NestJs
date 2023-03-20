@@ -5,6 +5,7 @@ import {
   HttpCode,
   Param,
   Post,
+  Query,
   Req,
   UseGuards,
 } from '@nestjs/common';
@@ -18,6 +19,8 @@ import { CheckGameIdDto, PairQuizGameDto } from './dto/pair.quiz.game.dto';
 import { SendResultAnswerCommand } from './application/useCase/send.result.answer.use.case';
 import { BasicAuthGuard } from '../../../common/guard/basic.auth.guard';
 import { IPairQuizGameRepository } from './i.pair.quiz.game.repository';
+import { IQueryRepository } from '../queryReposytories/i.query.repository';
+import { QueryCount } from '../../../common/helper/query.count';
 
 @Controller('pair-game-quiz/pairs')
 export class PairQuizGameController {
@@ -25,6 +28,8 @@ export class PairQuizGameController {
     private readonly commandBus: CommandBus,
     private readonly usersService: UsersService,
     private readonly test: IPairQuizGameRepository,
+    private readonly queryRepository: IQueryRepository,
+    private readonly queryCount: QueryCount,
   ) {}
 
   @HttpCode(200)
@@ -56,6 +61,14 @@ export class PairQuizGameController {
   async returnUnfinishedUserGame(@Req() req) {
     const userId = req.user.id;
     return await this.commandBus.execute(new GetMyCurrentUseCommand(userId));
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('/my')
+  async getAllMyGames(@Query() dataQuery, @Req() req) {
+    const userId = req.user.id;
+    const query = this.queryCount.queryCheckHelper(dataQuery);
+    return await this.queryRepository.getQueryAllMyGames(query, userId);
   }
 
   @UseGuards(JwtAuthGuard)

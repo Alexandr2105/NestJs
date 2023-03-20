@@ -39,9 +39,9 @@ export class QuizQuestionsControllerSa {
   async getAllQuestion(@Query() dataQuery) {
     const query = this.queryCount.queryCheckHelper(dataQuery);
     if (query.publishedStatus === '') {
-      return this.queryRepository.getAllQuestionSa(query);
+      return this.queryRepository.getQueryAllQuestionSa(query);
     } else {
-      return this.queryRepository.getAllQuestionSaSortStatus(query);
+      return this.queryRepository.getQueryAllQuestionSaSortStatus(query);
     }
   }
 

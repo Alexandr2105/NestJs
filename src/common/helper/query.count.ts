@@ -1,5 +1,4 @@
 import { Injectable } from '@nestjs/common';
-import { isBooleanString } from 'class-validator';
 
 @Injectable()
 export class QueryCount {

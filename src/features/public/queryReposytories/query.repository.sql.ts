@@ -606,7 +606,7 @@ export class QueryRepositorySql extends IQueryRepository {
     };
   }
 
-  async getAllQuestionSa(query: any): Promise<AllQuestionsSa> {
+  async getQueryAllQuestionSa(query: any): Promise<AllQuestionsSa> {
     const totalCount = await this.dataSource.query(
       `SELECT count(*) FROM public."QuizQuestions"
             WHERE "body" ILIKE $1`,
@@ -635,7 +635,7 @@ export class QueryRepositorySql extends IQueryRepository {
     };
   }
 
-  async getAllQuestionSaSortStatus(query: any) {
+  async getQueryAllQuestionSaSortStatus(query: any): Promise<AllQuestionsSa> {
     const totalCount = await this.dataSource.query(
       `SELECT count(*) FROM public."QuizQuestions"
             WHERE "body" ILIKE $1 AND "published"=$2`,
@@ -664,4 +664,6 @@ export class QueryRepositorySql extends IQueryRepository {
       items: allQuestions,
     };
   }
+
+  async getQueryAllMyGames(query: any) {}
 }

@@ -12,6 +12,7 @@ import {
   AllCommentsForAllPostsCurrentUserBlogs,
   BanUsersInfoForBlog,
   AllQuestionsSa,
+  AllMyGames,
 } from '../../../common/helper/allTypes';
 import { QueryCount } from '../../../common/helper/query.count';
 import { InjectModel } from '@nestjs/mongoose';
@@ -28,6 +29,7 @@ import { IQueryRepository } from './i.query.repository';
 import { IPostsRepository } from '../posts/i.posts.repository';
 import { ICommentsRepository } from '../comments/i.comments.repository';
 import { QuestionDocument } from '../../sa/quizQuestions/schema/question.schema';
+import { PairQuizGameDocument } from '../pairQuizGame/schema/pair.quiz.game.schema';
 
 @Injectable()
 export class QueryRepositoryMongo extends IQueryRepository {
@@ -44,6 +46,8 @@ export class QueryRepositoryMongo extends IQueryRepository {
     private readonly banUsersForBlogsCollection: Model<BanUsersForBlogDocument>,
     @InjectModel('quizQuestions')
     private readonly questions: Model<QuestionDocument>,
+    @InjectModel('infoQuizQuestionsGames')
+    private readonly quizGameCollection: Model<PairQuizGameDocument>,
     private readonly queryCount: QueryCount,
     private readonly commentsRepository: ICommentsRepository,
     private readonly postsRepository: IPostsRepository,
@@ -570,7 +574,7 @@ export class QueryRepositoryMongo extends IQueryRepository {
     };
   }
 
-  async getAllQuestionSa(query: any): Promise<AllQuestionsSa> {
+  async getQueryAllQuestionSa(query: any): Promise<AllQuestionsSa> {
     const totalCount = await this.questions.countDocuments({
       body: {
         $regex: query.bodySearchTerm,
@@ -605,7 +609,7 @@ export class QueryRepositoryMongo extends IQueryRepository {
     };
   }
 
-  async getAllQuestionSaSortStatus(query: any): Promise<AllQuestionsSa> {
+  async getQueryAllQuestionSaSortStatus(query: any): Promise<AllQuestionsSa> {
     const totalCount = await this.questions.countDocuments({
       body: {
         $regex: query.bodySearchTerm,
@@ -637,6 +641,68 @@ export class QueryRepositoryMongo extends IQueryRepository {
           published: a.published,
           createdAt: a.createdAt,
           updatedAt: a.updatedAt,
+        };
+      }),
+    };
+  }
+
+  async getQueryAllMyGames(query: any, id: string): Promise<AllMyGames> {
+    const sortBy =
+      query.sortBy === '' ||
+      query.sortBy === undefined ||
+      query.sortBy === 'pairCreatedDate'
+        ? ['pairCreatedDate']
+        : [query.sortBy, 'pairCreatedDate'];
+    const totalCount = await this.quizGameCollection.countDocuments({
+      $or: [{ playerId1: id }, { playerId2: id }],
+    });
+    let allGames;
+    if (sortBy.length === 1) {
+      allGames = await this.quizGameCollection
+        .find({
+          $or: [{ playerId1: id }, { playerId2: id }],
+        })
+        .sort({ [sortBy[0]]: query.sortDirection })
+        .skip(this.queryCount.skipHelper(query.pageNumber, query.pageSize))
+        .limit(query.pageSize);
+    } else {
+      allGames = await this.quizGameCollection
+        .find({
+          $or: [{ playerId1: id }, { playerId2: id }],
+        })
+        .sort({ [sortBy[0]]: query.sortDirection, [sortBy[1]]: -1 })
+        .skip(this.queryCount.skipHelper(query.pageNumber, query.pageSize))
+        .limit(query.pageSize);
+    }
+    return {
+      pagesCount: this.queryCount.pagesCountHelper(totalCount, query.pageSize),
+      page: query.pageNumber,
+      pageSize: query.pageSize,
+      totalCount: totalCount,
+      items: allGames.map((a) => {
+        return {
+          id: a.gameId,
+          firstPlayerProgress: {
+            answers: a.answersPlayer1,
+            player: {
+              id: a.playerId1,
+              login: a.playerLogin1,
+            },
+            score: a.scorePlayer1,
+          },
+          secondPlayerProgress: {
+            answers: a.answersPlayer1,
+            player: {
+              id: a.playerId2,
+              login: a.playerLogin2,
+            },
+            score: a.scorePlayer2,
+          },
+          questions: a.questions,
+          status: a.status,
+          pairCreatedDate: a.pairCreatedDate,
+          startGameDate: a.startGameDate,
+          finishGameDate: a.finishGameDate,
         };
       }),
     };

@@ -165,3 +165,47 @@ type QuestionsSa = {
   createdAt: string;
   updatedAt: string;
 };
+
+export type AllMyGames = {
+  pagesCount: number;
+  page: number;
+  pageSize: number;
+  totalCount: number;
+  items: Games[];
+};
+
+type Games = {
+  id: string;
+  firstPlayerProgress: {
+    answers: Answers[];
+    player: {
+      id: string;
+      login: string;
+    };
+    score: number;
+  };
+  secondPlayerProgress: {
+    answers: Answers[];
+    player: {
+      id: string;
+      login: string;
+    };
+    score: number;
+  };
+  questions: Questions[];
+  status: 'PendingSecondPlayer' | 'Active' | 'Finished';
+  pairCreatedDate: string;
+  startGameDate: string;
+  finishGameDate: string;
+};
+
+type Answers = {
+  questionId: string;
+  answerStatus: 'Correct' | 'Incorrect';
+  addedAt: string;
+};
+
+type Questions = {
+  id: string;
+  body: string;
+};

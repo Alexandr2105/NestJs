@@ -433,7 +433,7 @@ export class QueryRepositoryTypeorm extends IQueryRepository {
     };
   }
 
-  async getAllQuestionSa(query: any): Promise<AllQuestionsSa> {
+  async getQueryAllQuestionSa(query: any): Promise<AllQuestionsSa> {
     const [sortQuestion, totalCount] =
       await this.questionsRepository.findAndCount({
         where: { body: ILike(`%${query.bodySearchTerm}%`) },
@@ -450,7 +450,7 @@ export class QueryRepositoryTypeorm extends IQueryRepository {
     };
   }
 
-  async getAllQuestionSaSortStatus(query: any): Promise<AllQuestionsSa> {
+  async getQueryAllQuestionSaSortStatus(query: any): Promise<AllQuestionsSa> {
     const [sortQuestion, totalCount] =
       await this.questionsRepository.findAndCount({
         where: {
@@ -469,4 +469,6 @@ export class QueryRepositoryTypeorm extends IQueryRepository {
       items: sortQuestion,
     };
   }
+
+  async getQueryAllMyGames(query: any) {}
 }
