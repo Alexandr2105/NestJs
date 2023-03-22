@@ -665,5 +665,12 @@ export class QueryRepositorySql extends IQueryRepository {
     };
   }
 
-  async getQueryAllMyGames(query: any) {}
+  async getQueryAllMyGames(query: any) {
+    const sortBy =
+      query.sortBy === '' ||
+      query.sortBy === undefined ||
+      query.sortBy === 'pairCreatedDate'
+        ? ['pairCreatedDate']
+        : [query.sortBy, 'pairCreatedDate'];
+  }
 }

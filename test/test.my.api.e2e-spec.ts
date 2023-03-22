@@ -1840,9 +1840,11 @@ describe('Quiz questions sa', () => {
 describe('Pair quiz game all', () => {
   let app: INestApplication;
   let test;
-  let game1;
   let accessToken1;
   let accessToken2;
+  let game1;
+  let game2;
+  let game3;
 
   jest.setTimeout(5 * 60 * 1000);
 
@@ -2070,14 +2072,14 @@ describe('Pair quiz game all', () => {
       .get('/pair-game-quiz/pairs/my-current')
       .auth(accessToken1.accessToken, { type: 'bearer' })
       .expect(200);
-    const game = await test
+    game1 = await test
       .get(`/pair-game-quiz/pairs/test-my-current/${gameForId.body.id}`)
       .auth('admin', 'qwerty', { type: 'basic' })
       .expect(200);
     const info11 = await test
       .post(`/pair-game-quiz/pairs/my-current/answers`)
       .send({
-        answer: game.body.allAnswers[0][0],
+        answer: game1.body.allAnswers[0][0],
       })
       .auth(accessToken1.accessToken, { type: 'bearer' })
       .expect(200);
@@ -2102,7 +2104,7 @@ describe('Pair quiz game all', () => {
     const info21 = await test
       .post(`/pair-game-quiz/pairs/my-current/answers`)
       .send({
-        answer: game.body.allAnswers[0][0],
+        answer: game1.body.allAnswers[0][0],
       })
       .auth(accessToken2.accessToken, { type: 'bearer' })
       .expect(200);
@@ -2114,7 +2116,7 @@ describe('Pair quiz game all', () => {
     const info22 = await test
       .post(`/pair-game-quiz/pairs/my-current/answers`)
       .send({
-        answer: game.body.allAnswers[1][1],
+        answer: game1.body.allAnswers[1][1],
       })
       .auth(accessToken2.accessToken, { type: 'bearer' })
       .expect(200);
@@ -2127,7 +2129,7 @@ describe('Pair quiz game all', () => {
     const info13 = await test
       .post(`/pair-game-quiz/pairs/my-current/answers`)
       .send({
-        answer: game.body.allAnswers[2][1],
+        answer: game1.body.allAnswers[2][1],
       })
       .auth(accessToken1.accessToken, { type: 'bearer' })
       .expect(200);
@@ -2139,7 +2141,7 @@ describe('Pair quiz game all', () => {
     const info14 = await test
       .post(`/pair-game-quiz/pairs/my-current/answers`)
       .send({
-        answer: game.body.allAnswers[3][0],
+        answer: game1.body.allAnswers[3][0],
       })
       .auth(accessToken1.accessToken, { type: 'bearer' })
       .expect(200);
@@ -2151,7 +2153,7 @@ describe('Pair quiz game all', () => {
     const info15 = await test
       .post(`/pair-game-quiz/pairs/my-current/answers`)
       .send({
-        answer: game.body.allAnswers[3][0],
+        answer: game1.body.allAnswers[3][0],
       })
       .auth(accessToken1.accessToken, { type: 'bearer' })
       .expect(200);
@@ -2164,7 +2166,7 @@ describe('Pair quiz game all', () => {
     const info23 = await test
       .post(`/pair-game-quiz/pairs/my-current/answers`)
       .send({
-        answer: game.body.allAnswers[3][1],
+        answer: game1.body.allAnswers[3][1],
       })
       .auth(accessToken2.accessToken, { type: 'bearer' })
       .expect(200);
@@ -2176,7 +2178,7 @@ describe('Pair quiz game all', () => {
     const info24 = await test
       .post(`/pair-game-quiz/pairs/my-current/answers`)
       .send({
-        answer: game.body.allAnswers[2][0],
+        answer: game1.body.allAnswers[2][0],
       })
       .auth(accessToken2.accessToken, { type: 'bearer' })
       .expect(200);
@@ -2188,7 +2190,7 @@ describe('Pair quiz game all', () => {
     const info25 = await test
       .post(`/pair-game-quiz/pairs/my-current/answers`)
       .send({
-        answer: game.body.allAnswers[3][0],
+        answer: game1.body.allAnswers[3][0],
       })
       .auth(accessToken2.accessToken, { type: 'bearer' })
       .expect(200);
@@ -2202,7 +2204,7 @@ describe('Pair quiz game all', () => {
       .auth(accessToken1.accessToken, { type: 'bearer' })
       .expect(200);
     expect(gameByIdFinish.body).toEqual({
-      id: game.body.gameId,
+      id: game1.body.gameId,
       firstPlayerProgress: {
         answers: [
           {
@@ -2312,14 +2314,14 @@ describe('Pair quiz game all', () => {
       .get('/pair-game-quiz/pairs/my-current')
       .auth(accessToken1.accessToken, { type: 'bearer' })
       .expect(200);
-    const game = await test
+    game2 = await test
       .get(`/pair-game-quiz/pairs/test-my-current/${gameForId.body.id}`)
       .auth('admin', 'qwerty', { type: 'basic' })
       .expect(200);
     await test
       .post(`/pair-game-quiz/pairs/my-current/answers`)
       .send({
-        answer: game.body.allAnswers[0][0],
+        answer: game2.body.allAnswers[0][0],
       })
       .auth(accessToken1.accessToken, { type: 'bearer' })
       .expect(200);
@@ -2334,14 +2336,14 @@ describe('Pair quiz game all', () => {
     await test
       .post(`/pair-game-quiz/pairs/my-current/answers`)
       .send({
-        answer: game.body.allAnswers[0][0],
+        answer: game2.body.allAnswers[0][0],
       })
       .auth(accessToken2.accessToken, { type: 'bearer' })
       .expect(200);
     await test
       .post(`/pair-game-quiz/pairs/my-current/answers`)
       .send({
-        answer: game.body.allAnswers[1][1],
+        answer: game2.body.allAnswers[1][1],
       })
       .auth(accessToken2.accessToken, { type: 'bearer' })
       .expect(200);
@@ -2349,21 +2351,21 @@ describe('Pair quiz game all', () => {
     await test
       .post(`/pair-game-quiz/pairs/my-current/answers`)
       .send({
-        answer: game.body.allAnswers[2][1],
+        answer: game2.body.allAnswers[2][1],
       })
       .auth(accessToken1.accessToken, { type: 'bearer' })
       .expect(200);
     await test
       .post(`/pair-game-quiz/pairs/my-current/answers`)
       .send({
-        answer: game.body.allAnswers[3][0],
+        answer: game2.body.allAnswers[3][0],
       })
       .auth(accessToken1.accessToken, { type: 'bearer' })
       .expect(200);
     await test
       .post(`/pair-game-quiz/pairs/my-current/answers`)
       .send({
-        answer: game.body.allAnswers[3][0],
+        answer: game2.body.allAnswers[3][0],
       })
       .auth(accessToken1.accessToken, { type: 'bearer' })
       .expect(200);
@@ -2371,21 +2373,21 @@ describe('Pair quiz game all', () => {
     await test
       .post(`/pair-game-quiz/pairs/my-current/answers`)
       .send({
-        answer: game.body.allAnswers[3][1],
+        answer: game2.body.allAnswers[3][1],
       })
       .auth(accessToken2.accessToken, { type: 'bearer' })
       .expect(200);
     await test
       .post(`/pair-game-quiz/pairs/my-current/answers`)
       .send({
-        answer: game.body.allAnswers[2][0],
+        answer: game2.body.allAnswers[2][0],
       })
       .auth(accessToken2.accessToken, { type: 'bearer' })
       .expect(200);
     await test
       .post(`/pair-game-quiz/pairs/my-current/answers`)
       .send({
-        answer: game.body.allAnswers[3][0],
+        answer: game2.body.allAnswers[3][0],
       })
       .auth(accessToken2.accessToken, { type: 'bearer' })
       .expect(200);
@@ -2424,14 +2426,14 @@ describe('Pair quiz game all', () => {
       .get('/pair-game-quiz/pairs/my-current')
       .auth(accessToken1.accessToken, { type: 'bearer' })
       .expect(200);
-    const game = await test
+    game3 = await test
       .get(`/pair-game-quiz/pairs/test-my-current/${gameForId.body.id}`)
       .auth('admin', 'qwerty', { type: 'basic' })
       .expect(200);
     await test
       .post(`/pair-game-quiz/pairs/my-current/answers`)
       .send({
-        answer: game.body.allAnswers[0][0],
+        answer: game3.body.allAnswers[0][0],
       })
       .auth(accessToken1.accessToken, { type: 'bearer' })
       .expect(200);
@@ -2446,14 +2448,14 @@ describe('Pair quiz game all', () => {
     await test
       .post(`/pair-game-quiz/pairs/my-current/answers`)
       .send({
-        answer: game.body.allAnswers[0][0],
+        answer: game3.body.allAnswers[0][0],
       })
       .auth(accessToken2.accessToken, { type: 'bearer' })
       .expect(200);
     await test
       .post(`/pair-game-quiz/pairs/my-current/answers`)
       .send({
-        answer: game.body.allAnswers[1][1],
+        answer: game3.body.allAnswers[1][1],
       })
       .auth(accessToken2.accessToken, { type: 'bearer' })
       .expect(200);
@@ -2461,21 +2463,21 @@ describe('Pair quiz game all', () => {
     await test
       .post(`/pair-game-quiz/pairs/my-current/answers`)
       .send({
-        answer: game.body.allAnswers[2][1],
+        answer: game3.body.allAnswers[2][1],
       })
       .auth(accessToken1.accessToken, { type: 'bearer' })
       .expect(200);
     await test
       .post(`/pair-game-quiz/pairs/my-current/answers`)
       .send({
-        answer: game.body.allAnswers[3][0],
+        answer: game3.body.allAnswers[3][0],
       })
       .auth(accessToken1.accessToken, { type: 'bearer' })
       .expect(200);
     await test
       .post(`/pair-game-quiz/pairs/my-current/answers`)
       .send({
-        answer: game.body.allAnswers[3][0],
+        answer: game3.body.allAnswers[3][0],
       })
       .auth(accessToken1.accessToken, { type: 'bearer' })
       .expect(200);
@@ -2483,23 +2485,42 @@ describe('Pair quiz game all', () => {
     await test
       .post(`/pair-game-quiz/pairs/my-current/answers`)
       .send({
-        answer: game.body.allAnswers[3][1],
+        answer: game3.body.allAnswers[3][1],
       })
       .auth(accessToken2.accessToken, { type: 'bearer' })
       .expect(200);
     await test
       .post(`/pair-game-quiz/pairs/my-current/answers`)
       .send({
-        answer: game.body.allAnswers[2][0],
+        answer: game3.body.allAnswers[2][0],
       })
       .auth(accessToken2.accessToken, { type: 'bearer' })
       .expect(200);
-    await test
-      .post(`/pair-game-quiz/pairs/my-current/answers`)
-      .send({
-        answer: game.body.allAnswers[3][0],
-      })
-      .auth(accessToken2.accessToken, { type: 'bearer' })
+  });
+
+  it('Проверяем правильный вывод игр', async () => {
+    const finishGame1 = await test
+      .get(`/pair-game-quiz/pairs/${game1.body.gameId}`)
+      .auth(accessToken1.accessToken, { type: 'bearer' })
       .expect(200);
+    const finishGame2 = await test
+      .get(`/pair-game-quiz/pairs/${game2.body.gameId}`)
+      .auth(accessToken1.accessToken, { type: 'bearer' })
+      .expect(200);
+    const finishGame3 = await test
+      .get(`/pair-game-quiz/pairs/${game3.body.gameId}`)
+      .auth(accessToken1.accessToken, { type: 'bearer' })
+      .expect(200);
+    const allGames = await test
+      .get(`/pair-game-quiz/pairs/my?sortBy=status&sortDirection=desc`)
+      .auth(accessToken1.accessToken, { type: 'bearer' })
+      .expect(200);
+    expect(allGames.body).toEqual({
+      pagesCount: 1,
+      page: 1,
+      pageSize: 10,
+      totalCount: 3,
+      items: [finishGame2.body, finishGame1.body, finishGame3.body],
+    });
   });
 });
