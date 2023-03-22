@@ -22,7 +22,7 @@ import { IPairQuizGameRepository } from './i.pair.quiz.game.repository';
 import { IQueryRepository } from '../queryReposytories/i.query.repository';
 import { QueryCount } from '../../../common/helper/query.count';
 
-@Controller('pair-game-quiz/pairs')
+@Controller('pair-game-quiz')
 export class PairQuizGameController {
   constructor(
     private readonly commandBus: CommandBus,
@@ -34,7 +34,7 @@ export class PairQuizGameController {
 
   @HttpCode(200)
   @UseGuards(JwtAuthGuard)
-  @Post('connection')
+  @Post('pairs/connection')
   async connectionToGame(@Req() req) {
     const userId = req.user.id;
     const userInfo: any = await this.usersService.getUserById(userId);
@@ -48,7 +48,7 @@ export class PairQuizGameController {
 
   @HttpCode(200)
   @UseGuards(JwtAuthGuard)
-  @Post('my-current/answers')
+  @Post('pairs/my-current/answers')
   async sendAnswer(@Req() req, @Body() body: PairQuizGameDto) {
     const userId = req.user.id;
     return await this.commandBus.execute(
@@ -57,14 +57,14 @@ export class PairQuizGameController {
   }
 
   @UseGuards(JwtAuthGuard)
-  @Get('my-current')
+  @Get('pairs/my-current')
   async returnUnfinishedUserGame(@Req() req) {
     const userId = req.user.id;
     return await this.commandBus.execute(new GetMyCurrentUseCommand(userId));
   }
 
   @UseGuards(JwtAuthGuard)
-  @Get('/my')
+  @Get('pairs/my')
   async getAllMyGames(@Query() dataQuery, @Req() req) {
     const userId = req.user.id;
     const query = this.queryCount.queryCheckHelper(dataQuery);
@@ -72,7 +72,7 @@ export class PairQuizGameController {
   }
 
   @UseGuards(JwtAuthGuard)
-  @Get(':id')
+  @Get('pairs/:id')
   async getGameById(@Req() req, @Param() param: CheckGameIdDto) {
     const userId = req.user.id;
     return await this.commandBus.execute(
@@ -81,8 +81,14 @@ export class PairQuizGameController {
   }
 
   @UseGuards(BasicAuthGuard)
-  @Get('test-my-current/:id')
+  @Get('pairs/test-my-current/:id')
   async returnUnfinishedUserGameForTest(@Param('id') id) {
     return this.test.getUnfinishedUserGameForTest(id);
   }
+
+  // @UseGuards(JwtAuthGuard)
+  // @Get('users/my-static')
+  // async getCurrentUserStatic() {
+  //
+  // }
 }

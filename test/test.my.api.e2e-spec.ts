@@ -2523,4 +2523,20 @@ describe('Pair quiz game all', () => {
       items: [finishGame2.body, finishGame1.body, finishGame3.body],
     });
   });
+
+  // it('Получить всю статистику по играм конкретного игрока', async () => {
+  //   await test.get(`/pair-game-quiz/users/my-static`).expect(401);
+  //   const allStatic = await test
+  //     .get(`/pair-game-quiz/users/my-static`)
+  //     .auth(accessToken1.accessToken, { type: 'bearer' })
+  //     .expect(200);
+  //   expect(allStatic.body).toEqual({
+  //     sumScore: 11,
+  //     avgScores: 3.67,
+  //     gamesCount: 3,
+  //     winsCount: 3,
+  //     lossesCount: 0,
+  //     drawsCount: 0,
+  //   });
+  // });
 });
