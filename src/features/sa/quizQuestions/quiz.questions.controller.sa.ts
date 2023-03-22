@@ -58,7 +58,7 @@ export class QuizQuestionsControllerSa {
   @UseGuards(BasicAuthGuard)
   @Delete(':id')
   async deleteQuestion(@Param() param: QuizQuestionCheckId) {
-    const result = this.commandBus.execute(
+    const result = await this.commandBus.execute(
       new DeleteQuestionSaCommand(param.id),
     );
     if (!result) return false;
