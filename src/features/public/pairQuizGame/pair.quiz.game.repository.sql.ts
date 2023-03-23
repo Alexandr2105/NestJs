@@ -34,7 +34,7 @@ export class PairQuizGameRepositorySql extends IPairQuizGameRepository {
     }
   }
 
-  async getUnfinishedUserGameForTest(gameId: string) {
+  async getUserGameForTest(gameId: string) {
     const game = await this.dataSource.query(
       `SELECT * FROM public."PairQuizGame"
             WHERE "gameId"=$1`,
@@ -58,6 +58,15 @@ export class PairQuizGameRepositorySql extends IPairQuizGameRepository {
     } else {
       return false;
     }
+  }
+
+  async getAllStaticForCurrentUserGames(userId: string) {
+    return this.dataSource.query(
+      `SELECT "gameId","playerId1","playerLogin1","scorePlayer1","playerId2",
+      "playerLogin2","scorePlayer2" FROM public."PairQuizGame"
+      WHERE "playerId1"=$1 OR "playerId2"=$2`,
+      [userId, userId],
+    );
   }
 
   async save(newGame: PairQuizGameEntity) {

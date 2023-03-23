@@ -2524,19 +2524,51 @@ describe('Pair quiz game all', () => {
     });
   });
 
-  // it('Получить всю статистику по играм конкретного игрока', async () => {
-  //   await test.get(`/pair-game-quiz/users/my-static`).expect(401);
-  //   const allStatic = await test
-  //     .get(`/pair-game-quiz/users/my-static`)
-  //     .auth(accessToken1.accessToken, { type: 'bearer' })
-  //     .expect(200);
-  //   expect(allStatic.body).toEqual({
-  //     sumScore: 11,
-  //     avgScores: 3.67,
-  //     gamesCount: 3,
-  //     winsCount: 3,
-  //     lossesCount: 0,
-  //     drawsCount: 0,
-  //   });
-  // });
+  it('Получить всю статистику по играм конкретного игрока', async () => {
+    await test.get(`/pair-game-quiz/users/my-static`).expect(401);
+    const allStatic = await test
+      .get(`/pair-game-quiz/users/my-static`)
+      .auth(accessToken1.accessToken, { type: 'bearer' })
+      .expect(200);
+    expect(allStatic.body).toEqual({
+      sumScore: 11,
+      avgScores: 3.67,
+      gamesCount: 3,
+      winsCount: 3,
+      lossesCount: 0,
+      drawsCount: 0,
+    });
+  });
+
+  it('Получить статистику для игрока, который не играл', async () => {
+    await new Helper().user(
+      {
+        login: 'Alex3',
+        password: 'QWERTY',
+        email: '50305533@gmail.com',
+      },
+      'admin',
+      'qwerty',
+      test,
+    );
+    const info1 = await test
+      .post('/auth/login')
+      .set('user-agent', 'Chrome')
+      .send({ loginOrEmail: 'Alex3', password: 'QWERTY' });
+    expect(info1.status).toBe(200);
+    const accessToken3 = info1.body;
+    expect.setState(accessToken3);
+    const allStatic = await test
+      .get(`/pair-game-quiz/users/my-static`)
+      .auth(accessToken3.accessToken, { type: 'bearer' })
+      .expect(200);
+    expect(allStatic.body).toEqual({
+      sumScore: 0,
+      avgScores: 0,
+      gamesCount: 0,
+      winsCount: 0,
+      lossesCount: 0,
+      drawsCount: 0,
+    });
+  });
 });

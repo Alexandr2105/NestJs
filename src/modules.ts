@@ -140,6 +140,7 @@ import { ConnectCurrentUserOrWaitingSecondPlayerUseCase } from './features/publi
 import { GetGameByIdUseCase } from './features/public/pairQuizGame/application/useCase/get.game.by.id.use.case';
 import { GetMyCurrentUseCase } from './features/public/pairQuizGame/application/useCase/get.my.current.use.case';
 import { SendResultAnswerUseCase } from './features/public/pairQuizGame/application/useCase/send.result.answer.use.case';
+import { GetCurrentUserStaticUseCase } from './features/public/pairQuizGame/application/useCase/get.current.user.static.use.case';
 
 const Strategies = [LocalStrategy, JwtStrategy, BasicStrategy, RefreshStrategy];
 const Validators = [
@@ -191,6 +192,7 @@ const UseCases = [
   GetGameByIdUseCase,
   GetMyCurrentUseCase,
   SendResultAnswerUseCase,
+  GetCurrentUserStaticUseCase,
 ];
 const MongoRepositories = [
   AuthRepositoryMongo,

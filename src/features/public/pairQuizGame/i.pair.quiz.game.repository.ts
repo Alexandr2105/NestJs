@@ -4,7 +4,8 @@ import { PairQuizGameEntity } from './entity/pair.quiz.game.entity';
 export abstract class IPairQuizGameRepository {
   abstract getGameByStatus(status: string);
   abstract save(newGame: PairQuizGameDocument | PairQuizGameEntity);
-  abstract getUnfinishedUserGameForTest(gameId: string);
+  abstract getUserGameForTest(gameId: string);
   abstract getUnfinishedGame(status: string, userId: string);
   abstract getGameById(gameId: string);
+  abstract getAllStaticForCurrentUserGames(userId: string);
 }

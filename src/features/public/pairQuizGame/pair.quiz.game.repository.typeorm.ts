@@ -19,7 +19,7 @@ export class PairQuizGameRepositoryTypeorm extends IPairQuizGameRepository {
     return this.quizGameCollection.findOneBy({ status: status });
   }
 
-  async getUnfinishedUserGameForTest(gameId: string) {
+  async getUserGameForTest(gameId: string) {
     return this.quizGameCollection.findOneBy({ gameId: gameId });
   }
 
@@ -28,6 +28,21 @@ export class PairQuizGameRepositoryTypeorm extends IPairQuizGameRepository {
       { status: Not(status), playerId1: userId },
       { status: Not(status), playerId2: userId },
     ]);
+  }
+
+  getAllStaticForCurrentUserGames(userId: string) {
+    return this.quizGameCollection.find({
+      where: [{ playerId1: userId }, { playerId2: userId }],
+      select: {
+        gameId: true,
+        playerId1: true,
+        playerLogin1: true,
+        scorePlayer1: true,
+        playerId2: true,
+        playerLogin2: true,
+        scorePlayer2: true,
+      },
+    });
   }
 
   async save(newGame: PairQuizGameEntity) {

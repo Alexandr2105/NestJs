@@ -18,7 +18,7 @@ export class PairQuizGameRepositoryMongo extends IPairQuizGameRepository {
     return this.quizGameCollection.findOne({ status: status });
   }
 
-  async getUnfinishedUserGameForTest(gameId: string) {
+  async getUserGameForTest(gameId: string) {
     return this.quizGameCollection.findOne({ gameId: gameId });
   }
 
@@ -27,6 +27,16 @@ export class PairQuizGameRepositoryMongo extends IPairQuizGameRepository {
       status: { $ne: status },
       $or: [{ playerId2: userId }, { playerId1: userId }],
     });
+  }
+
+  async getAllStaticForCurrentUserGames(userId: string) {
+    return this.quizGameCollection
+      .find({
+        $or: [{ playerId1: userId }, { playerId2: userId }],
+      })
+      .select(
+        'gameId playerId1 playerLogin1 scorePlayer1 playerId2 playerLogin2 scorePlayer2',
+      );
   }
 
   async save(newGame: PairQuizGameDocument) {
