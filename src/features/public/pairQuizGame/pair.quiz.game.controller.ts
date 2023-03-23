@@ -84,7 +84,7 @@ export class PairQuizGameController {
   }
 
   @UseGuards(JwtAuthGuard)
-  @Get('users/my-static')
+  @Get('users/my-statistic')
   async getCurrentUserStatic(@Req() req) {
     return this.commandBus.execute(
       new GetCurrentUserStaticCommand(req.user.id),

@@ -2525,9 +2525,9 @@ describe('Pair quiz game all', () => {
   });
 
   it('Получить всю статистику по играм конкретного игрока', async () => {
-    await test.get(`/pair-game-quiz/users/my-static`).expect(401);
+    await test.get(`/pair-game-quiz/users/my-statistic`).expect(401);
     const allStatic = await test
-      .get(`/pair-game-quiz/users/my-static`)
+      .get(`/pair-game-quiz/users/my-statistic`)
       .auth(accessToken1.accessToken, { type: 'bearer' })
       .expect(200);
     expect(allStatic.body).toEqual({
@@ -2559,7 +2559,7 @@ describe('Pair quiz game all', () => {
     const accessToken3 = info1.body;
     expect.setState(accessToken3);
     const allStatic = await test
-      .get(`/pair-game-quiz/users/my-static`)
+      .get(`/pair-game-quiz/users/my-statistic`)
       .auth(accessToken3.accessToken, { type: 'bearer' })
       .expect(200);
     expect(allStatic.body).toEqual({
