@@ -707,4 +707,18 @@ export class QueryRepositoryMongo extends IQueryRepository {
       }),
     };
   }
+
+  async getQueryUsersTop(query: any) {
+    const allUsers = await this.usersCollection.find().select('id -_id');
+    const totalCount = await this.quizGameCollection.countDocuments();
+    const sortAllGames = await this.quizGameCollection
+      .find()
+      .select(
+        'gameId playerId1 playerLogin1 scorePlayer1 playerId2 playerLogin2 scorePlayer2',
+      );
+
+    console.log(sortAllGames);
+    console.log(allUsers);
+    console.log(totalCount);
+  }
 }

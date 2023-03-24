@@ -17,4 +17,5 @@ export abstract class IQueryRepository {
   abstract getQueryAllQuestionSa(query: any);
   abstract getQueryAllQuestionSaSortStatus(query: any);
   abstract getQueryAllMyGames(query: any, id: string);
+  abstract getQueryUsersTop(query: any);
 }

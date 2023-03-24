@@ -53,6 +53,18 @@ export class QueryCount {
     } else if (query.publishedStatus === 'notPublished') {
       publishedStatus = false;
     }
+    let sort;
+    const newArray = [];
+    if (query.sort === undefined) {
+      sort = [{ avgScores: 'desc' }, { sumScore: 'desc' }];
+    } else if (Array.isArray(query.sort)) {
+      for (const p of query.sort) {
+        newArray.push({ [p.split(' ')[0]]: p.split(' ')[1] });
+      }
+      sort = newArray;
+    } else {
+      sort = [{ [query.sort.split(' ')[0]]: query.sort.split(' ')[1] }];
+    }
 
     return {
       pageNumber,
@@ -65,6 +77,7 @@ export class QueryCount {
       banStatus,
       bodySearchTerm,
       publishedStatus,
+      sort,
     };
   };
 }

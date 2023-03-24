@@ -141,6 +141,8 @@ import { GetGameByIdUseCase } from './features/public/pairQuizGame/application/u
 import { GetMyCurrentUseCase } from './features/public/pairQuizGame/application/useCase/get.my.current.use.case';
 import { SendResultAnswerUseCase } from './features/public/pairQuizGame/application/useCase/send.result.answer.use.case';
 import { GetCurrentUserStaticUseCase } from './features/public/pairQuizGame/application/useCase/get.current.user.static.use.case';
+import { StatisticGamesEntity } from './features/public/pairQuizGame/entity/statistic.games.entity';
+import { StatisticGamesSchema } from './features/public/pairQuizGame/schema/statistic.games.schema';
 
 const Strategies = [LocalStrategy, JwtStrategy, BasicStrategy, RefreshStrategy];
 const Validators = [
@@ -327,6 +329,7 @@ const entities = [
   BanUsersEntity,
   QuizQuestionEntity,
   PairQuizGameEntity,
+  StatisticGamesEntity,
 ];
 
 @Module({
@@ -346,6 +349,7 @@ const entities = [
       { name: 'banUsersForBlogs', schema: BanUsersForBlogSchema },
       { name: 'quizQuestions', schema: QuestionSchema },
       { name: 'infoQuizQuestionsGames', schema: PairQuizGameSchema },
+      { name: 'statisticGames', schema: StatisticGamesSchema },
     ]),
     JwtModule.register({}),
     MailerModule.forRootAsync({
@@ -413,7 +417,7 @@ const entities = [
     ...SqlRepositories,
     ...MongoRepositories,
     ...TypeOrmRepositories,
-    ...AbstractClassesSql,
+    ...AbstractClassesMongo,
   ],
 })
 export class Modules {}

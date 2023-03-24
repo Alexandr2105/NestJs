@@ -14,6 +14,10 @@ import { BanUsersForBlogDocument } from '../features/public/blogs/schema/ban.use
 import { ITestingRepository } from './i.testing.repository';
 import { QuestionDocument } from '../features/sa/quizQuestions/schema/question.schema';
 import { PairQuizGameDocument } from '../features/public/pairQuizGame/schema/pair.quiz.game.schema';
+import {
+  StatisticGames,
+  StatisticGamesDocument,
+} from '../features/public/pairQuizGame/schema/statistic.games.schema';
 
 @Injectable()
 export class TestingRepositoryMongo extends ITestingRepository {
@@ -38,6 +42,8 @@ export class TestingRepositoryMongo extends ITestingRepository {
     private readonly questions: Model<QuestionDocument>,
     @InjectModel('infoQuizQuestionsGames')
     private readonly infoQuizQuestionsGames: Model<PairQuizGameDocument>,
+    @InjectModel('statisticGames')
+    private readonly statisticGames: Model<StatisticGamesDocument>,
   ) {
     super();
   }
@@ -54,5 +60,6 @@ export class TestingRepositoryMongo extends ITestingRepository {
     await this.banUsersForBlogsCollection.deleteMany({});
     await this.questions.deleteMany({});
     await this.infoQuizQuestionsGames.deleteMany({});
+    await this.statisticGames.deleteMany({});
   }
 }

@@ -748,4 +748,8 @@ export class QueryRepositorySql extends IQueryRepository {
       }),
     };
   }
+
+  async getQueryUsersTop(query: any) {
+    return;
+  }
 }

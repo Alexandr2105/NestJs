@@ -6,6 +6,8 @@ import { LikeStatusEntity } from '../../../../common/entity/like.status.entity';
 import { RefreshTokenDataEntity } from '../../../../common/entity/refresh.token.data.entities';
 import { BanUsersForBlogEntity } from '../../../public/blogs/entity/ban.users.for.blog.entity';
 import { BanUsersEntity } from './banUsers.entity';
+import { PairQuizGameEntity } from '../../../public/pairQuizGame/entity/pair.quiz.game.entity';
+import { StatisticGamesEntity } from '../../../public/pairQuizGame/entity/statistic.games.entity';
 
 @Entity()
 export class UserEntity {
@@ -42,4 +44,16 @@ export class UserEntity {
     onDelete: 'CASCADE',
   })
   banUsers: BanUsersEntity;
+  @OneToMany(() => PairQuizGameEntity, (player) => player.user, {
+    onDelete: 'CASCADE',
+  })
+  player: PairQuizGameEntity[];
+  @OneToMany(() => StatisticGamesEntity, (player) => player.user, {
+    onDelete: 'CASCADE',
+  })
+  user: PairQuizGameEntity[];
+  @OneToMany(() => StatisticGamesEntity, (player) => player.user, {
+    onDelete: 'CASCADE',
+  })
+  name: PairQuizGameEntity[];
 }

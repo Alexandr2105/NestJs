@@ -90,4 +90,10 @@ export class PairQuizGameController {
       new GetCurrentUserStaticCommand(req.user.id),
     );
   }
+
+  @Get('users/top')
+  async getUsersTop(@Query() dataQuery) {
+    const query = this.queryCount.queryCheckHelper(dataQuery);
+    return this.queryRepository.getQueryUsersTop(query);
+  }
 }

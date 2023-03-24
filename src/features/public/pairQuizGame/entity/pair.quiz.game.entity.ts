@@ -1,4 +1,5 @@
-import { Column, Entity, PrimaryColumn } from 'typeorm';
+import { Column, Entity, JoinColumn, ManyToOne, PrimaryColumn } from 'typeorm';
+import { UserEntity } from '../../../sa/users/entity/user.entity';
 
 @Entity()
 export class PairQuizGameEntity {
@@ -53,4 +54,15 @@ export class PairQuizGameEntity {
   playerCount1: number;
   @Column({ default: 0 })
   playerCount2: number;
+
+  @ManyToOne(() => UserEntity, (user) => user.player, {
+    onDelete: 'CASCADE',
+  })
+  @JoinColumn({ name: 'playerId1', referencedColumnName: 'id' })
+  user: UserEntity;
+  @ManyToOne(() => UserEntity, (user) => user.player, {
+    onDelete: 'CASCADE',
+  })
+  @JoinColumn({ name: 'playerId2', referencedColumnName: 'id' })
+  user2: UserEntity;
 }

@@ -530,4 +530,8 @@ export class QueryRepositoryTypeorm extends IQueryRepository {
       }),
     };
   }
+
+  async getQueryUsersTop(query: any) {
+    return;
+  }
 }
