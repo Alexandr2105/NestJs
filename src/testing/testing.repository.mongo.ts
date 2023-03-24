@@ -14,10 +14,7 @@ import { BanUsersForBlogDocument } from '../features/public/blogs/schema/ban.use
 import { ITestingRepository } from './i.testing.repository';
 import { QuestionDocument } from '../features/sa/quizQuestions/schema/question.schema';
 import { PairQuizGameDocument } from '../features/public/pairQuizGame/schema/pair.quiz.game.schema';
-import {
-  StatisticGames,
-  StatisticGamesDocument,
-} from '../features/public/pairQuizGame/schema/statistic.games.schema';
+import { StatisticGamesDocument } from '../features/public/pairQuizGame/schema/statistic.games.schema';
 
 @Injectable()
 export class TestingRepositoryMongo extends ITestingRepository {
