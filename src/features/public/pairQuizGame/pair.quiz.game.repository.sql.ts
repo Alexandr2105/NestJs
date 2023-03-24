@@ -2,6 +2,7 @@ import { IPairQuizGameRepository } from './i.pair.quiz.game.repository';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
 import { PairQuizGameEntity } from './entity/pair.quiz.game.entity';
+import { StatisticGamesEntity } from './entity/statistic.games.entity';
 
 export class PairQuizGameRepositorySql extends IPairQuizGameRepository {
   constructor(@InjectDataSource() private readonly dataSource: DataSource) {
@@ -60,13 +61,26 @@ export class PairQuizGameRepositorySql extends IPairQuizGameRepository {
     }
   }
 
-  async getAllStaticForCurrentUserGames(userId: string) {
+  async getAllStaticForCurrentUserGames(userId: string, status: string) {
     return this.dataSource.query(
       `SELECT "gameId","playerId1","playerLogin1","scorePlayer1","playerId2",
       "playerLogin2","scorePlayer2" FROM public."PairQuizGame"
-      WHERE "playerId1"=$1 OR "playerId2"=$2`,
-      [userId, userId],
+      WHERE "status"=$1 AND ("playerId1"=$2 OR "playerId2"=$3)`,
+      [status, userId, userId],
     );
+  }
+
+  async getStatisticById(id: string) {
+    const stat = await this.dataSource.query(
+      `SELECT * FROM public."StatisticGames"
+            WHERE "userId"=$1`,
+      [id],
+    );
+    if (stat[0]) {
+      return stat[0];
+    } else {
+      return false;
+    }
   }
 
   async save(newGame: PairQuizGameEntity) {
@@ -124,6 +138,44 @@ export class PairQuizGameRepositorySql extends IPairQuizGameRepository {
           newGame.playerCount1,
           newGame.playerCount2,
           newGame.gameId,
+        ],
+      );
+    }
+  }
+
+  async saveStatistic(info: StatisticGamesEntity) {
+    if (!(await this.getStatisticById(info.userId))) {
+      await this.dataSource.query(
+        `INSERT INTO public."StatisticGames"(
+            "userId","login","sumScore","avgScores","gamesCount","winsCount",
+            "lossesCount","drawsCount")
+            VALUES($1,$2,$3,$4,$5,$6,$7,$8)`,
+        [
+          info.userId,
+          info.login,
+          info.sumScore,
+          info.avgScores,
+          info.gamesCount,
+          info.winsCount,
+          info.lossesCount,
+          info.drawsCount,
+        ],
+      );
+    } else {
+      await this.dataSource.query(
+        `UPDATE public."StatisticGames"
+              SET "login"=$1,"sumScore"=$2,"avgScores"=$3,"gamesCount"=$4,
+              "winsCount"=$5,"lossesCount"=$6,"drawsCount"=$7
+              WHERE "userId"=$8`,
+        [
+          info.login,
+          info.sumScore,
+          info.avgScores,
+          info.gamesCount,
+          info.winsCount,
+          info.lossesCount,
+          info.drawsCount,
+          info.userId,
         ],
       );
     }

@@ -2531,10 +2531,10 @@ describe('Pair quiz game all', () => {
       .auth(accessToken1.accessToken, { type: 'bearer' })
       .expect(200);
     expect(allStatic.body).toEqual({
-      sumScore: 11,
-      avgScores: 3.67,
-      gamesCount: 3,
-      winsCount: 3,
+      sumScore: 8,
+      avgScores: 4,
+      gamesCount: 2,
+      winsCount: 2,
       lossesCount: 0,
       drawsCount: 0,
     });

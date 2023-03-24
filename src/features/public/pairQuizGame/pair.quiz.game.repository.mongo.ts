@@ -2,11 +2,14 @@ import { IPairQuizGameRepository } from './i.pair.quiz.game.repository';
 import { PairQuizGameDocument } from './schema/pair.quiz.game.schema';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
+import { StatisticGamesDocument } from './schema/statistic.games.schema';
 
 export class PairQuizGameRepositoryMongo extends IPairQuizGameRepository {
   constructor(
     @InjectModel('infoQuizQuestionsGames')
     private readonly quizGameCollection: Model<PairQuizGameDocument>,
+    @InjectModel('statisticGames')
+    private readonly gameStatistic: Model<StatisticGamesDocument>,
   ) {
     super();
   }
@@ -29,9 +32,10 @@ export class PairQuizGameRepositoryMongo extends IPairQuizGameRepository {
     });
   }
 
-  async getAllStaticForCurrentUserGames(userId: string) {
+  async getAllStaticForCurrentUserGames(userId: string, status: string) {
     return this.quizGameCollection
       .find({
+        status: status,
         $or: [{ playerId1: userId }, { playerId2: userId }],
       })
       .select(
@@ -39,7 +43,15 @@ export class PairQuizGameRepositoryMongo extends IPairQuizGameRepository {
       );
   }
 
+  async getStatisticById(id: string) {
+    return this.gameStatistic.findOne({ userId: id });
+  }
+
   async save(newGame: PairQuizGameDocument) {
     await newGame.save();
+  }
+
+  async saveStatistic(info: StatisticGamesDocument) {
+    await info.save();
   }
 }

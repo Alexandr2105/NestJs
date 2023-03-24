@@ -15,6 +15,7 @@ export class GetCurrentUserStaticUseCase {
     const allInfo =
       await this.pairQuizGamesRepository.getAllStaticForCurrentUserGames(
         command.userId,
+        'Finished',
       );
     const gamesCount = allInfo?.length;
     let sumScore = 0;

@@ -48,12 +48,8 @@ export class UserEntity {
     onDelete: 'CASCADE',
   })
   player: PairQuizGameEntity[];
-  @OneToMany(() => StatisticGamesEntity, (player) => player.user, {
+  @OneToOne(() => StatisticGamesEntity, (player) => player.user, {
     onDelete: 'CASCADE',
   })
-  user: PairQuizGameEntity[];
-  @OneToMany(() => StatisticGamesEntity, (player) => player.user, {
-    onDelete: 'CASCADE',
-  })
-  name: PairQuizGameEntity[];
+  user: PairQuizGameEntity;
 }

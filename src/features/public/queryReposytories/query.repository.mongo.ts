@@ -716,9 +716,5 @@ export class QueryRepositoryMongo extends IQueryRepository {
       .select(
         'gameId playerId1 playerLogin1 scorePlayer1 playerId2 playerLogin2 scorePlayer2',
       );
-
-    console.log(sortAllGames);
-    console.log(allUsers);
-    console.log(totalCount);
   }
 }

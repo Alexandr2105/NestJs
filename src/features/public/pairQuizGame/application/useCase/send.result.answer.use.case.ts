@@ -1,7 +1,11 @@
-import { CommandHandler } from '@nestjs/cqrs';
+import { CommandBus, CommandHandler } from '@nestjs/cqrs';
 import { PairQuizGameDto } from '../../dto/pair.quiz.game.dto';
 import { IPairQuizGameRepository } from '../../i.pair.quiz.game.repository';
 import { ForbiddenException } from '@nestjs/common';
+import { GetCurrentUserStaticCommand } from './get.current.user.static.use.case';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
+import { StatisticGamesDocument } from '../../schema/statistic.games.schema';
 
 export class SendResultAnswerCommand {
   constructor(public userId: string, public body: PairQuizGameDto) {}
@@ -9,7 +13,12 @@ export class SendResultAnswerCommand {
 
 @CommandHandler(SendResultAnswerCommand)
 export class SendResultAnswerUseCase {
-  constructor(private readonly gamesRepository: IPairQuizGameRepository) {}
+  constructor(
+    @InjectModel('statisticGames')
+    private readonly gameStatistic: Model<StatisticGamesDocument>,
+    private readonly gamesRepository: IPairQuizGameRepository,
+    private readonly commandBus: CommandBus,
+  ) {}
 
   async execute(command: SendResultAnswerCommand) {
     const gameInfo = await this.gamesRepository.getUnfinishedGame(
@@ -47,6 +56,56 @@ export class SendResultAnswerUseCase {
         }
         gameInfo.status = 'Finished';
         gameInfo.finishGameDate = new Date().toISOString();
+        await this.gamesRepository.save(gameInfo);
+        const userStat1 = await this.commandBus.execute(
+          new GetCurrentUserStaticCommand(gameInfo.playerId1),
+        );
+        const info1 = await this.gamesRepository.getStatisticById(
+          gameInfo.playerId1,
+        );
+        if (info1) {
+          info1.sumScore = userStat1.sumScore;
+          info1.avgScores = userStat1.avgScores;
+          info1.gamesCount = userStat1.gamesCount;
+          info1.winsCount = userStat1.winsCount;
+          info1.lossesCount = userStat1.lossesCount;
+          info1.drawsCount = userStat1.drawsCount;
+          info1.userId = gameInfo.playerId1;
+          info1.login = gameInfo.playerLogin1;
+          await this.gamesRepository.saveStatistic(info1);
+        } else {
+          const newStat = new this.gameStatistic({
+            userId: gameInfo.playerId1,
+            login: gameInfo.playerLogin1,
+            ...userStat1,
+          });
+          await this.gamesRepository.saveStatistic(newStat);
+        }
+        const userStat2 = await this.commandBus.execute(
+          new GetCurrentUserStaticCommand(gameInfo.playerId2),
+        );
+        const info2 = await this.gamesRepository.getStatisticById(
+          gameInfo.playerId2,
+        );
+        if (info2) {
+          info2.sumScore = userStat2.sumScore;
+          info2.avgScores = userStat2.avgScores;
+          info2.gamesCount = userStat2.gamesCount;
+          info2.winsCount = userStat2.winsCount;
+          info2.lossesCount = userStat2.lossesCount;
+          info2.drawsCount = userStat2.drawsCount;
+          info2.userId = gameInfo.playerId2;
+          info2.login = gameInfo.playerLogin2;
+          await this.gamesRepository.saveStatistic(info2);
+        } else {
+          const newStat = new this.gameStatistic({
+            userId: gameInfo.playerId2,
+            login: gameInfo.playerLogin2,
+            ...userStat2,
+          });
+          await this.gamesRepository.saveStatistic(newStat);
+        }
+        return gameInfo.answersPlayer1[gameInfo.playerCount1 - 1];
       }
       await this.gamesRepository.save(gameInfo);
       return gameInfo.answersPlayer1[gameInfo.playerCount1 - 1];
@@ -80,6 +139,56 @@ export class SendResultAnswerUseCase {
         }
         gameInfo.status = 'Finished';
         gameInfo.finishGameDate = new Date().toISOString();
+        await this.gamesRepository.save(gameInfo);
+        const userStat1 = await this.commandBus.execute(
+          new GetCurrentUserStaticCommand(gameInfo.playerId1),
+        );
+        const info1 = await this.gamesRepository.getStatisticById(
+          gameInfo.playerId1,
+        );
+        if (info1) {
+          info1.sumScore = userStat1.sumScore;
+          info1.avgScores = userStat1.avgScores;
+          info1.gamesCount = userStat1.gamesCount;
+          info1.winsCount = userStat1.winsCount;
+          info1.lossesCount = userStat1.lossesCount;
+          info1.drawsCount = userStat1.drawsCount;
+          info1.userId = gameInfo.playerId1;
+          info1.login = gameInfo.playerLogin1;
+          await this.gamesRepository.saveStatistic(info1);
+        } else {
+          const newStat = new this.gameStatistic({
+            userId: gameInfo.playerId1,
+            login: gameInfo.playerLogin1,
+            ...userStat1,
+          });
+          await this.gamesRepository.saveStatistic(newStat);
+        }
+        const userStat2 = await this.commandBus.execute(
+          new GetCurrentUserStaticCommand(gameInfo.playerId2),
+        );
+        const info2 = await this.gamesRepository.getStatisticById(
+          gameInfo.playerId2,
+        );
+        if (info2) {
+          info2.sumScore = userStat2.sumScore;
+          info2.avgScores = userStat2.avgScores;
+          info2.gamesCount = userStat2.gamesCount;
+          info2.winsCount = userStat2.winsCount;
+          info2.lossesCount = userStat2.lossesCount;
+          info2.drawsCount = userStat2.drawsCount;
+          info2.userId = gameInfo.playerId2;
+          info2.login = gameInfo.playerLogin2;
+          await this.gamesRepository.saveStatistic(info2);
+        } else {
+          const newStat = new this.gameStatistic({
+            userId: gameInfo.playerId2,
+            login: gameInfo.playerLogin2,
+            ...userStat2,
+          });
+          await this.gamesRepository.saveStatistic(newStat);
+        }
+        return gameInfo.answersPlayer2[gameInfo.playerCount2 - 1];
       }
       await this.gamesRepository.save(gameInfo);
       return gameInfo.answersPlayer2[gameInfo.playerCount2 - 1];
