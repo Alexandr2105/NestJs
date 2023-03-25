@@ -1,7 +1,9 @@
 import { IQueryRepository } from './i.query.repository';
 import {
   AllCommentsForAllPostsCurrentUserBlogs,
+  AllMyGames,
   AllQuestionsSa,
+  AllStatistics,
   BanUsersInfoForBlog,
   BlogsQueryType,
   BlogsQueryTypeSA,
@@ -665,7 +667,7 @@ export class QueryRepositorySql extends IQueryRepository {
     };
   }
 
-  async getQueryAllMyGames(query: any, id: string) {
+  async getQueryAllMyGames(query: any, id: string): Promise<AllMyGames> {
     const sortBy =
       query.sortBy === '' ||
       query.sortBy === undefined ||
@@ -750,7 +752,7 @@ export class QueryRepositorySql extends IQueryRepository {
     };
   }
 
-  async getQueryUsersTop(query: any) {
+  async getQueryUsersTop(query: any): Promise<AllStatistics> {
     const newArray = Object.entries(query.sort);
     const sort = [];
     for (const a of newArray) {

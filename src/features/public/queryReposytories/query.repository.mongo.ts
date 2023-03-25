@@ -13,6 +13,7 @@ import {
   BanUsersInfoForBlog,
   AllQuestionsSa,
   AllMyGames,
+  AllStatistics,
 } from '../../../common/helper/allTypes';
 import { QueryCount } from '../../../common/helper/query.count';
 import { InjectModel } from '@nestjs/mongoose';
@@ -712,7 +713,7 @@ export class QueryRepositoryMongo extends IQueryRepository {
     };
   }
 
-  async getQueryUsersTop(query: any) {
+  async getQueryUsersTop(query: any): Promise<AllStatistics> {
     const totalCount = await this.statisticGames.countDocuments();
     const sortAllGames = await this.statisticGames
       .find()

@@ -209,3 +209,24 @@ type Questions = {
   id: string;
   body: string;
 };
+
+export type AllStatistics = {
+  pagesCount: number;
+  page: number;
+  pageSize: number;
+  totalCount: number;
+  items: Statistics[];
+};
+
+type Statistics = {
+  sumScore: number;
+  avgScores: number;
+  gamesCount: number;
+  winsCount: number;
+  lossesCount: number;
+  drawsCount: number;
+  player: {
+    id: string;
+    login: string;
+  };
+};
