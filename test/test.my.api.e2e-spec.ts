@@ -2387,7 +2387,7 @@ describe('Pair quiz game all', () => {
     await test
       .post(`/pair-game-quiz/pairs/my-current/answers`)
       .send({
-        answer: game2.body.allAnswers[3][0],
+        answer: game2.body.allAnswers[4][0],
       })
       .auth(accessToken2.accessToken, { type: 'bearer' })
       .expect(200);
@@ -2593,8 +2593,8 @@ describe('Pair quiz game all', () => {
           },
         },
         {
-          sumScore: 4,
-          avgScores: 2,
+          sumScore: 5,
+          avgScores: 2.5,
           gamesCount: 2,
           winsCount: 0,
           lossesCount: 2,
@@ -2619,8 +2619,8 @@ describe('Pair quiz game all', () => {
       totalCount: 2,
       items: [
         {
-          sumScore: 4,
-          avgScores: 2,
+          sumScore: 5,
+          avgScores: 2.5,
           gamesCount: 2,
           winsCount: 0,
           lossesCount: 2,
