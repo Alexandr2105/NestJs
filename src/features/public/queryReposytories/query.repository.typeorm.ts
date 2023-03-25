@@ -480,7 +480,8 @@ export class QueryRepositoryTypeorm extends IQueryRepository {
     const sortBy =
       query.sortBy === '' ||
       query.sortBy === undefined ||
-      query.sortBy === 'pairCreatedDate'
+      query.sortBy === 'pairCreatedDate' ||
+      query.sortBy === 'createdAt'
         ? ['pairCreatedDate']
         : [query.sortBy, 'pairCreatedDate'];
     let allGames;
