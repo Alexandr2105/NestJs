@@ -750,6 +750,42 @@ export class QueryRepositorySql extends IQueryRepository {
   }
 
   async getQueryUsersTop(query: any) {
-    return;
+    const newArray = Object.entries(query.sort);
+    const sort = [];
+    for (const a of newArray) {
+      const b = a[1] === 'desc' ? 'DESC' : 'ASC';
+      sort.push(`"${a[0]}" ` + b);
+    }
+    const totalCount = await this.dataSource.query(
+      `SELECT count(*) FROM "StatisticGames"`,
+    );
+    const allStats = await this.dataSource.query(
+      `SELECT * FROM "StatisticGames"
+            ORDER BY ${sort}
+            LIMIT $1 OFFSET $2`,
+      [
+        query.pageSize,
+        this.queryCount.skipHelper(query.pageNumber, query.pageSize),
+      ],
+    );
+    return {
+      pagesCount: this.queryCount.pagesCountHelper(
+        totalCount[0].count,
+        query.pageSize,
+      ),
+      page: query.pageNumber,
+      pageSize: query.pageSize,
+      totalCount: +totalCount[0].count,
+      items: allStats.map((a) => {
+        const { userId, login, ...all } = a;
+        return {
+          ...all,
+          player: {
+            id: userId,
+            login,
+          },
+        };
+      }),
+    };
   }
 }

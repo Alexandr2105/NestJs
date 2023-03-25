@@ -19,6 +19,7 @@ import { CommentEntity } from '../comments/entity/comment.entity';
 import { UserEntity } from '../../sa/users/entity/user.entity';
 import { QuizQuestionEntity } from '../../sa/quizQuestions/entity/quiz.question.entity';
 import { PairQuizGameEntity } from '../pairQuizGame/entity/pair.quiz.game.entity';
+import { StatisticGamesEntity } from '../pairQuizGame/entity/statistic.games.entity';
 
 @Injectable()
 export class QueryRepositoryTypeorm extends IQueryRepository {
@@ -36,6 +37,8 @@ export class QueryRepositoryTypeorm extends IQueryRepository {
     private readonly questionsRepository: Repository<QuizQuestionEntity>,
     @InjectRepository(PairQuizGameEntity)
     private readonly pairQuizGameRepository: Repository<PairQuizGameEntity>,
+    @InjectRepository(StatisticGamesEntity)
+    private readonly gamesStats: Repository<StatisticGamesEntity>,
   ) {
     super();
   }
@@ -532,6 +535,26 @@ export class QueryRepositoryTypeorm extends IQueryRepository {
   }
 
   async getQueryUsersTop(query: any) {
-    return;
+    const [allStat, totalCount] = await this.gamesStats.findAndCount({
+      order: query.sort,
+      skip: this.queryCount.skipHelper(query.pageNumber, query.pageSize),
+      take: query.pageSize,
+    });
+    return {
+      pagesCount: this.queryCount.pagesCountHelper(totalCount, query.pageSize),
+      page: query.pageNumber,
+      pageSize: query.pageSize,
+      totalCount: totalCount,
+      items: allStat.map((a) => {
+        const { userId, login, ...all } = a;
+        return {
+          ...all,
+          player: {
+            id: userId,
+            login,
+          },
+        };
+      }),
+    };
   }
 }

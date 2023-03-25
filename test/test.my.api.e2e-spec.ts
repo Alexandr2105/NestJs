@@ -2571,4 +2571,78 @@ describe('Pair quiz game all', () => {
       drawsCount: 0,
     });
   });
+
+  it('Получаем всю статистику по играм', async () => {
+    const info = await test.get('/pair-game-quiz/users/top');
+    expect(info.body).toEqual({
+      pagesCount: 1,
+      page: 1,
+      pageSize: 10,
+      totalCount: 2,
+      items: [
+        {
+          sumScore: 8,
+          avgScores: 4,
+          gamesCount: 2,
+          winsCount: 2,
+          lossesCount: 0,
+          drawsCount: 0,
+          player: {
+            id: player1.id,
+            login: player1.login,
+          },
+        },
+        {
+          sumScore: 4,
+          avgScores: 2,
+          gamesCount: 2,
+          winsCount: 0,
+          lossesCount: 2,
+          drawsCount: 0,
+          player: {
+            id: player2.id,
+            login: player2.login,
+          },
+        },
+      ],
+    });
+  });
+
+  it('Получаем всю статистику по играм с queryParams', async () => {
+    const info = await test.get(
+      '/pair-game-quiz/users/top?sort=gamesCount asc&sort=avgScores asc&sort=sumScore asc',
+    );
+    expect(info.body).toEqual({
+      pagesCount: 1,
+      page: 1,
+      pageSize: 10,
+      totalCount: 2,
+      items: [
+        {
+          sumScore: 4,
+          avgScores: 2,
+          gamesCount: 2,
+          winsCount: 0,
+          lossesCount: 2,
+          drawsCount: 0,
+          player: {
+            id: player2.id,
+            login: player2.login,
+          },
+        },
+        {
+          sumScore: 8,
+          avgScores: 4,
+          gamesCount: 2,
+          winsCount: 2,
+          lossesCount: 0,
+          drawsCount: 0,
+          player: {
+            id: player1.id,
+            login: player1.login,
+          },
+        },
+      ],
+    });
+  });
 });

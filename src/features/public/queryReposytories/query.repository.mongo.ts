@@ -30,6 +30,7 @@ import { IPostsRepository } from '../posts/i.posts.repository';
 import { ICommentsRepository } from '../comments/i.comments.repository';
 import { QuestionDocument } from '../../sa/quizQuestions/schema/question.schema';
 import { PairQuizGameDocument } from '../pairQuizGame/schema/pair.quiz.game.schema';
+import { StatisticGamesDocument } from '../pairQuizGame/schema/statistic.games.schema';
 
 @Injectable()
 export class QueryRepositoryMongo extends IQueryRepository {
@@ -48,6 +49,8 @@ export class QueryRepositoryMongo extends IQueryRepository {
     private readonly questions: Model<QuestionDocument>,
     @InjectModel('infoQuizQuestionsGames')
     private readonly quizGameCollection: Model<PairQuizGameDocument>,
+    @InjectModel('statisticGames')
+    private readonly statisticGames: Model<StatisticGamesDocument>,
     private readonly queryCount: QueryCount,
     private readonly commentsRepository: ICommentsRepository,
     private readonly postsRepository: IPostsRepository,
@@ -709,12 +712,32 @@ export class QueryRepositoryMongo extends IQueryRepository {
   }
 
   async getQueryUsersTop(query: any) {
-    const allUsers = await this.usersCollection.find().select('id -_id');
-    const totalCount = await this.quizGameCollection.countDocuments();
-    const sortAllGames = await this.quizGameCollection
+    const totalCount = await this.statisticGames.countDocuments();
+    const sortAllGames = await this.statisticGames
       .find()
-      .select(
-        'gameId playerId1 playerLogin1 scorePlayer1 playerId2 playerLogin2 scorePlayer2',
-      );
+      .select('-_id -__v')
+      .sort(query.sort)
+      .skip(this.queryCount.skipHelper(query.pageNumber, query.pageSize))
+      .limit(query.pageSize);
+    return {
+      pagesCount: this.queryCount.pagesCountHelper(totalCount, query.pageSize),
+      page: query.pageNumber,
+      pageSize: query.pageSize,
+      totalCount: totalCount,
+      items: sortAllGames.map((a) => {
+        return {
+          sumScore: a.sumScore,
+          avgScores: a.avgScores,
+          gamesCount: a.gamesCount,
+          winsCount: a.winsCount,
+          lossesCount: a.lossesCount,
+          drawsCount: a.drawsCount,
+          player: {
+            id: a.userId,
+            login: a.login,
+          },
+        };
+      }),
+    };
   }
 }

@@ -53,17 +53,15 @@ export class QueryCount {
     } else if (query.publishedStatus === 'notPublished') {
       publishedStatus = false;
     }
-    let sort;
-    const newArray = [];
+    let sort = {};
     if (query.sort === undefined) {
-      sort = [{ avgScores: 'desc' }, { sumScore: 'desc' }];
+      sort = { avgScores: 'desc', sumScore: 'desc' };
     } else if (Array.isArray(query.sort)) {
       for (const p of query.sort) {
-        newArray.push({ [p.split(' ')[0]]: p.split(' ')[1] });
+        Object.assign(sort, { [p.split(' ')[0]]: p.split(' ')[1] });
       }
-      sort = newArray;
     } else {
-      sort = [{ [query.sort.split(' ')[0]]: query.sort.split(' ')[1] }];
+      sort = { [query.sort.split(' ')[0]]: query.sort.split(' ')[1] };
     }
 
     return {
