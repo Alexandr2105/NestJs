@@ -77,7 +77,6 @@ export class SendResultAnswerUseCase {
         // }, 10000);
       }
       if (gameInfo.playerCount1 === 5 && gameInfo.playerCount2 === 5) {
-        clearTimeout(timerId);
         const result = gameInfo.answersPlayer2.filter(
           (a) => a.answerStatus === 'Correct',
         );
@@ -146,7 +145,6 @@ export class SendResultAnswerUseCase {
         // }, 10000);
       }
       if (gameInfo.playerCount2 === 5 && gameInfo.playerCount1 === 5) {
-        clearTimeout(timerId);
         const result = gameInfo.answersPlayer1.filter(
           (a) => a.answerStatus === 'Correct',
         );
