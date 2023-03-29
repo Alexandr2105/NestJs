@@ -21,6 +21,7 @@ export class SendResultAnswerUseCase {
   ) {}
 
   async execute(command: SendResultAnswerCommand) {
+    let timerId;
     const gameInfo = await this.gamesRepository.getUnfinishedGame(
       'Finished',
       command.userId,
@@ -48,10 +49,35 @@ export class SendResultAnswerUseCase {
       }
       gameInfo.playerCount1++;
       if (gameInfo.playerCount1 === 5 && gameInfo.playerCount2 < 5) {
-        gameInfo.timerId = +(await this.finishGame(command.userId));
+        console.log('Для первого');
+        console.log(command.userId);
+        timerId = await this.finishGame(command.userId);
+        // setTimeout(async () => {
+        //   const gameInfo1 = await this.gamesRepository.getUnfinishedGame(
+        //     'Finished',
+        //     command.userId,
+        //   );
+        //   for (let a = gameInfo1.playerCount2; a < 5; a++) {
+        //     gameInfo1.answersPlayer2.push({
+        //       questionId: gameInfo1.questions[gameInfo1.playerCount2].id,
+        //       answerStatus: 'Incorrect',
+        //       addedAt: new Date().toISOString(),
+        //     });
+        //   }
+        //   const result = gameInfo1.answersPlayer1.filter(
+        //     (a) => a.answerStatus === 'Correct',
+        //   );
+        //   if (result.length > 0) {
+        //     gameInfo1.scorePlayer1++;
+        //   }
+        //   gameInfo1.status = 'Finished';
+        //   gameInfo1.finishGameDate = new Date().toISOString();
+        //   await this.gamesRepository.save(gameInfo1);
+        //   await this.saveStatistic(gameInfo1);
+        // }, 10000);
       }
       if (gameInfo.playerCount1 === 5 && gameInfo.playerCount2 === 5) {
-        clearTimeout(gameInfo.timerId);
+        clearTimeout(timerId);
         const result = gameInfo.answersPlayer2.filter(
           (a) => a.answerStatus === 'Correct',
         );
@@ -87,11 +113,40 @@ export class SendResultAnswerUseCase {
         });
       }
       gameInfo.playerCount2++;
+      // if (gameInfo.playerCount1 === 5 && gameInfo.playerCount2 < 5) {
+      //   setTimeout(() => {
+      //     console.log(gameInfo.playerCount2);
+      //   }, 10000);
+      // }
       if (gameInfo.playerCount2 === 5 && gameInfo.playerCount1 < 5) {
-        gameInfo.timerId = +(await this.finishGame(command.userId));
+        console.log('Для второго');
+        timerId = await this.finishGame(command.userId);
+        // setTimeout(async () => {
+        //   const gameInfo1 = await this.gamesRepository.getUnfinishedGame(
+        //     'Finished',
+        //     command.userId,
+        //   );
+        //   for (let a = gameInfo1.playerCount2; a < 5; a++) {
+        //     gameInfo1.answersPlayer2.push({
+        //       questionId: gameInfo1.questions[gameInfo1.playerCount2].id,
+        //       answerStatus: 'Incorrect',
+        //       addedAt: new Date().toISOString(),
+        //     });
+        //   }
+        //   const result = gameInfo1.answersPlayer1.filter(
+        //     (a) => a.answerStatus === 'Correct',
+        //   );
+        //   if (result.length > 0) {
+        //     gameInfo1.scorePlayer1++;
+        //   }
+        //   gameInfo1.status = 'Finished';
+        //   gameInfo1.finishGameDate = new Date().toISOString();
+        //   await this.gamesRepository.save(gameInfo1);
+        //   await this.saveStatistic(gameInfo1);
+        // }, 10000);
       }
       if (gameInfo.playerCount2 === 5 && gameInfo.playerCount1 === 5) {
-        clearTimeout(gameInfo.timerId);
+        clearTimeout(timerId);
         const result = gameInfo.answersPlayer1.filter(
           (a) => a.answerStatus === 'Correct',
         );
@@ -161,28 +216,29 @@ export class SendResultAnswerUseCase {
   }
 
   private async finishGame(userId: string) {
-    return setTimeout(async () => {
-      const gameInfo = await this.gamesRepository.getUnfinishedGame(
-        'Finished',
-        userId,
-      );
-      for (let a = gameInfo.playerCount2; a < 5; a++) {
-        gameInfo.answersPlayer2.push({
-          questionId: gameInfo.questions[gameInfo.playerCount2].id,
-          answerStatus: 'Incorrect',
-          addedAt: new Date().toISOString(),
-        });
-      }
-      const result = gameInfo.answersPlayer1.filter(
-        (a) => a.answerStatus === 'Correct',
-      );
-      if (result.length > 0) {
-        gameInfo.scorePlayer1++;
-      }
-      gameInfo.status = 'Finished';
-      gameInfo.finishGameDate = new Date().toISOString();
-      await this.gamesRepository.save(gameInfo);
-      await this.saveStatistic(gameInfo);
-    }, 10000);
+    const gameInfo = await this.gamesRepository.getUnfinishedGame(
+      'Finished',
+      userId,
+    );
+    for (let a = gameInfo.playerCount2; a < 5; a++) {
+      gameInfo.answersPlayer2.push({
+        questionId: gameInfo.questions[gameInfo.playerCount2].id,
+        answerStatus: 'Incorrect',
+        addedAt: new Date().toISOString(),
+      });
+    }
+    console.log(gameInfo.answersPlayer2);
+    // console.log(gameInfo.answersPlayer1);
+    // console.log(gameInfo);
+    const result = gameInfo.answersPlayer1.filter(
+      (a) => a.answerStatus === 'Correct',
+    );
+    if (result.length > 0) {
+      gameInfo.scorePlayer1++;
+    }
+    gameInfo.status = 'Finished';
+    gameInfo.finishGameDate = new Date().toISOString();
+    await this.gamesRepository.save(gameInfo);
+    await this.saveStatistic(gameInfo);
   }
 }
