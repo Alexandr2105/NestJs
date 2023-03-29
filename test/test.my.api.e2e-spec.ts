@@ -2521,7 +2521,7 @@ describe('Pair quiz game all', () => {
       page: 1,
       pageSize: 10,
       totalCount: 3,
-      items: [finishGame2.body, finishGame1.body, finishGame3.body],
+      items: [finishGame3.body, finishGame2.body, finishGame1.body],
     });
   });
 
@@ -2532,10 +2532,10 @@ describe('Pair quiz game all', () => {
       .auth(accessToken1.accessToken, { type: 'bearer' })
       .expect(200);
     expect(allStatic.body).toEqual({
-      sumScore: 8,
+      sumScore: 12,
       avgScores: 4,
-      gamesCount: 2,
-      winsCount: 2,
+      gamesCount: 3,
+      winsCount: 3,
       lossesCount: 0,
       drawsCount: 0,
     });
@@ -2582,10 +2582,10 @@ describe('Pair quiz game all', () => {
       totalCount: 2,
       items: [
         {
-          sumScore: 8,
+          sumScore: 12,
           avgScores: 4,
-          gamesCount: 2,
-          winsCount: 2,
+          gamesCount: 3,
+          winsCount: 3,
           lossesCount: 0,
           drawsCount: 0,
           player: {
@@ -2594,11 +2594,11 @@ describe('Pair quiz game all', () => {
           },
         },
         {
-          sumScore: 5,
-          avgScores: 2.5,
-          gamesCount: 2,
+          sumScore: 7,
+          avgScores: 2.33,
+          gamesCount: 3,
           winsCount: 0,
-          lossesCount: 2,
+          lossesCount: 3,
           drawsCount: 0,
           player: {
             id: player2.id,
@@ -2620,11 +2620,11 @@ describe('Pair quiz game all', () => {
       totalCount: 2,
       items: [
         {
-          sumScore: 5,
-          avgScores: 2.5,
-          gamesCount: 2,
+          sumScore: 7,
+          avgScores: 2.33,
+          gamesCount: 3,
           winsCount: 0,
-          lossesCount: 2,
+          lossesCount: 3,
           drawsCount: 0,
           player: {
             id: player2.id,
@@ -2632,10 +2632,10 @@ describe('Pair quiz game all', () => {
           },
         },
         {
-          sumScore: 8,
+          sumScore: 12,
           avgScores: 4,
-          gamesCount: 2,
-          winsCount: 2,
+          gamesCount: 3,
+          winsCount: 3,
           lossesCount: 0,
           drawsCount: 0,
           player: {

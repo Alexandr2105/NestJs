@@ -54,6 +54,8 @@ export class PairQuizGameEntity {
   playerCount1: number;
   @Column({ default: 0 })
   playerCount2: number;
+  @Column({ default: 0 })
+  timerId: number;
 
   @ManyToOne(() => UserEntity, (user) => user.player, {
     onDelete: 'CASCADE',

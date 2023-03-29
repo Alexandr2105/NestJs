@@ -90,8 +90,8 @@ export class PairQuizGameRepositorySql extends IPairQuizGameRepository {
             "gameId","playerId1","playerLogin1","answersPlayer1","scorePlayer1",
             "playerId2","playerLogin2","answersPlayer2","scorePlayer2","questions",
             "allAnswers","status","pairCreatedDate","startGameDate","finishGameDate",
-            "playerCount1","playerCount2")
-            VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17)`,
+            "playerCount1","playerCount2","timerId")
+            VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18)`,
         [
           newGame.gameId,
           newGame.playerId1,
@@ -110,6 +110,7 @@ export class PairQuizGameRepositorySql extends IPairQuizGameRepository {
           newGame.finishGameDate,
           newGame.playerCount1,
           newGame.playerCount2,
+          newGame.timerId,
         ],
       );
     } else {
@@ -118,8 +119,9 @@ export class PairQuizGameRepositorySql extends IPairQuizGameRepository {
             SET "playerId1"=$1,"playerLogin1"=$2,"answersPlayer1"=$3,"scorePlayer1"=$4,
             "playerId2"=$5,"playerLogin2"=$6,"answersPlayer2"=$7,"scorePlayer2"=$8,
             "questions"=$9,"allAnswers"=$10,"status"=$11,"pairCreatedDate"=$12,
-            "startGameDate"=$13,"finishGameDate"=$14,"playerCount1"=$15,"playerCount2"=$16
-            WHERE "gameId"=$17`,
+            "startGameDate"=$13,"finishGameDate"=$14,"playerCount1"=$15,"playerCount2"=$16,
+            "timerId"=$17
+            WHERE "gameId"=$18`,
         [
           newGame.playerId1,
           newGame.playerLogin1,
@@ -137,6 +139,7 @@ export class PairQuizGameRepositorySql extends IPairQuizGameRepository {
           newGame.finishGameDate,
           newGame.playerCount1,
           newGame.playerCount2,
+          newGame.timerId,
           newGame.gameId,
         ],
       );

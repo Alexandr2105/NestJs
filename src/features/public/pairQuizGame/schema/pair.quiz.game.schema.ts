@@ -60,6 +60,8 @@ export class PairQuizGame {
   playerCount1: number;
   @Prop({ default: 0 })
   playerCount2: number;
+  @Prop({ default: 0 })
+  timerId: number;
 }
 
 export const PairQuizGameSchema = SchemaFactory.createForClass(PairQuizGame);
