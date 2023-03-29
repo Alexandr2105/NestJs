@@ -186,4 +186,3 @@ export class SendResultAnswerUseCase {
     }, 10000);
   }
 }
-//TODO:Наставил кучу логов, добавил timerId. В тест тоже добавил таймер. Надо разобраться почему filter undefined.
