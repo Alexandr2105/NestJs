@@ -25,6 +25,7 @@ export class SendResultAnswerUseCase {
       'Finished',
       command.userId,
     );
+    console.log(typeof gameInfo.timerId);
     if (!gameInfo) throw new ForbiddenException();
     if (command.userId === gameInfo.playerId1) {
       if (gameInfo.playerCount1 > gameInfo.questions.length - 1)
