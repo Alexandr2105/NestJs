@@ -183,6 +183,6 @@ export class SendResultAnswerUseCase {
       gameInfo.finishGameDate = new Date().toISOString();
       await this.gamesRepository.save(gameInfo);
       await this.saveStatistic(gameInfo);
-    }, 9000);
+    }, 5000);
   }
 }
