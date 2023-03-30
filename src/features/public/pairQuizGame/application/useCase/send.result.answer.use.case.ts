@@ -51,7 +51,7 @@ export class SendResultAnswerUseCase {
         gameInfo.timerId = +(await this.finishGame(command.userId));
       }
       if (gameInfo.playerCount1 === 5 && gameInfo.playerCount2 === 5) {
-        // clearTimeout(gameInfo.timerId);
+        clearTimeout(gameInfo.timerId);
         const result = gameInfo.answersPlayer2.filter(
           (a) => a.answerStatus === 'Correct',
         );
@@ -91,7 +91,7 @@ export class SendResultAnswerUseCase {
         gameInfo.timerId = +(await this.finishGame(command.userId));
       }
       if (gameInfo.playerCount2 === 5 && gameInfo.playerCount1 === 5) {
-        // clearTimeout(gameInfo.timerId);
+        clearTimeout(gameInfo.timerId);
         const result = gameInfo.answersPlayer1.filter(
           (a) => a.answerStatus === 'Correct',
         );
@@ -161,28 +161,28 @@ export class SendResultAnswerUseCase {
   }
 
   private async finishGame(userId: string) {
-    // return setTimeout(async () => {
-    const gameInfo = await this.gamesRepository.getUnfinishedGame(
-      'Finished',
-      userId,
-    );
-    for (let a = gameInfo.playerCount2; a < 5; a++) {
-      gameInfo.answersPlayer2.push({
-        questionId: gameInfo.questions[gameInfo.playerCount2].id,
-        answerStatus: 'Incorrect',
-        addedAt: new Date().toISOString(),
-      });
-    }
-    const result = gameInfo.answersPlayer1.filter(
-      (a) => a.answerStatus === 'Correct',
-    );
-    if (result.length > 0) {
-      gameInfo.scorePlayer1++;
-    }
-    gameInfo.status = 'Finished';
-    gameInfo.finishGameDate = new Date().toISOString();
-    await this.gamesRepository.save(gameInfo);
-    await this.saveStatistic(gameInfo);
-    // }, 4000);
+    return setTimeout(async () => {
+      const gameInfo = await this.gamesRepository.getUnfinishedGame(
+        'Finished',
+        userId,
+      );
+      for (let a = gameInfo.playerCount2; a < 5; a++) {
+        gameInfo.answersPlayer2.push({
+          questionId: gameInfo.questions[gameInfo.playerCount2].id,
+          answerStatus: 'Incorrect',
+          addedAt: new Date().toISOString(),
+        });
+      }
+      const result = gameInfo.answersPlayer1.filter(
+        (a) => a.answerStatus === 'Correct',
+      );
+      if (result.length > 0) {
+        gameInfo.scorePlayer1++;
+      }
+      gameInfo.status = 'Finished';
+      gameInfo.finishGameDate = new Date().toISOString();
+      await this.gamesRepository.save(gameInfo);
+      await this.saveStatistic(gameInfo);
+    }, 4000);
   }
 }
