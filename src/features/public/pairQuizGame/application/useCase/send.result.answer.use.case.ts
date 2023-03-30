@@ -166,18 +166,34 @@ export class SendResultAnswerUseCase {
         'Finished',
         userId,
       );
-      for (let a = gameInfo.playerCount2; a < 5; a++) {
-        gameInfo.answersPlayer2.push({
-          questionId: gameInfo.questions[gameInfo.playerCount2].id,
-          answerStatus: 'Incorrect',
-          addedAt: new Date().toISOString(),
-        });
-      }
-      const result = gameInfo.answersPlayer1.filter(
-        (a) => a.answerStatus === 'Correct',
-      );
-      if (result.length > 0) {
-        gameInfo.scorePlayer1++;
+      if (gameInfo.playerId1 === userId) {
+        for (let a = gameInfo.playerCount1; a < 5; a++) {
+          gameInfo.answersPlayer1.push({
+            questionId: gameInfo.questions[gameInfo.playerCount1].id,
+            answerStatus: 'Incorrect',
+            addedAt: new Date().toISOString(),
+          });
+        }
+        const result = gameInfo.answersPlayer2.filter(
+          (a) => a.answerStatus === 'Correct',
+        );
+        if (result.length > 0) {
+          gameInfo.scorePlayer2++;
+        }
+      } else {
+        for (let a = gameInfo.playerCount1; a < 5; a++) {
+          gameInfo.answersPlayer2.push({
+            questionId: gameInfo.questions[gameInfo.playerCount2].id,
+            answerStatus: 'Incorrect',
+            addedAt: new Date().toISOString(),
+          });
+        }
+        const result = gameInfo.answersPlayer1.filter(
+          (a) => a.answerStatus === 'Correct',
+        );
+        if (result.length > 0) {
+          gameInfo.scorePlayer1++;
+        }
       }
       gameInfo.status = 'Finished';
       gameInfo.finishGameDate = new Date().toISOString();
