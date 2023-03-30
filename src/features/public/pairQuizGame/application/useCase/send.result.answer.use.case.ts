@@ -48,7 +48,7 @@ export class SendResultAnswerUseCase {
       }
       gameInfo.playerCount1++;
       if (gameInfo.playerCount1 === 5 && gameInfo.playerCount2 < 5) {
-        gameInfo.timerId = +(await this.finishGame(command.userId));
+        gameInfo.timerId = +(await this.finishGame(gameInfo.playerId2));
       }
       if (gameInfo.playerCount1 === 5 && gameInfo.playerCount2 === 5) {
         clearTimeout(gameInfo.timerId);
@@ -88,7 +88,7 @@ export class SendResultAnswerUseCase {
       }
       gameInfo.playerCount2++;
       if (gameInfo.playerCount2 === 5 && gameInfo.playerCount1 < 5) {
-        gameInfo.timerId = +(await this.finishGame(command.userId));
+        gameInfo.timerId = +(await this.finishGame(gameInfo.playerId1));
       }
       if (gameInfo.playerCount2 === 5 && gameInfo.playerCount1 === 5) {
         clearTimeout(gameInfo.timerId);
