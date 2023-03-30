@@ -51,7 +51,7 @@ export class SendResultAnswerUseCase {
         gameInfo.timerId = +(await this.finishGame(command.userId));
       }
       if (gameInfo.playerCount1 === 5 && gameInfo.playerCount2 === 5) {
-        clearTimeout(gameInfo.timerId);
+        // clearTimeout(gameInfo.timerId);
         const result = gameInfo.answersPlayer2.filter(
           (a) => a.answerStatus === 'Correct',
         );
@@ -91,7 +91,7 @@ export class SendResultAnswerUseCase {
         gameInfo.timerId = +(await this.finishGame(command.userId));
       }
       if (gameInfo.playerCount2 === 5 && gameInfo.playerCount1 === 5) {
-        clearTimeout(gameInfo.timerId);
+        // clearTimeout(gameInfo.timerId);
         const result = gameInfo.answersPlayer1.filter(
           (a) => a.answerStatus === 'Correct',
         );
