@@ -2496,7 +2496,7 @@ describe('Pair quiz game all', () => {
       })
       .auth(accessToken2.accessToken, { type: 'bearer' })
       .expect(200);
-    // await new Promise((a) => setTimeout(a, 15000));
+    await new Promise((a) => setTimeout(a, 15000));
   });
 
   it('Проверяем правильный вывод игр', async () => {
