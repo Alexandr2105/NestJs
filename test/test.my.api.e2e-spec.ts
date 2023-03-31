@@ -1845,6 +1845,7 @@ describe('Pair quiz game all', () => {
   let game1;
   let game2;
   let game3;
+  let game4;
 
   jest.setTimeout(5 * 60 * 1000);
 
@@ -2496,7 +2497,129 @@ describe('Pair quiz game all', () => {
       })
       .auth(accessToken2.accessToken, { type: 'bearer' })
       .expect(200);
+    const gameInfo1 = await test
+      .get(`/pair-game-quiz/pairs/${game3.body.gameId}`)
+      .auth(accessToken2.accessToken, { type: 'bearer' })
+      .expect(200);
+    expect(gameInfo1.body.status).toEqual('Active');
     await new Promise((a) => setTimeout(a, 10000));
+    const gameInfo2 = await test
+      .get(`/pair-game-quiz/pairs/${game3.body.gameId}`)
+      .auth(accessToken2.accessToken, { type: 'bearer' })
+      .expect(200);
+    expect(gameInfo2.body.status).toEqual('Finished');
+  });
+
+  it('Создаём игру номер 4', async () => {
+    const info1 = await test
+      .post('/auth/login')
+      .set('user-agent', 'Chrome')
+      .send({ loginOrEmail: user2.login, password: user2.password });
+    expect(info1.status).toBe(200);
+    accessToken2 = info1.body;
+    expect(accessToken2).toEqual({
+      accessToken: expect.any(String),
+    });
+    expect.setState(accessToken2);
+    const info2 = await test
+      .post('/auth/login')
+      .set('user-agent', 'Chrome')
+      .send({ loginOrEmail: user1.login, password: user1.password });
+    expect(info2.status).toBe(200);
+    accessToken1 = info2.body;
+    expect(accessToken1).toEqual({
+      accessToken: expect.any(String),
+    });
+    await test
+      .post('/pair-game-quiz/pairs/connection')
+      .auth(accessToken2.accessToken, { type: 'bearer' })
+      .expect(200);
+    expect.setState(accessToken1);
+    await test
+      .post('/pair-game-quiz/pairs/connection')
+      .auth(accessToken1.accessToken, { type: 'bearer' })
+      .expect(200);
+    const gameForId = await test
+      .get('/pair-game-quiz/pairs/my-current')
+      .auth(accessToken2.accessToken, { type: 'bearer' })
+      .expect(200);
+    game4 = await test
+      .get(`/pair-game-quiz/pairs/test-my-current/${gameForId.body.id}`)
+      .auth('admin', 'qwerty', { type: 'basic' })
+      .expect(200);
+    await test
+      .post(`/pair-game-quiz/pairs/my-current/answers`)
+      .send({
+        answer: game4.body.allAnswers[0][0],
+      })
+      .auth(accessToken2.accessToken, { type: 'bearer' })
+      .expect(200);
+    await test
+      .post(`/pair-game-quiz/pairs/my-current/answers`)
+      .send({
+        answer: 'string',
+      })
+      .auth(accessToken2.accessToken, { type: 'bearer' })
+      .expect(200);
+    expect.setState(accessToken1);
+    await test
+      .post(`/pair-game-quiz/pairs/my-current/answers`)
+      .send({
+        answer: game4.body.allAnswers[0][0],
+      })
+      .auth(accessToken1.accessToken, { type: 'bearer' })
+      .expect(200);
+    await test
+      .post(`/pair-game-quiz/pairs/my-current/answers`)
+      .send({
+        answer: game4.body.allAnswers[1][1],
+      })
+      .auth(accessToken1.accessToken, { type: 'bearer' })
+      .expect(200);
+    expect.setState(accessToken2);
+    await test
+      .post(`/pair-game-quiz/pairs/my-current/answers`)
+      .send({
+        answer: game4.body.allAnswers[2][1],
+      })
+      .auth(accessToken2.accessToken, { type: 'bearer' })
+      .expect(200);
+    await test
+      .post(`/pair-game-quiz/pairs/my-current/answers`)
+      .send({
+        answer: game4.body.allAnswers[3][0],
+      })
+      .auth(accessToken2.accessToken, { type: 'bearer' })
+      .expect(200);
+    await test
+      .post(`/pair-game-quiz/pairs/my-current/answers`)
+      .send({
+        answer: game4.body.allAnswers[3][0],
+      })
+      .auth(accessToken2.accessToken, { type: 'bearer' })
+      .expect(200);
+    expect.setState(accessToken1);
+    await test
+      .post(`/pair-game-quiz/pairs/my-current/answers`)
+      .send({
+        answer: game4.body.allAnswers[3][1],
+      })
+      .auth(accessToken1.accessToken, { type: 'bearer' })
+      .expect(200);
+    await test
+      .post(`/pair-game-quiz/pairs/my-current/answers`)
+      .send({
+        answer: game4.body.allAnswers[2][0],
+      })
+      .auth(accessToken1.accessToken, { type: 'bearer' })
+      .expect(200);
+    await test
+      .post(`/pair-game-quiz/pairs/my-current/answers`)
+      .send({
+        answer: game4.body.allAnswers[3][0],
+      })
+      .auth(accessToken1.accessToken, { type: 'bearer' })
+      .expect(200);
   });
 
   it('Проверяем правильный вывод игр', async () => {
@@ -2512,6 +2635,10 @@ describe('Pair quiz game all', () => {
       .get(`/pair-game-quiz/pairs/${game3.body.gameId}`)
       .auth(accessToken1.accessToken, { type: 'bearer' })
       .expect(200);
+    const finishGame4 = await test
+      .get(`/pair-game-quiz/pairs/${game4.body.gameId}`)
+      .auth(accessToken1.accessToken, { type: 'bearer' })
+      .expect(200);
     const allGames = await test
       .get(`/pair-game-quiz/pairs/my?sortBy=status&sortDirection=desc`)
       .auth(accessToken1.accessToken, { type: 'bearer' })
@@ -2520,8 +2647,13 @@ describe('Pair quiz game all', () => {
       pagesCount: 1,
       page: 1,
       pageSize: 10,
-      totalCount: 3,
-      items: [finishGame3.body, finishGame2.body, finishGame1.body],
+      totalCount: 4,
+      items: [
+        finishGame4.body,
+        finishGame3.body,
+        finishGame2.body,
+        finishGame1.body,
+      ],
     });
   });
 
@@ -2532,11 +2664,11 @@ describe('Pair quiz game all', () => {
       .auth(accessToken1.accessToken, { type: 'bearer' })
       .expect(200);
     expect(allStatic.body).toEqual({
-      sumScore: 12,
-      avgScores: 4,
-      gamesCount: 3,
+      sumScore: 14,
+      avgScores: 3.5,
+      gamesCount: 4,
       winsCount: 3,
-      lossesCount: 0,
+      lossesCount: 1,
       drawsCount: 0,
     });
   });
@@ -2582,11 +2714,11 @@ describe('Pair quiz game all', () => {
       totalCount: 2,
       items: [
         {
-          sumScore: 12,
-          avgScores: 4,
-          gamesCount: 3,
+          sumScore: 14,
+          avgScores: 3.5,
+          gamesCount: 4,
           winsCount: 3,
-          lossesCount: 0,
+          lossesCount: 1,
           drawsCount: 0,
           player: {
             id: player1.id,
@@ -2594,10 +2726,10 @@ describe('Pair quiz game all', () => {
           },
         },
         {
-          sumScore: 7,
-          avgScores: 2.33,
-          gamesCount: 3,
-          winsCount: 0,
+          sumScore: 11,
+          avgScores: 2.75,
+          gamesCount: 4,
+          winsCount: 1,
           lossesCount: 3,
           drawsCount: 0,
           player: {
@@ -2620,10 +2752,10 @@ describe('Pair quiz game all', () => {
       totalCount: 2,
       items: [
         {
-          sumScore: 7,
-          avgScores: 2.33,
-          gamesCount: 3,
-          winsCount: 0,
+          sumScore: 11,
+          avgScores: 2.75,
+          gamesCount: 4,
+          winsCount: 1,
           lossesCount: 3,
           drawsCount: 0,
           player: {
@@ -2632,11 +2764,11 @@ describe('Pair quiz game all', () => {
           },
         },
         {
-          sumScore: 12,
-          avgScores: 4,
-          gamesCount: 3,
+          sumScore: 14,
+          avgScores: 3.5,
+          gamesCount: 4,
           winsCount: 3,
-          lossesCount: 0,
+          lossesCount: 1,
           drawsCount: 0,
           player: {
             id: player1.id,
