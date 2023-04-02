@@ -143,6 +143,9 @@ import { SendResultAnswerUseCase } from './features/public/pairQuizGame/applicat
 import { GetCurrentUserStaticUseCase } from './features/public/pairQuizGame/application/useCase/get.current.user.static.use.case';
 import { StatisticGamesEntity } from './features/public/pairQuizGame/entity/statistic.games.entity';
 import { StatisticGamesSchema } from './features/public/pairQuizGame/schema/statistic.games.schema';
+import { UploadPictureForBlogUseCase } from './features/blogger/blogs/application/useCases/upload.picture.for.blog.use.case';
+import { FileStorageAdapter } from './common/adapters/file.storage.adapter';
+import { UploadPictureForPostUserCase } from './features/blogger/blogs/application/useCases/upload.picture.for.post.user.case';
 
 const Strategies = [LocalStrategy, JwtStrategy, BasicStrategy, RefreshStrategy];
 const Validators = [
@@ -195,6 +198,8 @@ const UseCases = [
   GetMyCurrentUseCase,
   SendResultAnswerUseCase,
   GetCurrentUserStaticUseCase,
+  UploadPictureForBlogUseCase,
+  UploadPictureForPostUserCase,
 ];
 const MongoRepositories = [
   AuthRepositoryMongo,
@@ -413,11 +418,12 @@ const entities = [
     ...Strategies,
     ...Validators,
     CountAttemptGuard,
+    FileStorageAdapter,
     ...UseCases,
     ...SqlRepositories,
     ...MongoRepositories,
     ...TypeOrmRepositories,
-    ...AbstractClassesTypeorm,
+    ...AbstractClassesMongo,
   ],
 })
 export class Modules {}

@@ -10,7 +10,9 @@ import {
   Put,
   Query,
   Req,
+  UploadedFile,
   UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
 import { QueryCount } from '../../../common/helper/query.count';
 import { JwtAuthGuard } from '../../../common/guard/jwt.auth.guard';
@@ -30,6 +32,15 @@ import { UpdatePostByIdCommand } from './application/useCases/update.post.by.id.
 import { DeletePostByIdCommand } from './application/useCases/delete.post.by.id.use.case';
 import { CreatePostByIdCommand } from './application/useCases/create.post.by.id.use.case';
 import { IQueryRepository } from '../../public/queryReposytories/i.query.repository';
+import path from 'node:path';
+import {
+  checkDirectoryAsync,
+  readTextFileAsync,
+  saveFileAsync,
+} from '../../../common/utils/fs-utils';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { UploadPictureForBlogCommand } from './application/useCases/upload.picture.for.blog.use.case';
+import { UploadPictureForPostCommand } from './application/useCases/upload.picture.for.post.user.case';
 
 @Controller('blogger/blogs')
 export class BlogsControllerBlogger {
@@ -139,5 +150,85 @@ export class BlogsControllerBlogger {
     await this.commandBus.execute(
       new DeletePostByIdCommand(param.blogId, param.postId, req.user.id),
     );
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Post('/:blogId/images/wallpaper')
+  @UseInterceptors(FileInterceptor('file'))
+  async uploadBackgroundWallpaperForBlog(
+    @Param('blogId') blogId: string,
+    @Req() req,
+    @Body() body,
+    @UploadedFile() wallpaper: Express.Multer.File,
+  ) {
+    return await this.commandBus.execute(
+      new UploadPictureForBlogCommand(
+        blogId,
+        req.user.id,
+        wallpaper.originalname,
+        wallpaper.buffer,
+        'wallpaper',
+      ),
+    );
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Post('/:blogId/images/main')
+  @UseInterceptors(FileInterceptor('file'))
+  async uploadMainSquareImageForBlog(
+    @Param('blogId') blogId: string,
+    @Req() req,
+    @Body() body,
+    @UploadedFile() main: Express.Multer.File,
+  ) {
+    return await this.commandBus.execute(
+      new UploadPictureForBlogCommand(
+        blogId,
+        req.user.id,
+        main.originalname,
+        main.buffer,
+        'main',
+      ),
+    );
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Post('/:blogId/posts/:postId/images/main')
+  @UseInterceptors(FileInterceptor('file'))
+  async uploadMainImagineForPost(
+    @Param() param,
+    @Req() req,
+    @Body() body,
+    @UploadedFile() wallpaper: Express.Multer.File,
+  ) {
+    return await this.commandBus.execute(
+      new UploadPictureForPostCommand(
+        param.blogId,
+        req.user.id,
+        param.postId,
+        wallpaper.originalname,
+        wallpaper.buffer,
+        'postId/images/main',
+      ),
+    );
+  }
+
+  @Get('/images/wallpaper')
+  async forTest() {
+    return await readTextFileAsync(
+      path.join('common', 'views', 'avatars', 'change-page.html'),
+    );
+  }
+
+  @Post('/wallpaper')
+  @UseInterceptors(FileInterceptor('avatar'))
+  async forTestPost(@UploadedFile() avatarFile: Express.Multer.File) {
+    await checkDirectoryAsync(path.join('common', 'content', '10'));
+    await saveFileAsync(
+      path.join('common', 'content', '10', avatarFile.originalname),
+      avatarFile.buffer,
+    );
+    console.log(avatarFile);
+    return 'avatar saved';
   }
 }
