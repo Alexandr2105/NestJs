@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { checkDirectoryAsync, saveFileAsync } from '../utils/fs-utils';
 import path from 'node:path';
+import { unlink } from 'fs/promises';
 
 @Injectable()
 export class FileStorageAdapter {
@@ -17,5 +18,9 @@ export class FileStorageAdapter {
       path.join('common', 'images', userId, folderName, fileName),
       wallpaperBuffer,
     );
+  }
+
+  async deleteFile(fileId: string) {
+    await unlink(fileId);
   }
 }
