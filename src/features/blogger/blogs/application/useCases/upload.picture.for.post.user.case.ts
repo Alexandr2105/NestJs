@@ -26,12 +26,11 @@ export class UploadPictureForPostUserCase {
     if (!post) throw new NotFoundException();
     if (post.userId !== command.userId || post.blogId !== command.blogId)
       throw new ForbiddenException();
-    const result = await this.fileStorageAdapter.saveAvatar(
+    return this.fileStorageAdapter.saveAvatar(
       command.userId,
       command.wallpaperName,
       command.wallpaperBuffer,
       command.folderName,
     );
-    return result;
   }
 }

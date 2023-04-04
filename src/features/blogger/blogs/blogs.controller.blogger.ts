@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Body,
   Controller,
   Delete,
@@ -32,15 +33,10 @@ import { UpdatePostByIdCommand } from './application/useCases/update.post.by.id.
 import { DeletePostByIdCommand } from './application/useCases/delete.post.by.id.use.case';
 import { CreatePostByIdCommand } from './application/useCases/create.post.by.id.use.case';
 import { IQueryRepository } from '../../public/queryReposytories/i.query.repository';
-import path from 'node:path';
-import {
-  checkDirectoryAsync,
-  readTextFileAsync,
-  saveFileAsync,
-} from '../../../common/utils/fs-utils';
-import { FileInterceptor } from '@nestjs/platform-express';
+import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
 import { UploadPictureForBlogCommand } from './application/useCases/upload.picture.for.blog.use.case';
 import { UploadPictureForPostCommand } from './application/useCases/upload.picture.for.post.user.case';
+import sharp from 'sharp';
 
 @Controller('blogger/blogs')
 export class BlogsControllerBlogger {
@@ -161,6 +157,18 @@ export class BlogsControllerBlogger {
     @Body() body,
     @UploadedFile() wallpaper: Express.Multer.File,
   ) {
+    const checkImages = await sharp(wallpaper.buffer).metadata();
+    if (
+      checkImages.size > 100 &&
+      checkImages.width !== 1028 &&
+      checkImages.height !== 312
+    ) {
+      {
+        throw new BadRequestException([
+          { message: 'aadsfasdf', field: 'size' },
+        ]);
+      }
+    }
     return await this.commandBus.execute(
       new UploadPictureForBlogCommand(
         blogId,
@@ -208,27 +216,27 @@ export class BlogsControllerBlogger {
         param.postId,
         wallpaper.originalname,
         wallpaper.buffer,
-        'postId/images/main',
+        `${param.postId}/main`,
       ),
     );
   }
 
-  @Get('/images/wallpaper')
-  async forTest() {
-    return await readTextFileAsync(
-      path.join('common', 'views', 'avatars', 'change-page.html'),
-    );
-  }
-
-  @Post('/wallpaper')
-  @UseInterceptors(FileInterceptor('avatar'))
-  async forTestPost(@UploadedFile() avatarFile: Express.Multer.File) {
-    await checkDirectoryAsync(path.join('common', 'content', '10'));
-    await saveFileAsync(
-      path.join('common', 'content', '10', avatarFile.originalname),
-      avatarFile.buffer,
-    );
-    console.log(avatarFile);
-    return 'avatar saved';
-  }
+  // @Get('/images/wallpaper')
+  // async forTest() {
+  //   return await readTextFileAsync(
+  //     path.join('common', 'views', 'avatars', 'change-page.html'),
+  //   );
+  // }
+  //
+  // @Post('/wallpaper')
+  // @UseInterceptors(FileInterceptor('avatar'))
+  // async forTestPost(@UploadedFile() avatarFile: Express.Multer.File) {
+  //   await checkDirectoryAsync(path.join('common', 'content', '10'));
+  //   await saveFileAsync(
+  //     path.join('common', 'content', '10', avatarFile.originalname),
+  //     avatarFile.buffer,
+  //   );
+  //   console.log(avatarFile);
+  //   return 'avatar saved';
+  // }
 }
