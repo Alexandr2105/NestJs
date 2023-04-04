@@ -33,7 +33,7 @@ import { UpdatePostByIdCommand } from './application/useCases/update.post.by.id.
 import { DeletePostByIdCommand } from './application/useCases/delete.post.by.id.use.case';
 import { CreatePostByIdCommand } from './application/useCases/create.post.by.id.use.case';
 import { IQueryRepository } from '../../public/queryReposytories/i.query.repository';
-import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
+import { FileInterceptor } from '@nestjs/platform-express';
 import { UploadPictureForBlogCommand } from './application/useCases/upload.picture.for.blog.use.case';
 import { UploadPictureForPostCommand } from './application/useCases/upload.picture.for.post.user.case';
 import sharp from 'sharp';
