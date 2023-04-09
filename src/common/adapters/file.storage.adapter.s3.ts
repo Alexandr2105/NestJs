@@ -42,7 +42,6 @@ export class FileStorageAdapterS3 {
 
     try {
       const uploadResult = await this.s3Client.send(command);
-      console.log(uploadResult);
       const newImage = new this.image();
       newImage.id = uploadResult.ETag;
       newImage.blogId = blogId;
