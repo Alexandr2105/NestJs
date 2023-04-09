@@ -1,7 +1,8 @@
 import { CommandHandler } from '@nestjs/cqrs';
-import { FileStorageAdapter } from '../../../../../common/adapters/file.storage.adapter';
 import { ForbiddenException, NotFoundException } from '@nestjs/common';
 import { IPostsRepository } from '../../../../public/posts/i.posts.repository';
+import { ImageModelDocument } from '../../../../../common/schemas/image.schema';
+import { FileStorageAdapterS3 } from '../../../../../common/adapters/file.storage.adapter.s3';
 
 export class UploadPictureForPostCommand {
   constructor(
@@ -18,7 +19,7 @@ export class UploadPictureForPostCommand {
 export class UploadPictureForPostUserCase {
   constructor(
     private readonly postRepository: IPostsRepository,
-    private readonly fileStorageAdapter: FileStorageAdapter,
+    private readonly fileStorageAdapter: FileStorageAdapterS3,
   ) {}
 
   async execute(command: UploadPictureForPostCommand) {
@@ -26,11 +27,21 @@ export class UploadPictureForPostUserCase {
     if (!post) throw new NotFoundException();
     if (post.userId !== command.userId || post.blogId !== command.blogId)
       throw new ForbiddenException();
-    return this.fileStorageAdapter.saveAvatar(
-      command.userId,
-      command.wallpaperName,
-      command.wallpaperBuffer,
-      command.folderName,
-    );
+    const image: ImageModelDocument =
+      await this.fileStorageAdapter.saveImageForPost(
+        command.userId,
+        command.wallpaperName,
+        command.wallpaperBuffer,
+        command.folderName,
+        command.blogId,
+        command.postId,
+      );
+    const imageInfo = await this.postRepository.getInfoForImage(image.url);
+    if (!imageInfo) {
+      await this.postRepository.saveImage(image);
+    } else {
+      imageInfo.id = image.id;
+      await this.postRepository.saveImage(imageInfo);
+    }
   }
 }

@@ -3,6 +3,7 @@ import { UserEntity } from '../../../sa/users/entity/user.entity';
 import { BlogEntity } from '../../blogs/entity/blog.entity';
 import { CommentEntity } from '../../comments/entity/comment.entity';
 import { LikeStatusEntity } from '../../../../common/entity/like.status.entity';
+import { ImageEntity } from '../../../../common/entity/image.entity';
 
 @Entity()
 export class PostEntity {
@@ -31,4 +32,6 @@ export class PostEntity {
   comments: CommentEntity[];
   @OneToMany(() => LikeStatusEntity, (l) => l.post, { onDelete: 'CASCADE' })
   likeStatus: LikeStatusEntity[];
+  @OneToMany(() => ImageEntity, (i) => i.post, { onDelete: 'CASCADE' })
+  image: ImageEntity[];
 }

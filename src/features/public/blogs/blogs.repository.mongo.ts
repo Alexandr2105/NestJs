@@ -4,6 +4,7 @@ import { Model } from 'mongoose';
 import { BlogDocument } from './schema/blogs.schema';
 import { BanUsersForBlogDocument } from './schema/ban.users.for.blog.schema';
 import { IBlogsRepository } from './i.blogs.repository';
+import { ImageModelDocument } from '../../../common/schemas/image.schema';
 
 @Injectable()
 export class BlogsRepositoryMongo extends IBlogsRepository {
@@ -11,6 +12,7 @@ export class BlogsRepositoryMongo extends IBlogsRepository {
     @InjectModel('blogs') private readonly blogsCollection: Model<BlogDocument>,
     @InjectModel('banUsersForBlogs')
     private readonly banUsersForBlogsCollection: Model<BanUsersForBlogDocument>,
+    @InjectModel('image') private readonly image: Model<ImageModelDocument>,
   ) {
     super();
   }
@@ -63,5 +65,13 @@ export class BlogsRepositoryMongo extends IBlogsRepository {
 
   async save(blog: BlogDocument) {
     await blog.save();
+  }
+
+  async getInfoForImage(url: string) {
+    return this.image.findOne({ url: url });
+  }
+
+  async saveImage(image: ImageModelDocument) {
+    await image.save();
   }
 }

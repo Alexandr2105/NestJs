@@ -144,9 +144,10 @@ import { GetCurrentUserStaticUseCase } from './features/public/pairQuizGame/appl
 import { StatisticGamesEntity } from './features/public/pairQuizGame/entity/statistic.games.entity';
 import { StatisticGamesSchema } from './features/public/pairQuizGame/schema/statistic.games.schema';
 import { UploadPictureForBlogUseCase } from './features/blogger/blogs/application/useCases/upload.picture.for.blog.use.case';
-import { FileStorageAdapter } from './common/adapters/file.storage.adapter';
 import { UploadPictureForPostUserCase } from './features/blogger/blogs/application/useCases/upload.picture.for.post.user.case';
 import { FileStorageAdapterS3 } from './common/adapters/file.storage.adapter.s3';
+import { ImageSchema } from './common/schemas/image.schema';
+import { ImageEntity } from './common/entity/image.entity';
 
 const Strategies = [LocalStrategy, JwtStrategy, BasicStrategy, RefreshStrategy];
 const Validators = [
@@ -336,6 +337,7 @@ const entities = [
   QuizQuestionEntity,
   PairQuizGameEntity,
   StatisticGamesEntity,
+  ImageEntity,
 ];
 
 @Module({
@@ -356,6 +358,7 @@ const entities = [
       { name: 'quizQuestions', schema: QuestionSchema },
       { name: 'infoQuizQuestionsGames', schema: PairQuizGameSchema },
       { name: 'statisticGames', schema: StatisticGamesSchema },
+      { name: 'image', schema: ImageSchema },
     ]),
     JwtModule.register({}),
     MailerModule.forRootAsync({
@@ -419,7 +422,7 @@ const entities = [
     ...Strategies,
     ...Validators,
     CountAttemptGuard,
-    { provide: FileStorageAdapter, useClass: FileStorageAdapterS3 },
+    FileStorageAdapterS3,
     ...UseCases,
     ...SqlRepositories,
     ...MongoRepositories,

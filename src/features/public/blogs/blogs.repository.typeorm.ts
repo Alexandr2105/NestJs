@@ -6,6 +6,8 @@ import { BlogEntity } from './entity/blog.entity';
 import { BanUsersForBlogEntity } from './entity/ban.users.for.blog.entity';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { ImageModelDocument } from '../../../common/schemas/image.schema';
+import { ImageEntity } from '../../../common/entity/image.entity';
 
 @Injectable()
 export class BlogsRepositoryTypeorm extends IBlogsRepository {
@@ -14,6 +16,8 @@ export class BlogsRepositoryTypeorm extends IBlogsRepository {
     private readonly blogsRepository: Repository<BlogEntity>,
     @InjectRepository(BanUsersForBlogEntity)
     private readonly banUsersForBlog: Repository<BanUsersForBlogEntity>,
+    @InjectRepository(ImageEntity)
+    private readonly image: Repository<ImageEntity>,
   ) {
     super();
   }
@@ -59,5 +63,13 @@ export class BlogsRepositoryTypeorm extends IBlogsRepository {
 
   async saveBanUser(banUser: BanUsersForBlogDocument) {
     await this.banUsersForBlog.save(banUser);
+  }
+
+  async getInfoForImage(url: string) {
+    return this.image.findOneBy({ url: url });
+  }
+
+  async saveImage(image: ImageModelDocument) {
+    await this.image.save(image);
   }
 }

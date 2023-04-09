@@ -7,6 +7,8 @@ import { PostEntity } from './entity/post.entity';
 import { LikeStatusEntity } from '../../../common/entity/like.status.entity';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { ImageEntity } from '../../../common/entity/image.entity';
+import { ImageModelDocument } from '../../../common/schemas/image.schema';
 
 @Injectable()
 export class PostsRepositoryTypeorm extends IPostsRepository {
@@ -16,6 +18,8 @@ export class PostsRepositoryTypeorm extends IPostsRepository {
     private readonly postsCollection: Repository<PostEntity>,
     @InjectRepository(LikeStatusEntity)
     private readonly likeInfoCollection: Repository<LikeStatusEntity>,
+    @InjectRepository(ImageEntity)
+    private readonly image: Repository<ImageEntity>,
   ) {
     super();
   }
@@ -135,5 +139,13 @@ export class PostsRepositoryTypeorm extends IPostsRepository {
       { status: status },
     );
     return newStatusComment.affected === 1;
+  }
+
+  async getInfoForImage(url: string) {
+    return this.image.findOneBy({ url: url });
+  }
+
+  async saveImage(image: ImageModelDocument) {
+    await this.image.save(image);
   }
 }

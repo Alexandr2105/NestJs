@@ -15,6 +15,7 @@ import { ITestingRepository } from './i.testing.repository';
 import { QuestionDocument } from '../features/sa/quizQuestions/schema/question.schema';
 import { PairQuizGameDocument } from '../features/public/pairQuizGame/schema/pair.quiz.game.schema';
 import { StatisticGamesDocument } from '../features/public/pairQuizGame/schema/statistic.games.schema';
+import { ImageModelDocument } from '../common/schemas/image.schema';
 
 @Injectable()
 export class TestingRepositoryMongo extends ITestingRepository {
@@ -41,6 +42,8 @@ export class TestingRepositoryMongo extends ITestingRepository {
     private readonly infoQuizQuestionsGames: Model<PairQuizGameDocument>,
     @InjectModel('statisticGames')
     private readonly statisticGames: Model<StatisticGamesDocument>,
+    @InjectModel('image')
+    private readonly image: Model<ImageModelDocument>,
   ) {
     super();
   }
@@ -58,5 +61,6 @@ export class TestingRepositoryMongo extends ITestingRepository {
     await this.questions.deleteMany({});
     await this.infoQuizQuestionsGames.deleteMany({});
     await this.statisticGames.deleteMany({});
+    await this.image.deleteMany({});
   }
 }

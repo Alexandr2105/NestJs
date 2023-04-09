@@ -2,6 +2,7 @@ import { Column, Entity, ManyToOne, OneToMany, PrimaryColumn } from 'typeorm';
 import { UserEntity } from '../../../sa/users/entity/user.entity';
 import { PostEntity } from '../../posts/entity/post.entity';
 import { BanUsersForBlogEntity } from './ban.users.for.blog.entity';
+import { ImageEntity } from '../../../../common/entity/image.entity';
 
 @Entity()
 export class BlogEntity {
@@ -32,4 +33,6 @@ export class BlogEntity {
     onDelete: 'CASCADE',
   })
   banInfoForBlogs: BanUsersForBlogEntity[];
+  @OneToMany(() => ImageEntity, (i) => i.blog, { onDelete: 'CASCADE' })
+  image: ImageEntity[];
 }

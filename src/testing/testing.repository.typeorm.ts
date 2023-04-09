@@ -15,6 +15,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { QuizQuestionEntity } from '../features/sa/quizQuestions/entity/quiz.question.entity';
 import { PairQuizGameEntity } from '../features/public/pairQuizGame/entity/pair.quiz.game.entity';
 import { StatisticGamesEntity } from '../features/public/pairQuizGame/entity/statistic.games.entity';
+import { ImageEntity } from '../common/entity/image.entity';
 
 @Injectable()
 export class TestingRepositoryTypeorm extends ITestingRepository {
@@ -45,6 +46,8 @@ export class TestingRepositoryTypeorm extends ITestingRepository {
     private readonly pairQuizGameEntity: Repository<PairQuizGameEntity>,
     @InjectRepository(StatisticGamesEntity)
     private readonly statisticGames: Repository<StatisticGamesEntity>,
+    @InjectRepository(ImageEntity)
+    private readonly image: Repository<ImageEntity>,
   ) {
     super();
   }
@@ -77,5 +80,6 @@ export class TestingRepositoryTypeorm extends ITestingRepository {
     await this.statisticGames.query(
       `DELETE FROM public."statistic_games_entity"`,
     );
+    await this.statisticGames.query(`DELETE FROM public."image_entity"`);
   }
 }

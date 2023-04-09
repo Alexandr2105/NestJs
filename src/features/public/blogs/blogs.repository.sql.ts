@@ -4,6 +4,7 @@ import { BanUsersForBlogDocument } from './schema/ban.users.for.blog.schema';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
 import { Injectable } from '@nestjs/common';
+import { ImageModelDocument } from '../../../common/schemas/image.schema';
 
 @Injectable()
 export class BlogsRepositorySql extends IBlogsRepository {
@@ -149,5 +150,34 @@ export class BlogsRepositorySql extends IBlogsRepository {
       [blogId, userId],
     );
     return banUser[0];
+  }
+
+  async getInfoForImage(url: string) {
+    const image = await this.dataSource.query(
+      `SELECT * FROM public."Image"
+            WHERE "url"=$1`,
+      [url],
+    );
+    return image[0];
+  }
+
+  async saveImage(image: ImageModelDocument) {
+    if (!(await this.getInfoForImage(image.url))) {
+      const imageData = await this.dataSource.query(
+        `INSERT INTO public."Image"(
+            "id", "url", "bucket", "blogId")
+            VALUES ($1,$2,$3,$4)`,
+        [image.id, image.url, image.bucket, image.blogId],
+      );
+      return imageData[0];
+    } else {
+      const imageData = await this.dataSource.query(
+        `UPDATE public."Image"
+            SET "id"=$1, "bucket"=$2, "blogId"=$3
+            WHERE "url"=$4`,
+        [image.id, image.bucket, image.blogId, image.url],
+      );
+      return imageData[0];
+    }
   }
 }

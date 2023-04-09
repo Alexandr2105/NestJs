@@ -1,5 +1,4 @@
 import {
-  BadRequestException,
   Body,
   Controller,
   Delete,
@@ -36,7 +35,7 @@ import { IQueryRepository } from '../../public/queryReposytories/i.query.reposit
 import { FileInterceptor } from '@nestjs/platform-express';
 import { UploadPictureForBlogCommand } from './application/useCases/upload.picture.for.blog.use.case';
 import { UploadPictureForPostCommand } from './application/useCases/upload.picture.for.post.user.case';
-import sharp from 'sharp';
+import { CheckPicture } from '../../../common/customValidators/check.picture';
 
 @Controller('blogger/blogs')
 export class BlogsControllerBlogger {
@@ -154,21 +153,9 @@ export class BlogsControllerBlogger {
   async uploadBackgroundWallpaperForBlog(
     @Param('blogId') blogId: string,
     @Req() req,
-    @Body() body,
     @UploadedFile() wallpaper: Express.Multer.File,
   ) {
-    const checkImages = await sharp(wallpaper.buffer).metadata();
-    if (
-      checkImages.size > 100 &&
-      checkImages.width !== 1028 &&
-      checkImages.height !== 312
-    ) {
-      {
-        throw new BadRequestException([
-          { message: 'aadsfasdf', field: 'size' },
-        ]);
-      }
-    }
+    await new CheckPicture().validateWallpaperForBlog(wallpaper.buffer);
     return await this.commandBus.execute(
       new UploadPictureForBlogCommand(
         blogId,
@@ -186,7 +173,6 @@ export class BlogsControllerBlogger {
   async uploadMainSquareImageForBlog(
     @Param('blogId') blogId: string,
     @Req() req,
-    @Body() body,
     @UploadedFile() main: Express.Multer.File,
   ) {
     return await this.commandBus.execute(
@@ -206,7 +192,6 @@ export class BlogsControllerBlogger {
   async uploadMainImagineForPost(
     @Param() param,
     @Req() req,
-    @Body() body,
     @UploadedFile() wallpaper: Express.Multer.File,
   ) {
     return await this.commandBus.execute(
@@ -216,7 +201,7 @@ export class BlogsControllerBlogger {
         param.postId,
         wallpaper.originalname,
         wallpaper.buffer,
-        `${param.postId}/main`,
+        `main`,
       ),
     );
   }

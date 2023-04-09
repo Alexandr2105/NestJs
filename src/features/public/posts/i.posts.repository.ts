@@ -1,5 +1,6 @@
 import { PostDocument } from './schema/posts.schema';
 import { LikesModelDocument } from '../../../common/schemas/like.type.schema';
+import { ImageModelDocument } from '../../../common/schemas/image.schema';
 
 export abstract class IPostsRepository {
   abstract getPostId(id: string);
@@ -16,4 +17,6 @@ export abstract class IPostsRepository {
     status: string,
   ): Promise<boolean>;
   abstract save(post: PostDocument);
+  abstract saveImage(image: ImageModelDocument);
+  abstract getInfoForImage(url: string);
 }
