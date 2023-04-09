@@ -144,7 +144,7 @@ import { GetCurrentUserStaticUseCase } from './features/public/pairQuizGame/appl
 import { StatisticGamesEntity } from './features/public/pairQuizGame/entity/statistic.games.entity';
 import { StatisticGamesSchema } from './features/public/pairQuizGame/schema/statistic.games.schema';
 import { UploadPictureForBlogUseCase } from './features/blogger/blogs/application/useCases/upload.picture.for.blog.use.case';
-import { UploadPictureForPostUserCase } from './features/blogger/blogs/application/useCases/upload.picture.for.post.user.case';
+import { UploadPictureForPostUserCase } from './features/public/posts/entity/upload.picture.for.post.user.case';
 import { FileStorageAdapterS3 } from './common/adapters/file.storage.adapter.s3';
 import { ImageSchema } from './common/schemas/image.schema';
 import { ImageEntity } from './common/entity/image.entity';

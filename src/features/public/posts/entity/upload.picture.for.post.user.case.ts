@@ -1,8 +1,8 @@
 import { CommandHandler } from '@nestjs/cqrs';
 import { ForbiddenException, NotFoundException } from '@nestjs/common';
-import { IPostsRepository } from '../../../../public/posts/i.posts.repository';
-import { ImageModelDocument } from '../../../../../common/schemas/image.schema';
-import { FileStorageAdapterS3 } from '../../../../../common/adapters/file.storage.adapter.s3';
+import { IPostsRepository } from '../i.posts.repository';
+import { ImageModelDocument } from '../../../../common/schemas/image.schema';
+import { FileStorageAdapterS3 } from '../../../../common/adapters/file.storage.adapter.s3';
 
 export class UploadPictureForPostCommand {
   constructor(

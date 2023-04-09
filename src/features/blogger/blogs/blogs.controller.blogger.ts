@@ -34,7 +34,7 @@ import { CreatePostByIdCommand } from './application/useCases/create.post.by.id.
 import { IQueryRepository } from '../../public/queryReposytories/i.query.repository';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { UploadPictureForBlogCommand } from './application/useCases/upload.picture.for.blog.use.case';
-import { UploadPictureForPostCommand } from './application/useCases/upload.picture.for.post.user.case';
+import { UploadPictureForPostCommand } from '../../public/posts/entity/upload.picture.for.post.user.case';
 import { CheckPicture } from '../../../common/customValidators/check.picture';
 
 @Controller('blogger/blogs')
