@@ -62,14 +62,15 @@ export class UploadPictureForBlogUseCase {
         'main',
       );
     return {
-      wallpaper: wallpaper.map((a) => {
-        return {
-          url: a.url,
-          width: a.width,
-          height: a.height,
-          fileSize: a.fileSize,
-        };
-      }),
+      wallpaper:
+        wallpaper[0] === undefined
+          ? null
+          : {
+              url: wallpaper.url,
+              width: wallpaper.width,
+              height: wallpaper.height,
+              fileSize: wallpaper.fileSize,
+            },
       main: main.map((a) => {
         return {
           url: a.url,
