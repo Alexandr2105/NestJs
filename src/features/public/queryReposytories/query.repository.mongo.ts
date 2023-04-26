@@ -106,12 +106,15 @@ export class QueryRepositoryMongo extends IQueryRepository {
             createdAt: a.createdAt,
             isMembership: a.isMembership,
             images: {
-              wallpaper: {
-                url: wallpaper[0]?.url,
-                width: wallpaper[0]?.width,
-                height: wallpaper[0]?.height,
-                fileSize: wallpaper[0]?.fileSize,
-              },
+              wallpaper:
+                wallpaper[0] === undefined
+                  ? null
+                  : {
+                      url: wallpaper[0]?.url,
+                      width: wallpaper[0]?.width,
+                      height: wallpaper[0]?.height,
+                      fileSize: wallpaper[0]?.fileSize,
+                    },
               main: main.map((a) => {
                 return {
                   url: a.url,
@@ -466,12 +469,15 @@ export class QueryRepositoryMongo extends IQueryRepository {
             createdAt: a.createdAt,
             isMembership: a.isMembership,
             images: {
-              wallpaper: {
-                url: wallpaper[0]?.url,
-                width: wallpaper[0]?.width,
-                height: wallpaper[0]?.height,
-                fileSize: wallpaper[0]?.fileSize,
-              },
+              wallpaper:
+                wallpaper === undefined
+                  ? null
+                  : {
+                      url: wallpaper[0]?.url,
+                      width: wallpaper[0]?.width,
+                      height: wallpaper[0]?.height,
+                      fileSize: wallpaper[0]?.fileSize,
+                    },
               main: main.map((a) => {
                 return {
                   url: a.url,

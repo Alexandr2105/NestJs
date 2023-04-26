@@ -34,13 +34,16 @@ export class GetBlogIdSpecialUseCase {
       websiteUrl: blog.websiteUrl,
       createdAt: blog.createdAt,
       isMembership: blog.isMembership,
-      image: {
-        wallpaper: {
-          url: wallpaper[0]?.url,
-          width: wallpaper[0]?.width,
-          height: wallpaper[0]?.height,
-          fileSize: wallpaper[0]?.fileSize,
-        },
+      images: {
+        wallpaper:
+          wallpaper[0] === undefined
+            ? null
+            : {
+                url: wallpaper[0]?.url,
+                width: wallpaper[0]?.width,
+                height: wallpaper[0]?.height,
+                fileSize: wallpaper[0]?.fileSize,
+              },
         main: main.map((a) => {
           return {
             url: a.url,
