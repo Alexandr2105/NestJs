@@ -5,7 +5,7 @@ export class CheckPicture {
   async validateWallpaperForBlog(wallpaperBuffer: Buffer) {
     const arrayErrors = [];
     const checkImages = await sharp(wallpaperBuffer).metadata();
-    if (checkImages.size > 100)
+    if (checkImages.size > 100000)
       arrayErrors.push({ message: 'Не верное значение', field: 'size' });
     if (checkImages.width !== 1028)
       arrayErrors.push({ message: 'Не верное значение', field: 'width' });
