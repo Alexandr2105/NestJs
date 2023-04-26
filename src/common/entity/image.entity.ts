@@ -14,6 +14,16 @@ export class ImageEntity {
   blogId: string;
   @Column({ default: null })
   postId: string;
+  @Column()
+  key: string;
+  @Column()
+  width: number;
+  @Column()
+  height: number;
+  @Column()
+  fileSize: number;
+  @Column()
+  folderName: string;
 
   @ManyToOne(() => BlogEntity, (b) => b.image, { onDelete: 'CASCADE' })
   blog: BlogEntity;

@@ -5,7 +5,6 @@ import {
   AllQuestionsSa,
   AllStatistics,
   BanUsersInfoForBlog,
-  BlogsQueryType,
   BlogsQueryTypeSA,
   CommentsType,
   PostQueryType,
@@ -153,7 +152,7 @@ export class QueryRepositoryTypeorm extends IQueryRepository {
     return this.returnObject(query, totalCount, sortUsers);
   }
 
-  async getQueryBlogs(query: any): Promise<BlogsQueryType> {
+  async getQueryBlogs(query: any) /*Promise<BlogsQueryType>*/ {
     const [allBlogs, totalCount] = await this.blogsRepository.findAndCount({
       where: { name: ILike(`%${query.searchNameTerm}%`), banStatus: false },
       select: {
@@ -180,7 +179,7 @@ export class QueryRepositoryTypeorm extends IQueryRepository {
   async getQueryBlogsAuthUser(
     query: any,
     userId: string,
-  ): Promise<BlogsQueryType> {
+  ) /*: Promise<BlogsQueryType>*/ {
     const [allBlogs, totalCount] = await this.blogsRepository.findAndCount({
       where: {
         userId: userId,

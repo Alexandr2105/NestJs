@@ -144,10 +144,14 @@ import { GetCurrentUserStaticUseCase } from './features/public/pairQuizGame/appl
 import { StatisticGamesEntity } from './features/public/pairQuizGame/entity/statistic.games.entity';
 import { StatisticGamesSchema } from './features/public/pairQuizGame/schema/statistic.games.schema';
 import { UploadPictureForBlogUseCase } from './features/blogger/blogs/application/useCases/upload.picture.for.blog.use.case';
-import { UploadPictureForPostUserCase } from './features/public/posts/entity/upload.picture.for.post.user.case';
+import { UploadPictureForPostUserCase } from './features/public/posts/application/useCase/upload.picture.for.post.user.case';
 import { FileStorageAdapterS3 } from './common/adapters/file.storage.adapter.s3';
 import { ImageSchema } from './common/schemas/image.schema';
 import { ImageEntity } from './common/entity/image.entity';
+import { IImageRepository } from './features/public/imageRepository/i.image.repository';
+import { ImageRepositoryTypeorm } from './features/public/imageRepository/image.repository.typeorm';
+import { ImageRepositoryMongo } from './features/public/imageRepository/image.repository.mongo';
+import { ImageRepositorySql } from './features/public/imageRepository/image.repository.sql';
 
 const Strategies = [LocalStrategy, JwtStrategy, BasicStrategy, RefreshStrategy];
 const Validators = [
@@ -214,6 +218,7 @@ const MongoRepositories = [
   PostsRepositoryMongo,
   QuizQuestionsRepositoryMongoSa,
   PairQuizGameRepositoryMongo,
+  ImageRepositoryMongo,
 ];
 const SqlRepositories = [
   AuthRepositorySql,
@@ -226,6 +231,7 @@ const SqlRepositories = [
   PostsRepositorySql,
   QuizQuestionsRepositorySqlSa,
   PairQuizGameRepositorySql,
+  ImageRepositorySql,
 ];
 const TypeOrmRepositories = [
   AuthRepositoryTypeorm,
@@ -238,6 +244,7 @@ const TypeOrmRepositories = [
   PostsRepositoryTypeorm,
   QuizQuestionsRepositoryTypeormSa,
   PairQuizGameRepositoryTypeorm,
+  ImageRepositoryTypeorm,
 ];
 const AbstractClassesSql = [
   {
@@ -265,6 +272,7 @@ const AbstractClassesSql = [
     useClass: QuizQuestionsRepositorySqlSa,
   },
   { provide: IPairQuizGameRepository, useClass: PairQuizGameRepositorySql },
+  { provide: IImageRepository, useClass: ImageRepositorySql },
 ];
 
 const AbstractClassesMongo = [
@@ -293,6 +301,7 @@ const AbstractClassesMongo = [
     useClass: QuizQuestionsRepositoryMongoSa,
   },
   { provide: IPairQuizGameRepository, useClass: PairQuizGameRepositoryMongo },
+  { provide: IImageRepository, useClass: ImageRepositoryMongo },
 ];
 
 const AbstractClassesTypeorm = [
@@ -321,6 +330,7 @@ const AbstractClassesTypeorm = [
     useClass: QuizQuestionsRepositoryTypeormSa,
   },
   { provide: IPairQuizGameRepository, useClass: PairQuizGameRepositoryTypeorm },
+  { provide: IImageRepository, useClass: ImageRepositoryTypeorm },
 ];
 
 const entities = [

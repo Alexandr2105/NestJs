@@ -164,18 +164,39 @@ export class BlogsRepositorySql extends IBlogsRepository {
   async saveImage(image: ImageModelDocument) {
     if (!(await this.getInfoForImage(image.url))) {
       const imageData = await this.dataSource.query(
-        `INSERT INTO public."Image"(
-            "id", "url", "bucket", "blogId")
-            VALUES ($1,$2,$3,$4)`,
-        [image.id, image.url, image.bucket, image.blogId],
+        `INSERT INTO public."Image"("id", "url", "bucket", "blogId","key","width",
+            "height","fileSize","folderName")
+            VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9)`,
+        [
+          image.id,
+          image.url,
+          image.bucket,
+          image.blogId,
+          image.key,
+          image.width,
+          image.height,
+          image.fileSize,
+          image.folderName,
+        ],
       );
       return imageData[0];
     } else {
       const imageData = await this.dataSource.query(
         `UPDATE public."Image"
-            SET "id"=$1, "bucket"=$2, "blogId"=$3
-            WHERE "url"=$4`,
-        [image.id, image.bucket, image.blogId, image.url],
+           SET "id"=$1, "bucket"=$2, "blogId"=$3,"url"=$4,"width"$5,
+            "height"=$6,"fileSize"=$7,"folderName"=$8
+            WHERE "key"=$9`,
+        [
+          image.id,
+          image.bucket,
+          image.blogId,
+          image.url,
+          image.width,
+          image.height,
+          image.fileSize,
+          image.folderName,
+          image.key,
+        ],
       );
       return imageData[0];
     }

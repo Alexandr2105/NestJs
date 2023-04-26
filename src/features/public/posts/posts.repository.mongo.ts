@@ -5,7 +5,6 @@ import { PostDocument } from './schema/posts.schema';
 import { LikesModelDocument } from '../../../common/schemas/like.type.schema';
 import { IUsersRepository } from '../../sa/users/i.users.repository';
 import { IPostsRepository } from './i.posts.repository';
-import { ImageModelDocument } from '../../../common/schemas/image.schema';
 
 @Injectable()
 export class PostsRepositoryMongo extends IPostsRepository {
@@ -14,7 +13,6 @@ export class PostsRepositoryMongo extends IPostsRepository {
     @InjectModel('posts') private readonly postsCollection: Model<PostDocument>,
     @InjectModel('likeStatuses')
     private readonly likeInfoCollection: Model<LikesModelDocument>,
-    @InjectModel('image') private readonly image: Model<ImageModelDocument>,
   ) {
     super();
   }
@@ -117,13 +115,5 @@ export class PostsRepositoryMongo extends IPostsRepository {
 
   async save(post: PostDocument) {
     await post.save();
-  }
-
-  async getInfoForImage(url: string) {
-    return this.image.findOne({ url: url });
-  }
-
-  async saveImage(image: ImageModelDocument) {
-    await image.save();
   }
 }

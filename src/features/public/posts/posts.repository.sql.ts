@@ -5,7 +5,6 @@ import { PostDocument } from './schema/posts.schema';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
 import { IUsersRepository } from '../../sa/users/i.users.repository';
-import { ImageModelDocument } from '../../../common/schemas/image.schema';
 
 @Injectable()
 export class PostsRepositorySql extends IPostsRepository {
@@ -186,34 +185,5 @@ export class PostsRepositorySql extends IPostsRepository {
         idPost,
       ],
     );
-  }
-
-  async getInfoForImage(url: string) {
-    const image = await this.dataSource.query(
-      `SELECT * FROM public."Image"
-            WHERE "url"=$1`,
-      [url],
-    );
-    return image[0];
-  }
-
-  async saveImage(image: ImageModelDocument) {
-    if (!(await this.getInfoForImage(image.url))) {
-      const imageData = await this.dataSource.query(
-        `INSERT INTO public."Image"(
-            "id", "url", "bucket", "blogId", "postId")
-            VALUES ($1,$2,$3,$4,$5)`,
-        [image.id, image.url, image.bucket, image.blogId, image.postId],
-      );
-      return imageData[0];
-    } else {
-      const imageData = await this.dataSource.query(
-        `UPDATE public."Image"
-            SET "id"=$1, "bucket"=$2, "blogId"=$3, "postId"=$4
-            WHERE "url"=$5`,
-        [image.id, image.bucket, image.blogId, image.postId, image.url],
-      );
-      return imageData[0];
-    }
   }
 }

@@ -15,6 +15,16 @@ export class ImageModel {
   url: string;
   @Prop({ required: true })
   bucket: string;
+  @Prop({ required: true })
+  key: string;
+  @Prop({ required: true })
+  width: number;
+  @Prop({ required: true })
+  height: number;
+  @Prop({ required: true })
+  fileSize: number;
+  @Prop({ required: true })
+  folderName: string;
 }
 
 export const ImageSchema = SchemaFactory.createForClass(ImageModel);

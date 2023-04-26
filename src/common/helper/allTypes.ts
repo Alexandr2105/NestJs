@@ -6,6 +6,25 @@ export type BlogsQueryType = {
   items: BlogNotUserId[];
 };
 
+type InfoImages = {
+  wallpaper: Wallpaper;
+  main: Main[];
+};
+
+type Wallpaper = {
+  url: string;
+  width: number;
+  height: number;
+  fileSize: number;
+};
+
+type Main = {
+  url: string;
+  width: number;
+  height: number;
+  fileSize: number;
+};
+
 export type BlogsQueryTypeSA = {
   pagesCount: number;
   pageSize: number;
@@ -21,6 +40,7 @@ type BlogNotUserId = {
   websiteUrl: string;
   createdAt: string;
   isMembership: boolean;
+  images: InfoImages;
 };
 
 type BlogNotUserIdSA = {

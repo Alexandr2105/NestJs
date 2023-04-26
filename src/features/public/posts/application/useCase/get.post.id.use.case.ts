@@ -1,5 +1,6 @@
 import { CommandHandler } from '@nestjs/cqrs';
 import { IPostsRepository } from '../../i.posts.repository';
+import { IImageRepository } from '../../../imageRepository/i.image.repository';
 
 export class GetPostIdCommand {
   constructor(public postId: string, public userId: string) {}
@@ -7,7 +8,10 @@ export class GetPostIdCommand {
 
 @CommandHandler(GetPostIdCommand)
 export class GetPostIdUseCase {
-  constructor(private readonly postsRepository: IPostsRepository) {}
+  constructor(
+    private readonly postsRepository: IPostsRepository,
+    private readonly imageRepository: IImageRepository,
+  ) {}
 
   async execute(command: GetPostIdCommand) {
     const post = await this.postsRepository.getPostId(command.postId);
@@ -21,6 +25,11 @@ export class GetPostIdUseCase {
     );
     const infoLikes = await this.postsRepository.getAllInfoLike(command.postId);
     if (post) {
+      const main =
+        await this.imageRepository.getInfoForImageByPostIdAndFolderName(
+          post.id,
+          'main',
+        );
       return {
         id: post.id,
         title: post.title,
@@ -38,6 +47,16 @@ export class GetPostIdUseCase {
               addedAt: a.createDate,
               userId: a.userId,
               login: a.login,
+            };
+          }),
+        },
+        images: {
+          main: main.map((a) => {
+            return {
+              url: a.url,
+              width: a.width,
+              height: a.height,
+              fileSize: a.fileSize,
             };
           }),
         },

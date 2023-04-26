@@ -45,7 +45,7 @@ export class FileStorageAdapterS3 {
       const newImage = new this.image();
       newImage.id = uploadResult.ETag;
       newImage.blogId = blogId;
-      newImage.url = `images/${folderName}/${userId}_blog.png`;
+      newImage.key = `images/${folderName}/${userId}_blog.png`;
       newImage.bucket = 'my1bucket';
       return newImage;
     } catch (err) {
@@ -72,7 +72,7 @@ export class FileStorageAdapterS3 {
       const newImage = new this.image();
       newImage.id = uploadResult.ETag;
       newImage.blogId = blogId;
-      newImage.url = `images/${folderName}/${userId}_post.png`;
+      newImage.key = `images/${folderName}/${userId}_post.png`;
       newImage.bucket = 'my1bucket';
       newImage.postId = postId;
       return newImage;
@@ -81,12 +81,11 @@ export class FileStorageAdapterS3 {
     }
   }
 
-  // async deleteFile(fileId: .string) {
+  // async getImage(bucket: string, key: string) {
   //   const command = new GetObjectCommand({
-  //     Bucket: 'my1bucket',
-  //     Key: `images/${folderName}/${userId}.png`,
+  //     Bucket: bucket,
+  //     Key: key,
   //   });
   //   const a = await this.s3Client.send(command);
-  //   const b = await sharp(a).metadata();
   // }
 }

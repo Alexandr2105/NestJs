@@ -33,9 +33,9 @@ import { DeletePostByIdCommand } from './application/useCases/delete.post.by.id.
 import { CreatePostByIdCommand } from './application/useCases/create.post.by.id.use.case';
 import { IQueryRepository } from '../../public/queryReposytories/i.query.repository';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { UploadPictureForBlogCommand } from './application/useCases/upload.picture.for.blog.use.case';
-import { UploadPictureForPostCommand } from '../../public/posts/entity/upload.picture.for.post.user.case';
+import { UploadPictureForPostCommand } from '../../public/posts/application/useCase/upload.picture.for.post.user.case';
 import { CheckPicture } from '../../../common/customValidators/check.picture';
+import { UploadPictureForBlogCommand } from './application/useCases/upload.picture.for.blog.use.case';
 
 @Controller('blogger/blogs')
 export class BlogsControllerBlogger {
@@ -218,7 +218,7 @@ export class BlogsControllerBlogger {
   // async forTestPost(@UploadedFile() avatarFile: Express.Multer.File) {
   //   await checkDirectoryAsync(path.join('common', 'content', '10'));
   //   await saveFileAsync(
-  //     path.join('common', 'content', '10', avatarFile.originalname),
+  //     path.join('common', 'content', '10', avatarFile.originalName),
   //     avatarFile.buffer,
   //   );
   //   console.log(avatarFile);

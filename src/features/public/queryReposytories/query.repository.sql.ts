@@ -19,6 +19,7 @@ import { ICommentsRepository } from '../comments/i.comments.repository';
 import { IPostsRepository } from '../posts/i.posts.repository';
 import { IUsersRepository } from '../../sa/users/i.users.repository';
 import { PostsRepositorySql } from '../posts/posts.repository.sql';
+import { IImageRepository } from '../imageRepository/i.image.repository';
 
 @Injectable()
 export class QueryRepositorySql extends IQueryRepository {
@@ -29,6 +30,7 @@ export class QueryRepositorySql extends IQueryRepository {
     private readonly postsRepository: IPostsRepository,
     private readonly postsRepositorySql: PostsRepositorySql,
     private readonly usersRepository: IUsersRepository,
+    private readonly imageRepository: IImageRepository,
   ) {
     super();
   }
@@ -58,16 +60,44 @@ export class QueryRepositorySql extends IQueryRepository {
       page: query.pageNumber,
       pageSize: query.pageSize,
       totalCount: +totalCount[0].count,
-      items: sortedBlogsArray.map((a) => {
-        return {
-          id: a.id,
-          name: a.name,
-          description: a.description,
-          websiteUrl: a.websiteUrl,
-          createdAt: a.createdAt,
-          isMembership: a.isMembership,
-        };
-      }),
+      items: await Promise.all(
+        sortedBlogsArray.map(async (a) => {
+          const wallpaper =
+            await this.imageRepository.getInfoForImageByBlogIdAndFolderName(
+              a.id,
+              'wallpaper',
+            );
+          const main =
+            await this.imageRepository.getInfoForImageByBlogIdAndFolderName(
+              a.id,
+              'main',
+            );
+          return {
+            id: a.id,
+            name: a.name,
+            description: a.description,
+            websiteUrl: a.websiteUrl,
+            createdAt: a.createdAt,
+            isMembership: a.isMembership,
+            images: {
+              wallpaper: {
+                url: wallpaper[0].url,
+                width: wallpaper[0].width,
+                height: wallpaper[0].height,
+                fileSize: wallpaper[0].fileSize,
+              },
+              main: main.map((a) => {
+                return {
+                  url: a.url,
+                  width: a.width,
+                  height: a.height,
+                  fileSize: a.fileSize,
+                };
+              }),
+            },
+          };
+        }),
+      ),
     };
   }
 
@@ -118,6 +148,11 @@ export class QueryRepositorySql extends IQueryRepository {
           const like = infoLikes.find((l) => 'Like' === l.status);
           const dislike = infoLikes.find((d) => 'Dislike' === d.status);
           const myStatus = await this.postsRepository.getMyStatus(userId, a.id);
+          const main =
+            await this.imageRepository.getInfoForImageByPostIdAndFolderName(
+              a.id,
+              'main',
+            );
           const sortLikesArray = await this.dataSource.query(
             `SELECT * FROM public."LikesModel"
                     WHERE "id"=$1 AND "status"=$2
@@ -142,6 +177,16 @@ export class QueryRepositorySql extends IQueryRepository {
                   addedAt: b.createDate.toString(),
                   userId: b.userId,
                   login: b.login,
+                };
+              }),
+            },
+            images: {
+              main: main.map((a) => {
+                return {
+                  url: a.url,
+                  width: a.width,
+                  height: a.height,
+                  fileSize: a.fileSize,
                 };
               }),
             },
@@ -199,6 +244,11 @@ export class QueryRepositorySql extends IQueryRepository {
             userId,
             a.id,
           );
+          const main =
+            await this.imageRepository.getInfoForImageByBlogIdAndFolderName(
+              a.id,
+              'main',
+            );
           const sortLikesArray = await this.dataSource.query(
             `SELECT * FROM public."LikesModel"
                     WHERE "id"=$1 AND "status"=$2
@@ -223,6 +273,16 @@ export class QueryRepositorySql extends IQueryRepository {
                   addedAt: a.createDate.toString(),
                   userId: a.userId,
                   login: a.login,
+                };
+              }),
+            },
+            images: {
+              main: main.map((a) => {
+                return {
+                  url: a.url,
+                  width: a.width,
+                  height: a.height,
+                  fileSize: a.fileSize,
                 };
               }),
             },
@@ -378,16 +438,44 @@ export class QueryRepositorySql extends IQueryRepository {
       page: query.pageNumber,
       pageSize: query.pageSize,
       totalCount: +totalCount[0].count,
-      items: sortedBlogsArray.map((a) => {
-        return {
-          id: a.id,
-          name: a.name,
-          description: a.description,
-          websiteUrl: a.websiteUrl,
-          createdAt: a.createdAt,
-          isMembership: a.isMembership,
-        };
-      }),
+      items: await Promise.all(
+        sortedBlogsArray.map(async (a) => {
+          const wallpaper =
+            await this.imageRepository.getInfoForImageByBlogIdAndFolderName(
+              a.id,
+              'wallpaper',
+            );
+          const main =
+            await this.imageRepository.getInfoForImageByBlogIdAndFolderName(
+              a.id,
+              'main',
+            );
+          return {
+            id: a.id,
+            name: a.name,
+            description: a.description,
+            websiteUrl: a.websiteUrl,
+            createdAt: a.createdAt,
+            isMembership: a.isMembership,
+            images: {
+              wallpaper: {
+                url: wallpaper[0].url,
+                width: wallpaper[0].width,
+                height: wallpaper[0].height,
+                fileSize: wallpaper[0].fileSize,
+              },
+              main: main.map((a) => {
+                return {
+                  url: a.url,
+                  width: a.width,
+                  height: a.height,
+                  fileSize: a.fileSize,
+                };
+              }),
+            },
+          };
+        }),
+      ),
     };
   }
 
