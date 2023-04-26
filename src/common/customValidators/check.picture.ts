@@ -11,7 +11,7 @@ export class CheckPicture {
       arrayErrors.push({ message: 'Не верное значение', field: 'width' });
     if (checkImages.height !== 312)
       arrayErrors.push({ message: 'Не верное значение', field: 'height' });
-    if (arrayErrors.length > 1) throw new BadRequestException(arrayErrors);
+    if (arrayErrors.length > 0) throw new BadRequestException(arrayErrors);
   }
 
   async validateMainSquareForBlog(wallpaperBuffer: Buffer) {
@@ -23,7 +23,7 @@ export class CheckPicture {
       arrayErrors.push({ message: 'Не верное значение', field: 'width' });
     if (checkImages.height !== 156)
       arrayErrors.push({ message: 'Не верное значение', field: 'height' });
-    if (arrayErrors.length > 1) throw new BadRequestException(arrayErrors);
+    if (arrayErrors.length > 0) throw new BadRequestException(arrayErrors);
   }
 
   async validateMainForPost(wallpaperBuffer: Buffer) {
@@ -35,6 +35,6 @@ export class CheckPicture {
       arrayErrors.push({ message: 'Не верное значение', field: 'width' });
     if (checkImages.height !== 432)
       arrayErrors.push({ message: 'Не верное значение', field: 'height' });
-    if (arrayErrors.length > 1) throw new BadRequestException(arrayErrors);
+    if (arrayErrors.length > 0) throw new BadRequestException(arrayErrors);
   }
 }
