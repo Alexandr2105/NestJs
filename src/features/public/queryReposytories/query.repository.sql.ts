@@ -81,10 +81,10 @@ export class QueryRepositorySql extends IQueryRepository {
             isMembership: a.isMembership,
             images: {
               wallpaper: {
-                url: wallpaper[0].url,
-                width: wallpaper[0].width,
-                height: wallpaper[0].height,
-                fileSize: wallpaper[0].fileSize,
+                url: wallpaper[0]?.url,
+                width: wallpaper[0]?.width,
+                height: wallpaper[0]?.height,
+                fileSize: wallpaper[0]?.fileSize,
               },
               main: main.map((a) => {
                 return {
@@ -459,10 +459,10 @@ export class QueryRepositorySql extends IQueryRepository {
             isMembership: a.isMembership,
             images: {
               wallpaper: {
-                url: wallpaper[0].url,
-                width: wallpaper[0].width,
-                height: wallpaper[0].height,
-                fileSize: wallpaper[0].fileSize,
+                url: wallpaper[0]?.url,
+                width: wallpaper[0]?.width,
+                height: wallpaper[0]?.height,
+                fileSize: wallpaper[0]?.fileSize,
               },
               main: main.map((a) => {
                 return {

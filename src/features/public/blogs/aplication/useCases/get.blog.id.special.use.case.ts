@@ -36,10 +36,10 @@ export class GetBlogIdSpecialUseCase {
       isMembership: blog.isMembership,
       image: {
         wallpaper: {
-          url: wallpaper[0].url,
-          width: wallpaper[0].width,
-          height: wallpaper[0].height,
-          fileSize: wallpaper[0].fileSize,
+          url: wallpaper[0]?.url,
+          width: wallpaper[0]?.width,
+          height: wallpaper[0]?.height,
+          fileSize: wallpaper[0]?.fileSize,
         },
         main: main.map((a) => {
           return {

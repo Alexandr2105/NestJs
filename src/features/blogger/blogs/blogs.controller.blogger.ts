@@ -100,9 +100,7 @@ export class BlogsControllerBlogger {
     const createBlog = await this.commandBus.execute(
       new CreateBlogCommand(body, req.user.id),
     );
-    return await this.commandBus.execute(
-      new GetBlogIdSpecialCommand(createBlog.id),
-    );
+    return this.commandBus.execute(new GetBlogIdSpecialCommand(createBlog.id));
   }
 
   @UseGuards(JwtAuthGuard)
