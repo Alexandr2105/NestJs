@@ -66,13 +66,13 @@ export class UploadPictureForPostUserCase {
       );
     return {
       wallpaper:
-        wallpaper === undefined
+        wallpaper[0] === undefined
           ? null
           : {
-              url: wallpaper.url,
-              width: wallpaper.width,
-              height: wallpaper.height,
-              fileSize: wallpaper.fileSize,
+              url: wallpaper[0].url,
+              width: wallpaper[0].width,
+              height: wallpaper[0].height,
+              fileSize: wallpaper[0].fileSize,
             },
       main: main.map((a) => {
         return {
