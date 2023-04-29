@@ -2,9 +2,13 @@ import sharp from 'sharp';
 import { BadRequestException } from '@nestjs/common';
 
 export class CheckPicture {
-  async validateWallpaperForBlog(wallpaperBuffer: Buffer) {
+  async validateWallpaperForBlog(main: Express.Multer.File) {
     const arrayErrors = [];
-    const checkImages = await sharp(wallpaperBuffer).metadata();
+    if (main.mimetype !== 'image/jpeg') {
+      arrayErrors.push({ message: 'Не верное значение', field: 'format' });
+      throw new BadRequestException(arrayErrors);
+    }
+    const checkImages = await sharp(main.buffer).metadata();
     if (checkImages.size > 100000)
       arrayErrors.push({ message: 'Не верное значение', field: 'size' });
     if (checkImages.width !== 1028)
@@ -14,9 +18,13 @@ export class CheckPicture {
     if (arrayErrors.length > 0) throw new BadRequestException(arrayErrors);
   }
 
-  async validateMainSquareForBlog(wallpaperBuffer: Buffer) {
+  async validateMainSquareForBlog(main: Express.Multer.File) {
     const arrayErrors = [];
-    const checkImages = await sharp(wallpaperBuffer).metadata();
+    if (main.mimetype !== 'image/jpeg') {
+      arrayErrors.push({ message: 'Не верное значение', field: 'format' });
+      throw new BadRequestException(arrayErrors);
+    }
+    const checkImages = await sharp(main.buffer).metadata();
     if (checkImages.size > 100000)
       arrayErrors.push({ message: 'Не верное значение', field: 'size' });
     if (checkImages.width !== 156)
@@ -26,9 +34,13 @@ export class CheckPicture {
     if (arrayErrors.length > 0) throw new BadRequestException(arrayErrors);
   }
 
-  async validateMainForPost(wallpaperBuffer: Buffer) {
+  async validateMainForPost(main: Express.Multer.File) {
     const arrayErrors = [];
-    const checkImages = await sharp(wallpaperBuffer).metadata();
+    if (main.mimetype !== 'image/jpeg') {
+      arrayErrors.push({ message: 'Не верное значение', field: 'format' });
+      throw new BadRequestException(arrayErrors);
+    }
+    const checkImages = await sharp(main.buffer).metadata();
     if (checkImages.size > 100000)
       arrayErrors.push({ message: 'Не верное значение', field: 'size' });
     if (checkImages.width !== 940)

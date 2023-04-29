@@ -153,7 +153,7 @@ export class BlogsControllerBlogger {
     @Req() req,
     @UploadedFile() wallpaper: Express.Multer.File,
   ) {
-    await new CheckPicture().validateWallpaperForBlog(wallpaper.buffer);
+    await new CheckPicture().validateWallpaperForBlog(wallpaper);
     return await this.commandBus.execute(
       new UploadPictureForBlogCommand(
         blogId,
@@ -173,7 +173,7 @@ export class BlogsControllerBlogger {
     @Req() req,
     @UploadedFile() main: Express.Multer.File,
   ) {
-    await new CheckPicture().validateMainSquareForBlog(main.buffer);
+    await new CheckPicture().validateMainSquareForBlog(main);
     return await this.commandBus.execute(
       new UploadPictureForBlogCommand(
         blogId,
@@ -193,7 +193,7 @@ export class BlogsControllerBlogger {
     @Req() req,
     @UploadedFile() wallpaper: Express.Multer.File,
   ) {
-    await new CheckPicture().validateMainForPost(wallpaper.buffer);
+    await new CheckPicture().validateMainForPost(wallpaper);
     return await this.commandBus.execute(
       new UploadPictureForPostCommand(
         param.blogId,
