@@ -13,9 +13,9 @@ export class CheckPicture {
       arrayErrors.push({ message: 'Не верное значение', field: 'width' });
     if (checkImages.height !== 312)
       arrayErrors.push({ message: 'Не верное значение', field: 'height' });
-    if (arrayErrors.length > 0) throw new BadRequestException(arrayErrors);
     if (checkImages.size > 100000)
       arrayErrors.push({ message: 'Не верное значение', field: 'size' });
+    if (arrayErrors.length > 0) throw new BadRequestException(arrayErrors);
   }
 
   async validateMainSquareForBlog(main: Express.Multer.File) {
