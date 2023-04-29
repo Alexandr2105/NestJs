@@ -47,6 +47,9 @@ export class CreatePostByIdUseCase {
         myStatus: 'None',
         newestLikes: [],
       },
+      images: {
+        main: [],
+      },
     };
   }
 }
