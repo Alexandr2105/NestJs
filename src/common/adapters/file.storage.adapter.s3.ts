@@ -35,7 +35,7 @@ export class FileStorageAdapterS3 {
   ): Promise<ImageModelDocument> {
     const command = new PutObjectCommand({
       Bucket: 'my1bucket',
-      Key: `images/${folderName}/${userId}_blog.png`,
+      Key: `images/${folderName}/${blogId}_blog.png`,
       Body: wallpaperBuffer,
       ContentType: 'image/png',
     });
@@ -45,7 +45,7 @@ export class FileStorageAdapterS3 {
       const newImage = new this.image();
       newImage.id = uploadResult.ETag;
       newImage.blogId = blogId;
-      newImage.key = `images/${folderName}/${userId}_blog.png`;
+      newImage.key = `images/${folderName}/${blogId}_blog.png`;
       newImage.bucket = 'my1bucket';
       return newImage;
     } catch (err) {
@@ -63,7 +63,7 @@ export class FileStorageAdapterS3 {
   ): Promise<ImageModelDocument> {
     const command = new PutObjectCommand({
       Bucket: 'my1bucket',
-      Key: `images/${folderName}/${userId}_post.png`,
+      Key: `images/${folderName}/${postId}_post.png`,
       Body: wallpaperBuffer,
       ContentType: 'image/png',
     });
@@ -72,7 +72,7 @@ export class FileStorageAdapterS3 {
       const newImage = new this.image();
       newImage.id = uploadResult.ETag;
       newImage.blogId = blogId;
-      newImage.key = `images/${folderName}/${userId}_post.png`;
+      newImage.key = `images/${folderName}/${postId}_post.png`;
       newImage.bucket = 'my1bucket';
       newImage.postId = postId;
       return newImage;
