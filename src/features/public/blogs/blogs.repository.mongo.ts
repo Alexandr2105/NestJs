@@ -66,12 +66,4 @@ export class BlogsRepositoryMongo extends IBlogsRepository {
   async save(blog: BlogDocument) {
     await blog.save();
   }
-
-  async getInfoForImage(url: string) {
-    return this.image.findOne({ url: url });
-  }
-
-  async saveImage(image: ImageModelDocument) {
-    await image.save();
-  }
 }

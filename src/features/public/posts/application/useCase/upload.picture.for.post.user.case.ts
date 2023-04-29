@@ -55,13 +55,13 @@ export class UploadPictureForPostUserCase {
       await this.imageRepository.saveImage(imageInfo);
     }
     const main =
-      await this.imageRepository.getInfoForImageByBlogIdAndFolderName(
-        command.blogId,
+      await this.imageRepository.getInfoForImageByPostIdAndFolderName(
+        command.postId,
         'main',
       );
     const wallpaper =
-      await this.imageRepository.getInfoForImageByBlogIdAndFolderName(
-        command.blogId,
+      await this.imageRepository.getInfoForImageByPostIdAndFolderName(
+        command.postId,
         'wallpaper',
       );
     return {
