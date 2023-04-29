@@ -28,8 +28,8 @@ export class UploadPictureForPostUserCase {
   async execute(command: UploadPictureForPostCommand) {
     const post = await this.postRepository.getPostId(command.postId);
     if (!post) throw new NotFoundException();
-    if (post.userId !== command.userId || post.blogId !== command.blogId)
-      throw new ForbiddenException();
+    if (post.blogId !== command.blogId) throw new NotFoundException();
+    if (post.userId !== command.userId) throw new ForbiddenException();
     const image: ImageModelDocument =
       await this.fileStorageAdapter.saveImageForPost(
         command.userId,
