@@ -41,9 +41,9 @@ export class FileStorageAdapterS3 {
     });
 
     try {
-      const uploadResult = await this.s3Client.send(command);
+      await this.s3Client.send(command);
       const newImage = new this.image();
-      newImage.id = uploadResult.ETag;
+      newImage.id = +new Date() + '';
       newImage.blogId = blogId;
       newImage.key = `images/${folderName}/${blogId}_blog.png`;
       newImage.bucket = 'my1bucket';
@@ -69,9 +69,9 @@ export class FileStorageAdapterS3 {
       ContentType: 'image/png',
     });
     try {
-      const uploadResult = await this.s3Client.send(command);
+      await this.s3Client.send(command);
       const newImage = new this.image();
-      newImage.id = uploadResult.ETag;
+      newImage.id = +new Date() + '';
       newImage.blogId = blogId;
       newImage.key = `images/${folderName}/${postId}_post_${infoSize}.png`;
       newImage.bucket = 'my1bucket';
