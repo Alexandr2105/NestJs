@@ -38,8 +38,41 @@ export class UploadPictureForPostUserCase {
         command.folderName,
         command.blogId,
         command.postId,
+        'original',
+      );
+    const imageMiddleInfo = await sharp(command.wallpaperBuffer)
+      .resize(300, 180, {
+        fit: 'contain',
+      })
+      .toBuffer();
+    const imageSmallInfo = await sharp(command.wallpaperBuffer)
+      .resize(149, 96, {
+        fit: 'contain',
+      })
+      .toBuffer();
+    const imageMiddle: ImageModelDocument =
+      await this.fileStorageAdapter.saveImageForPost(
+        command.userId,
+        command.wallpaperName,
+        imageMiddleInfo,
+        command.folderName,
+        command.blogId,
+        command.postId,
+        'middle',
+      );
+    const imageSmall: ImageModelDocument =
+      await this.fileStorageAdapter.saveImageForPost(
+        command.userId,
+        command.wallpaperName,
+        imageSmallInfo,
+        command.folderName,
+        command.blogId,
+        command.postId,
+        'small',
       );
     const infoImage = await sharp(command.wallpaperBuffer).metadata();
+    const infoMiddleImage = await sharp(imageMiddleInfo).metadata();
+    const infoSmallImage = await sharp(imageSmallInfo).metadata();
     image.url = `https://storage.yandexcloud.net/${image.bucket}/${image.key}`;
     image.width = infoImage.width;
     image.height = infoImage.height;
@@ -53,6 +86,34 @@ export class UploadPictureForPostUserCase {
     } else {
       imageInfo.id = image.id;
       await this.imageRepository.saveImage(imageInfo);
+    }
+    imageMiddle.url = `https://storage.yandexcloud.net/${imageMiddle.bucket}/${imageMiddle.key}`;
+    imageMiddle.width = infoMiddleImage.width;
+    imageMiddle.height = infoMiddleImage.height;
+    imageMiddle.fileSize = infoMiddleImage.size;
+    imageMiddle.folderName = command.folderName;
+    const infoImageMiddle = await this.imageRepository.getInfoForImageByUrl(
+      imageMiddle.url,
+    );
+    if (!infoImageMiddle) {
+      await this.imageRepository.saveImage(imageMiddle);
+    } else {
+      infoImageMiddle.id = imageMiddle.id;
+      await this.imageRepository.saveImage(infoImageMiddle);
+    }
+    imageSmall.url = `https://storage.yandexcloud.net/${imageSmall.bucket}/${imageSmall.key}`;
+    imageSmall.width = infoSmallImage.width;
+    imageSmall.height = infoSmallImage.height;
+    imageSmall.fileSize = infoSmallImage.size;
+    imageSmall.folderName = command.folderName;
+    const infoImageSmall = await this.imageRepository.getInfoForImageByUrl(
+      imageSmall.url,
+    );
+    if (!infoImageSmall) {
+      await this.imageRepository.saveImage(imageSmall);
+    } else {
+      infoImageSmall.id = imageSmall.id;
+      await this.imageRepository.saveImage(infoImageSmall);
     }
     const main =
       await this.imageRepository.getInfoForImageByPostIdAndFolderName(

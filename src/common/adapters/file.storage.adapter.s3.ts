@@ -60,10 +60,11 @@ export class FileStorageAdapterS3 {
     folderName: string,
     blogId: string,
     postId: string,
+    infoSize: string,
   ): Promise<ImageModelDocument> {
     const command = new PutObjectCommand({
       Bucket: 'my1bucket',
-      Key: `images/${folderName}/${postId}_post.png`,
+      Key: `images/${folderName}/${postId}_post_${infoSize}.png`,
       Body: wallpaperBuffer,
       ContentType: 'image/png',
     });
@@ -72,7 +73,7 @@ export class FileStorageAdapterS3 {
       const newImage = new this.image();
       newImage.id = uploadResult.ETag;
       newImage.blogId = blogId;
-      newImage.key = `images/${folderName}/${postId}_post.png`;
+      newImage.key = `images/${folderName}/${postId}_post_${infoSize}.png`;
       newImage.bucket = 'my1bucket';
       newImage.postId = postId;
       return newImage;
