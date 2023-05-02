@@ -248,7 +248,7 @@ export class QueryRepositorySql extends IQueryRepository {
             a.id,
           );
           const main =
-            await this.imageRepository.getInfoForImageByBlogIdAndFolderName(
+            await this.imageRepository.getInfoForImageByPostIdAndFolderName(
               a.id,
               'main',
             );
