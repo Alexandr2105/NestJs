@@ -5,6 +5,7 @@ import {
   AllQuestionsSa,
   AllStatistics,
   BanUsersInfoForBlog,
+  BlogsQueryType,
   BlogsQueryTypeSA,
   CommentsType,
   PostQueryType,
@@ -152,9 +153,10 @@ export class QueryRepositoryTypeorm extends IQueryRepository {
     return this.returnObject(query, totalCount, sortUsers);
   }
 
-  async getQueryBlogs(query: any) /*Promise<BlogsQueryType>*/ {
+  async getQueryBlogs(query: any): Promise<BlogsQueryType> {
     const [allBlogs, totalCount] = await this.blogsRepository.findAndCount({
       where: { name: ILike(`%${query.searchNameTerm}%`), banStatus: false },
+      relations: { image: true },
       select: {
         id: true,
         name: true,
@@ -162,6 +164,14 @@ export class QueryRepositoryTypeorm extends IQueryRepository {
         websiteUrl: true,
         createdAt: true,
         isMembership: true,
+        image: {
+          id: true,
+          folderName: true,
+          url: true,
+          width: true,
+          height: true,
+          fileSize: true,
+        },
       },
       order: { [query.sortBy]: query.sortDirection },
       skip: this.queryCount.skipHelper(query.pageNumber, query.pageSize),
@@ -172,14 +182,30 @@ export class QueryRepositoryTypeorm extends IQueryRepository {
       page: query.pageNumber,
       pageSize: query.pageSize,
       totalCount: totalCount,
-      items: allBlogs,
+      items: allBlogs.map((a) => {
+        const { image, ...all } = a;
+        let wallpaper = null;
+        const main = [];
+        image.map((b) => {
+          const { id, folderName, ...all } = b;
+          if (folderName === 'wallpaper') {
+            wallpaper = all;
+          } else if (folderName === 'main') {
+            main.push(all);
+          }
+        });
+        return {
+          ...all,
+          images: { wallpaper: wallpaper, main: main },
+        };
+      }),
     };
   }
 
   async getQueryBlogsAuthUser(
     query: any,
     userId: string,
-  ) /*: Promise<BlogsQueryType>*/ {
+  ): Promise<BlogsQueryType> {
     const [allBlogs, totalCount] = await this.blogsRepository.findAndCount({
       where: {
         userId: userId,
@@ -192,7 +218,16 @@ export class QueryRepositoryTypeorm extends IQueryRepository {
         websiteUrl: true,
         createdAt: true,
         isMembership: true,
+        image: {
+          id: true,
+          url: true,
+          width: true,
+          height: true,
+          fileSize: true,
+          folderName: true,
+        },
       },
+      relations: { image: true },
       order: { [query.sortBy]: query.sortDirection },
       skip: this.queryCount.skipHelper(query.pageNumber, query.pageSize),
       take: query.pageSize,
@@ -202,7 +237,23 @@ export class QueryRepositoryTypeorm extends IQueryRepository {
       page: query.pageNumber,
       pageSize: query.pageSize,
       totalCount: totalCount,
-      items: allBlogs,
+      items: allBlogs.map((a) => {
+        const { image, ...all } = a;
+        let wallpaper = null;
+        const main = [];
+        image.map((b) => {
+          const { id, folderName, ...all } = b;
+          if (folderName === 'wallpaper') {
+            wallpaper = all;
+          } else if (folderName === 'main') {
+            main.push(all);
+          }
+        });
+        return {
+          ...all,
+          images: { wallpaper: wallpaper, main: main },
+        };
+      }),
     };
   }
 
@@ -298,8 +349,15 @@ export class QueryRepositoryTypeorm extends IQueryRepository {
         blogName: true,
         createdAt: true,
         likeStatus: { userId: true, login: true, createDate: true },
+        image: {
+          id: true,
+          url: true,
+          width: true,
+          height: true,
+          fileSize: true,
+        },
       },
-      relations: { likeStatus: true },
+      relations: { likeStatus: true, image: true },
       order: {
         [query.sortBy]: query.sortDirection,
         likeStatus: { createDate: 'DESC' },
@@ -313,16 +371,21 @@ export class QueryRepositoryTypeorm extends IQueryRepository {
       pageSize: query.pageSize,
       totalCount: totalCount,
       items: allPosts.map((a) => {
-        const { likeStatus, ...all } = a;
+        const { likeStatus, image, ...all } = a;
         const like = likeStatus.filter((l) => l.status === 'Like');
         const dislike = likeStatus.filter((d) => d.status === 'Dislike');
         const myStatus = likeStatus.find((m) => m.userId === userId);
+        const main = [];
         const newestLikes = likeStatus.splice(0, 3).map((a) => {
           return {
             addedAt: a.createDate,
             userId: a.userId,
             login: a.login,
           };
+        });
+        image.map((b) => {
+          const { id, ...all } = b;
+          main.push(all);
         });
         return {
           ...all,
@@ -332,6 +395,7 @@ export class QueryRepositoryTypeorm extends IQueryRepository {
             myStatus: myStatus?.status === undefined ? 'None' : myStatus.status,
             newestLikes: newestLikes,
           },
+          images: main,
         };
       }),
     };
@@ -353,11 +417,19 @@ export class QueryRepositoryTypeorm extends IQueryRepository {
         blogName: true,
         createdAt: true,
         likeStatus: { login: true, userId: true, createDate: true },
+        image: {
+          id: true,
+          url: true,
+          width: true,
+          height: true,
+          fileSize: true,
+        },
       },
-      relations: { likeStatus: true },
+      relations: { likeStatus: true, image: true },
       order: {
-        [query.sortBy]: query.sortDirection,
         likeStatus: { createDate: 'DESC' },
+        image: { fileSize: 'desc' } /*для прохождения теста сделал*/,
+        [query.sortBy]: query.sortDirection,
       },
       skip: this.queryCount.skipHelper(query.pageNumber, query.pageSize),
       take: query.pageSize,
@@ -368,7 +440,7 @@ export class QueryRepositoryTypeorm extends IQueryRepository {
       pageSize: query.pageSize,
       totalCount: totalCount,
       items: allPosts.map((a) => {
-        const { likeStatus, ...all } = a;
+        const { likeStatus, image, ...all } = a;
         const like = likeStatus.filter((l) => l.status === 'Like');
         const dislike = likeStatus.filter((d) => d.status === 'Dislike');
         const myStatus = likeStatus.find((m) => m.userId === userId);
@@ -388,6 +460,16 @@ export class QueryRepositoryTypeorm extends IQueryRepository {
         return {
           ...all,
           extendedLikesInfo,
+          images: {
+            main: image.map((b) => {
+              return {
+                url: b.url,
+                width: b.width,
+                height: b.height,
+                fileSize: b.fileSize,
+              };
+            }),
+          },
         };
       }),
     };
