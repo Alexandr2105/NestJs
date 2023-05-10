@@ -3,4 +3,6 @@ export const settings = {
   REFRESH_TOKEN_SECRET: process.env.REFRESH_TOKEN_SECRET || '12345',
   TOKEN_LIFE: 3000,
   REFRESH_TOKEN_LIFE: 6000,
+  CURRENT_APP_BASE_URL:
+    process.env.CURRENT_APP_BASE_URL || 'https://localhost:3000',
 };
