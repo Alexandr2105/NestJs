@@ -152,6 +152,7 @@ import { IImageRepository } from './features/public/imageRepository/i.image.repo
 import { ImageRepositoryTypeorm } from './features/public/imageRepository/image.repository.typeorm';
 import { ImageRepositoryMongo } from './features/public/imageRepository/image.repository.mongo';
 import { ImageRepositorySql } from './features/public/imageRepository/image.repository.sql';
+import { TelegramController } from './features/integrations/telegram/telegram.controller';
 
 const Strategies = [LocalStrategy, JwtStrategy, BasicStrategy, RefreshStrategy];
 const Validators = [
@@ -418,6 +419,7 @@ const entities = [
     UsersControllerBlogger,
     QuizQuestionsControllerSa,
     PairQuizGameController,
+    TelegramController,
   ],
   providers: [
     QueryCount,
