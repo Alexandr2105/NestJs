@@ -153,6 +153,8 @@ import { ImageRepositoryTypeorm } from './features/public/imageRepository/image.
 import { ImageRepositoryMongo } from './features/public/imageRepository/image.repository.mongo';
 import { ImageRepositorySql } from './features/public/imageRepository/image.repository.sql';
 import { TelegramController } from './features/integrations/telegram/telegram.controller';
+import { TelegramAdapter } from './common/adapters/telegram.adapter';
+import { SendMessageUseCase } from './features/integrations/telegram/aplication/useCases/sendMessageUseCase';
 
 const Strategies = [LocalStrategy, JwtStrategy, BasicStrategy, RefreshStrategy];
 const Validators = [
@@ -207,6 +209,7 @@ const UseCases = [
   GetCurrentUserStaticUseCase,
   UploadPictureForBlogUseCase,
   UploadPictureForPostUserCase,
+  SendMessageUseCase,
 ];
 const MongoRepositories = [
   AuthRepositoryMongo,
@@ -435,6 +438,7 @@ const entities = [
     ...Validators,
     CountAttemptGuard,
     FileStorageAdapterS3,
+    TelegramAdapter,
     ...UseCases,
     ...SqlRepositories,
     ...MongoRepositories,
