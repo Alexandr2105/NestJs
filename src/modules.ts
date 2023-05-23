@@ -154,7 +154,11 @@ import { ImageRepositoryMongo } from './features/public/imageRepository/image.re
 import { ImageRepositorySql } from './features/public/imageRepository/image.repository.sql';
 import { TelegramController } from './features/integrations/telegram/telegram.controller';
 import { TelegramAdapter } from './common/adapters/telegram.adapter';
-import { SendMessageUseCase } from './features/integrations/telegram/aplication/useCases/sendMessageUseCase';
+import { SendMessageUseCase } from './features/integrations/telegram/aplication/useCases/send.message.use.case';
+import { SubscribeToBlogUseCase } from './features/public/blogs/aplication/useCases/subscribe.to.blog.use.case';
+import { UnsubscribeToBlogUseCase } from './features/public/blogs/aplication/useCases/unsubscribe.to.blog.use.case';
+import { AddTelegramIdForUserUseCase } from './features/integrations/telegram/aplication/useCases/add.telegram.id.for.user.use.case';
+import { SendMessageForUserAboutNewPostUseCase } from './features/integrations/telegram/aplication/useCases/send.message.for.user.about.new.post.use.case';
 
 const Strategies = [LocalStrategy, JwtStrategy, BasicStrategy, RefreshStrategy];
 const Validators = [
@@ -210,6 +214,10 @@ const UseCases = [
   UploadPictureForBlogUseCase,
   UploadPictureForPostUserCase,
   SendMessageUseCase,
+  SubscribeToBlogUseCase,
+  UnsubscribeToBlogUseCase,
+  AddTelegramIdForUserUseCase,
+  SendMessageForUserAboutNewPostUseCase,
 ];
 const MongoRepositories = [
   AuthRepositoryMongo,

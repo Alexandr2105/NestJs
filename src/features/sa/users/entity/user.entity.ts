@@ -23,6 +23,8 @@ export class UserEntity {
   createdAt: string;
   @Column()
   ban: boolean;
+  @Column({ default: null })
+  telegramId: string;
 
   @OneToMany(() => BlogEntity, (b) => b.user, { onDelete: 'CASCADE' })
   blogs: BlogEntity[];

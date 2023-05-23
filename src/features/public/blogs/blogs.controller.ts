@@ -1,10 +1,15 @@
 import {
   Controller,
+  Delete,
   Get,
   Headers,
+  HttpCode,
   NotFoundException,
   Param,
+  Post,
   Query,
+  Req,
+  UseGuards,
 } from '@nestjs/common';
 import { QueryCount } from '../../../common/helper/query.count';
 import { Jwt } from '../auth/jwt';
@@ -14,6 +19,9 @@ import { IQueryRepository } from '../queryReposytories/i.query.repository';
 import { IBlogsRepository } from './i.blogs.repository';
 import { GetBlogIdCommand } from './aplication/useCases/get.blog.id.use.case';
 import { CheckBlogId } from '../../blogger/blogs/dto/blogger.dto';
+import { JwtAuthGuard } from '../../../common/guard/jwt.auth.guard';
+import { SubscribeToBlogCommand } from './aplication/useCases/subscribe.to.blog.use.case';
+import { UnsubscribeToBlogCommand } from './aplication/useCases/unsubscribe.to.blog.use.case';
 
 @Controller('blogs')
 export class BlogsController {
@@ -68,5 +76,23 @@ export class BlogsController {
         'null',
       );
     }
+  }
+
+  @HttpCode(204)
+  @UseGuards(JwtAuthGuard)
+  @Post('/:blogId/subscription')
+  async subscribeUserToBlog(@Param() param: CheckBlogId, @Req() req) {
+    await this.commandBus.execute(
+      new SubscribeToBlogCommand(param.blogId, req.user.id),
+    );
+  }
+
+  @HttpCode(204)
+  @UseGuards(JwtAuthGuard)
+  @Delete('/:blogId/subscription')
+  async unsubscribeUserToBlog(@Param() param: CheckBlogId, @Req() req) {
+    await this.commandBus.execute(
+      new UnsubscribeToBlogCommand(param.blogId, req.user.id),
+    );
   }
 }

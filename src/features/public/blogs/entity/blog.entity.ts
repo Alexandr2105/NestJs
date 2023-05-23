@@ -24,6 +24,8 @@ export class BlogEntity {
   banDate: string;
   @Column()
   isMembership: boolean;
+  @Column('json', { default: [] })
+  subscribers: string[];
 
   @OneToMany(() => PostEntity, (p) => p.user, { onDelete: 'CASCADE' })
   posts: PostEntity[];

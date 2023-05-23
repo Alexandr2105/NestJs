@@ -16,7 +16,7 @@ export async function bootstrap() {
   const telegramAdapter = await app.resolve(TelegramAdapter);
   let baseUrl = settings.CURRENT_APP_BASE_URL;
   if (true) {
-    //TODO:разобраться и пересмотреть виде про телеграмм
+    //пока пусть будет true
     baseUrl = await telegramAdapter.connectToNgrok();
   }
   await telegramAdapter.sendOurHookForTelegram(

@@ -1,4 +1,4 @@
-import { CommandHandler } from '@nestjs/cqrs';
+import { CommandBus, CommandHandler } from '@nestjs/cqrs';
 import { PostDocument } from '../../../../public/posts/schema/posts.schema';
 import { ForbiddenException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
@@ -6,6 +6,8 @@ import { Model } from 'mongoose';
 import { CreatePostForBlogDto } from '../../dto/blogger.dto';
 import { IBlogsRepository } from '../../../../public/blogs/i.blogs.repository';
 import { IPostsRepository } from '../../../../public/posts/i.posts.repository';
+import { BlogDocument } from '../../../../public/blogs/schema/blogs.schema';
+import { SendMessageForUserAboutNewPostCommand } from '../../../../integrations/telegram/aplication/useCases/send.message.for.user.about.new.post.use.case';
 
 export class CreatePostByIdCommand {
   constructor(
@@ -20,11 +22,14 @@ export class CreatePostByIdUseCase {
   constructor(
     private readonly blogsRepository: IBlogsRepository,
     private readonly postsRepository: IPostsRepository,
+    private readonly commandBus: CommandBus,
     @InjectModel('posts') protected postsCollection: Model<PostDocument>,
   ) {}
 
   async execute(command: CreatePostByIdCommand) {
-    const infoBlog: any = await this.blogsRepository.getBlogId(command.blogId);
+    const infoBlog: BlogDocument = await this.blogsRepository.getBlogId(
+      command.blogId,
+    );
     if (infoBlog.userId !== command.userId) throw new ForbiddenException();
     const newPost = new this.postsCollection(command.post);
     newPost.createdAt = new Date().toISOString();
@@ -33,6 +38,12 @@ export class CreatePostByIdUseCase {
     newPost.userId = command.userId;
     newPost.blogId = command.blogId;
     await this.postsRepository.save(newPost);
+    await this.commandBus.execute(
+      new SendMessageForUserAboutNewPostCommand(
+        infoBlog.subscribers,
+        infoBlog.name,
+      ),
+    );
     return {
       id: newPost.id,
       title: newPost.title,

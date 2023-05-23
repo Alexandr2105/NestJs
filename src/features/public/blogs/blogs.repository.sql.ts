@@ -78,8 +78,8 @@ export class BlogsRepositorySql extends IBlogsRepository {
     if (!(await this.getBlogId(blog.id))) {
       await this.dataSource.query(
         `INSERT INTO public."Blogs"(
-            "name", "websiteUrl", "description","id","createdAt","userId","banStatus","isMembership")
-            VALUES ($1,$2,$3,$4,$5,$6,$7,$8)`,
+            "name", "websiteUrl", "description","id","createdAt","userId","banStatus","isMembership","subscribers")
+            VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9)`,
         [
           blog.name,
           blog.websiteUrl,
@@ -89,14 +89,15 @@ export class BlogsRepositorySql extends IBlogsRepository {
           blog.userId,
           blog.banStatus,
           blog.isMembership,
+          blog.subscribers,
         ],
       );
     } else {
       await this.dataSource.query(
         `UPDATE public."Blogs"
             SET "name"=$1, "websiteUrl"=$2, "description"=$3, 
-            "createdAt"=$4, "userId"=$5, "banDate"=$6, "isMembership"=$7, "banStatus"=$8
-            WHERE "id"=$9`,
+            "createdAt"=$4, "userId"=$5, "banDate"=$6, "isMembership"=$7, "banStatus"=$8, "subscribers"=$9
+            WHERE "id"=$10`,
         [
           blog.name,
           blog.websiteUrl,
@@ -106,6 +107,7 @@ export class BlogsRepositorySql extends IBlogsRepository {
           blog.banDate,
           blog.isMembership,
           blog.banStatus,
+          blog.subscribers,
           blog.id,
         ],
       );

@@ -79,8 +79,8 @@ export class UsersRepositorySql extends IUsersRepository {
     if (!(await this.getUserId(user.id))) {
       await this.dataSource.query(
         `INSERT INTO public."Users"
-           ("id", "login", "password", "email", "createdAt", "ban")
-            VALUES ($1, $2, $3, $4, $5, $6)`,
+           ("id", "login", "password", "email", "createdAt", "ban", "telegramId")
+            VALUES ($1, $2, $3, $4, $5, $6,$7)`,
         [
           user.id,
           user.login,
@@ -88,14 +88,15 @@ export class UsersRepositorySql extends IUsersRepository {
           user.email,
           user.createdAt,
           user.ban,
+          user.telegramId,
         ],
       );
     } else {
       await this.dataSource.query(
         `UPDATE public."Users"
-              SET ban=$1
-        WHERE "id"=$2`,
-        [user.ban, user.id],
+              SET ban=$1, telegramId=$2
+        WHERE "id"=$3`,
+        [user.ban, user.telegramId, user.id],
       );
     }
   }
