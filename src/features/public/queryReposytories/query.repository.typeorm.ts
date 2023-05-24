@@ -153,7 +153,7 @@ export class QueryRepositoryTypeorm extends IQueryRepository {
     return this.returnObject(query, totalCount, sortUsers);
   }
 
-  async getQueryBlogs(query: any): Promise<BlogsQueryType> {
+  async getQueryBlogs(query: any, userId: string): Promise<BlogsQueryType> {
     const [allBlogs, totalCount] = await this.blogsRepository.findAndCount({
       where: { name: ILike(`%${query.searchNameTerm}%`), banStatus: false },
       relations: { image: true },
@@ -164,6 +164,7 @@ export class QueryRepositoryTypeorm extends IQueryRepository {
         websiteUrl: true,
         createdAt: true,
         isMembership: true,
+        subscribers: true,
         image: {
           id: true,
           folderName: true,
@@ -183,7 +184,7 @@ export class QueryRepositoryTypeorm extends IQueryRepository {
       pageSize: query.pageSize,
       totalCount: totalCount,
       items: allBlogs.map((a) => {
-        const { image, ...all } = a;
+        const { image, subscribers, ...all } = a;
         let wallpaper = null;
         const main = [];
         image.map((b) => {
@@ -194,9 +195,19 @@ export class QueryRepositoryTypeorm extends IQueryRepository {
             main.push(all);
           }
         });
+        let currentUserSubscriptionStatus;
+        if (userId === null) {
+          currentUserSubscriptionStatus = 'None';
+        } else if (a.subscribers.includes(userId)) {
+          currentUserSubscriptionStatus = 'Subscribed';
+        } else {
+          currentUserSubscriptionStatus = 'Unsubscribed';
+        }
         return {
           ...all,
           images: { wallpaper: wallpaper, main: main },
+          currentUserSubscriptionStatus: currentUserSubscriptionStatus,
+          subscribersCount: subscribers.length,
         };
       }),
     };

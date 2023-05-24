@@ -35,7 +35,7 @@ export class QueryRepositorySql extends IQueryRepository {
     super();
   }
 
-  async getQueryBlogs(query: any): Promise<BlogsQueryType> {
+  async getQueryBlogs(query: any, userId: string): Promise<BlogsQueryType> {
     const totalCount = await this.dataSource.query(
       `SELECT count(*) FROM public."Blogs"
             WHERE "name" ILIKE $1 AND "banStatus"=false`,
@@ -72,6 +72,14 @@ export class QueryRepositorySql extends IQueryRepository {
               a.id,
               'main',
             );
+          let currentUserSubscriptionStatus;
+          if (userId === null) {
+            currentUserSubscriptionStatus = 'None';
+          } else if (a.subscribers.includes(userId)) {
+            currentUserSubscriptionStatus = 'Subscribed';
+          } else {
+            currentUserSubscriptionStatus = 'Unsubscribed';
+          }
           return {
             id: a.id,
             name: a.name,
@@ -98,6 +106,8 @@ export class QueryRepositorySql extends IQueryRepository {
                 };
               }),
             },
+            currentUserSubscriptionStatus: currentUserSubscriptionStatus,
+            subscribersCount: a.subscribers.length,
           };
         }),
       ),

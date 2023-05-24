@@ -2,7 +2,7 @@ export abstract class IQueryRepository {
   abstract getQueryAllUsers(query: any);
   abstract getQuerySortUsers(query: any);
   abstract returnObject(query, totalCount, sortArrayUsers);
-  abstract getQueryBlogs(query: any);
+  abstract getQueryBlogs(query: any, userId: string);
   abstract getQueryPosts(query: any, userId: string);
   abstract getQueryPostsBlogsId(query: any, blogId: string, userId: string);
   abstract getQueryCommentsByPostId(query: any, postId: string, userId: string);

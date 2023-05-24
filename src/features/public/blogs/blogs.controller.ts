@@ -34,9 +34,12 @@ export class BlogsController {
   ) {}
 
   @Get()
-  async getBlogs(@Query() dataQuery) {
+  async getBlogs(@Query() dataQuery, @Headers() header) {
     const query = this.queryCount.queryCheckHelper(dataQuery);
-    return await this.queryRepository.getQueryBlogs(query);
+    const userId = this.jwtService.getUserIdByToken(
+      header.authorization?.split(' ')[1],
+    );
+    return await this.queryRepository.getQueryBlogs(query, userId);
   }
 
   @Get(':id')

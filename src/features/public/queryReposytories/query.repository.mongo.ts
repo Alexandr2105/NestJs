@@ -62,7 +62,7 @@ export class QueryRepositoryMongo extends IQueryRepository {
     super();
   }
 
-  async getQueryBlogs(query: any): Promise<BlogsQueryType> {
+  async getQueryBlogs(query: any, userId: string): Promise<BlogsQueryType> {
     const totalCount = await this.blogsCollection.countDocuments({
       name: {
         $regex: query.searchNameTerm,
@@ -98,6 +98,14 @@ export class QueryRepositoryMongo extends IQueryRepository {
               a.id,
               'main',
             );
+          let currentUserSubscriptionStatus;
+          if (userId === null) {
+            currentUserSubscriptionStatus = 'None';
+          } else if (a.subscribers.includes(userId)) {
+            currentUserSubscriptionStatus = 'Subscribed';
+          } else {
+            currentUserSubscriptionStatus = 'Unsubscribed';
+          }
           return {
             id: a.id,
             name: a.name,
@@ -124,6 +132,8 @@ export class QueryRepositoryMongo extends IQueryRepository {
                 };
               }),
             },
+            currentUserSubscriptionStatus: currentUserSubscriptionStatus,
+            subscribersCount: a.subscribers.length,
           };
         }),
       ),
