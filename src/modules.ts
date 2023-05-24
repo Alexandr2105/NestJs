@@ -159,6 +159,7 @@ import { SubscribeToBlogUseCase } from './features/public/blogs/aplication/useCa
 import { UnsubscribeToBlogUseCase } from './features/public/blogs/aplication/useCases/unsubscribe.to.blog.use.case';
 import { AddTelegramIdForUserUseCase } from './features/integrations/telegram/aplication/useCases/add.telegram.id.for.user.use.case';
 import { SendMessageForUserAboutNewPostUseCase } from './features/integrations/telegram/aplication/useCases/send.message.for.user.about.new.post.use.case';
+import { GetBlogIdForSubscribesUseCase } from './features/public/blogs/aplication/useCases/get.blog.id.for.subscribers.use.case';
 
 const Strategies = [LocalStrategy, JwtStrategy, BasicStrategy, RefreshStrategy];
 const Validators = [
@@ -218,6 +219,7 @@ const UseCases = [
   UnsubscribeToBlogUseCase,
   AddTelegramIdForUserUseCase,
   SendMessageForUserAboutNewPostUseCase,
+  GetBlogIdForSubscribesUseCase,
 ];
 const MongoRepositories = [
   AuthRepositoryMongo,

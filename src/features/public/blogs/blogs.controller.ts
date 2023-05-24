@@ -14,7 +14,6 @@ import {
 import { QueryCount } from '../../../common/helper/query.count';
 import { Jwt } from '../auth/jwt';
 import { CommandBus } from '@nestjs/cqrs';
-import { GetBlogIdSpecialCommand } from './aplication/useCases/get.blog.id.special.use.case';
 import { IQueryRepository } from '../queryReposytories/i.query.repository';
 import { IBlogsRepository } from './i.blogs.repository';
 import { GetBlogIdCommand } from './aplication/useCases/get.blog.id.use.case';
@@ -22,6 +21,7 @@ import { CheckBlogId } from '../../blogger/blogs/dto/blogger.dto';
 import { JwtAuthGuard } from '../../../common/guard/jwt.auth.guard';
 import { SubscribeToBlogCommand } from './aplication/useCases/subscribe.to.blog.use.case';
 import { UnsubscribeToBlogCommand } from './aplication/useCases/unsubscribe.to.blog.use.case';
+import { GetBlogIdForSubscribesCommand } from './aplication/useCases/get.blog.id.for.subscribers.use.case';
 
 @Controller('blogs')
 export class BlogsController {
@@ -40,10 +40,15 @@ export class BlogsController {
   }
 
   @Get(':id')
-  async getBlog(@Param('id') blogId: string) {
+  async getBlog(@Param('id') blogId: string, @Headers() header) {
     const blog = await this.commandBus.execute(new GetBlogIdCommand(blogId));
     if (blog && blog.banStatus === false) {
-      return await this.commandBus.execute(new GetBlogIdSpecialCommand(blogId));
+      const userId = this.jwtService.getUserIdByToken(
+        header.authorization?.split(' ')[1],
+      );
+      return await this.commandBus.execute(
+        new GetBlogIdForSubscribesCommand(blogId, userId),
+      );
     } else {
       throw new NotFoundException();
     }
