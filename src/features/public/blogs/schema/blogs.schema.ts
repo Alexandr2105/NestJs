@@ -25,6 +25,7 @@ export class Blog {
   @Prop({ required: true })
   isMembership: boolean;
   @IsArray()
+  @Prop({ default: null })
   subscribers: any[];
 }
 export const BlogSchema = SchemaFactory.createForClass(Blog);

@@ -94,7 +94,7 @@ export class UsersRepositorySql extends IUsersRepository {
     } else {
       await this.dataSource.query(
         `UPDATE public."Users"
-              SET ban=$1, telegramId=$2
+              SET "ban"=$1, "telegramId"=$2
         WHERE "id"=$3`,
         [user.ban, user.telegramId, user.id],
       );

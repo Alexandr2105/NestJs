@@ -17,7 +17,7 @@ export class AddTelegramIdForUserUseCase {
 
   async execute(command: AddTelegramIdForUserCommand) {
     const id = command.payload.message.text.split('=')[1];
-    const user: UserDocument = await this.user.getUserId(id);
+    const user: UserDocument = await this.user.getUserByIdAll(id);
     user.telegramId = command.payload.message.from.id.toString();
     await this.user.save(user);
     await this.telegramAdapter.sendMessage(
