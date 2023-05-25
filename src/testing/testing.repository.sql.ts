@@ -23,5 +23,6 @@ export class TestingRepositorySql extends ITestingRepository {
     await this.dataSource.query(`DELETE FROM public."PairQuizGame"`);
     await this.dataSource.query(`DELETE FROM public."StatisticGames"`);
     await this.dataSource.query(`DELETE FROM public."Image"`);
+    await this.dataSource.query(`DELETE FROM public."SubscriptionsForBlog"`);
   }
 }

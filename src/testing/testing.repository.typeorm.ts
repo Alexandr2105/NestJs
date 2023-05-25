@@ -16,6 +16,7 @@ import { QuizQuestionEntity } from '../features/sa/quizQuestions/entity/quiz.que
 import { PairQuizGameEntity } from '../features/public/pairQuizGame/entity/pair.quiz.game.entity';
 import { StatisticGamesEntity } from '../features/public/pairQuizGame/entity/statistic.games.entity';
 import { ImageEntity } from '../common/entity/image.entity';
+import { SubscriptionsForBlogEntity } from '../features/public/blogs/entity/subscriptions.for.blog.entity';
 
 @Injectable()
 export class TestingRepositoryTypeorm extends ITestingRepository {
@@ -48,6 +49,8 @@ export class TestingRepositoryTypeorm extends ITestingRepository {
     private readonly statisticGames: Repository<StatisticGamesEntity>,
     @InjectRepository(ImageEntity)
     private readonly image: Repository<ImageEntity>,
+    @InjectRepository(SubscriptionsForBlogEntity)
+    private readonly subscriptionsForBlog: Repository<SubscriptionsForBlogEntity>,
   ) {
     super();
   }
@@ -81,5 +84,8 @@ export class TestingRepositoryTypeorm extends ITestingRepository {
       `DELETE FROM public."statistic_games_entity"`,
     );
     await this.statisticGames.query(`DELETE FROM public."image_entity"`);
+    await this.subscriptionsForBlog.query(
+      'DELETE FROM public."subscriptions_for_blog_entity"',
+    );
   }
 }

@@ -159,7 +159,12 @@ import { SubscribeToBlogUseCase } from './features/public/blogs/aplication/useCa
 import { UnsubscribeToBlogUseCase } from './features/public/blogs/aplication/useCases/unsubscribe.to.blog.use.case';
 import { AddTelegramIdForUserUseCase } from './features/integrations/telegram/aplication/useCases/add.telegram.id.for.user.use.case';
 import { SendMessageForUserAboutNewPostUseCase } from './features/integrations/telegram/aplication/useCases/send.message.for.user.about.new.post.use.case';
-import { GetBlogIdForSubscribesUseCase } from './features/public/blogs/aplication/useCases/get.blog.id.for.subscribers.use.case';
+import { SubscriptionsForBlogEntity } from './features/public/blogs/entity/subscriptions.for.blog.entity';
+import { SubscriptionsForBlogSchema } from './features/public/blogs/schema/subscriptions.for.blog.schema';
+import { ISubscriptionsRepository } from './features/public/subscriptionsRepository/i.subscriptions.repository';
+import { SubscriptionsRepositoryTypeorm } from './features/public/subscriptionsRepository/subscriptions.repository.typeorm';
+import { SubscriptionsRepositoryMongo } from './features/public/subscriptionsRepository/subscriptions.repository.mongo';
+import { SubscriptionsRepositorySql } from './features/public/subscriptionsRepository/subscriptions.repository.sql';
 
 const Strategies = [LocalStrategy, JwtStrategy, BasicStrategy, RefreshStrategy];
 const Validators = [
@@ -219,7 +224,6 @@ const UseCases = [
   UnsubscribeToBlogUseCase,
   AddTelegramIdForUserUseCase,
   SendMessageForUserAboutNewPostUseCase,
-  GetBlogIdForSubscribesUseCase,
 ];
 const MongoRepositories = [
   AuthRepositoryMongo,
@@ -233,6 +237,7 @@ const MongoRepositories = [
   QuizQuestionsRepositoryMongoSa,
   PairQuizGameRepositoryMongo,
   ImageRepositoryMongo,
+  SubscriptionsRepositoryMongo,
 ];
 const SqlRepositories = [
   AuthRepositorySql,
@@ -246,6 +251,7 @@ const SqlRepositories = [
   QuizQuestionsRepositorySqlSa,
   PairQuizGameRepositorySql,
   ImageRepositorySql,
+  SubscriptionsRepositorySql,
 ];
 const TypeOrmRepositories = [
   AuthRepositoryTypeorm,
@@ -259,6 +265,7 @@ const TypeOrmRepositories = [
   QuizQuestionsRepositoryTypeormSa,
   PairQuizGameRepositoryTypeorm,
   ImageRepositoryTypeorm,
+  SubscriptionsRepositoryTypeorm,
 ];
 const AbstractClassesSql = [
   {
@@ -287,6 +294,7 @@ const AbstractClassesSql = [
   },
   { provide: IPairQuizGameRepository, useClass: PairQuizGameRepositorySql },
   { provide: IImageRepository, useClass: ImageRepositorySql },
+  { provide: ISubscriptionsRepository, useClass: SubscriptionsRepositorySql },
 ];
 
 const AbstractClassesMongo = [
@@ -316,6 +324,7 @@ const AbstractClassesMongo = [
   },
   { provide: IPairQuizGameRepository, useClass: PairQuizGameRepositoryMongo },
   { provide: IImageRepository, useClass: ImageRepositoryMongo },
+  { provide: ISubscriptionsRepository, useClass: SubscriptionsRepositoryMongo },
 ];
 
 const AbstractClassesTypeorm = [
@@ -345,6 +354,10 @@ const AbstractClassesTypeorm = [
   },
   { provide: IPairQuizGameRepository, useClass: PairQuizGameRepositoryTypeorm },
   { provide: IImageRepository, useClass: ImageRepositoryTypeorm },
+  {
+    provide: ISubscriptionsRepository,
+    useClass: SubscriptionsRepositoryTypeorm,
+  },
 ];
 
 const entities = [
@@ -362,6 +375,7 @@ const entities = [
   PairQuizGameEntity,
   StatisticGamesEntity,
   ImageEntity,
+  SubscriptionsForBlogEntity,
 ];
 
 @Module({
@@ -383,6 +397,7 @@ const entities = [
       { name: 'infoQuizQuestionsGames', schema: PairQuizGameSchema },
       { name: 'statisticGames', schema: StatisticGamesSchema },
       { name: 'image', schema: ImageSchema },
+      { name: 'subscriptionsForBlog', schema: SubscriptionsForBlogSchema },
     ]),
     JwtModule.register({}),
     MailerModule.forRootAsync({

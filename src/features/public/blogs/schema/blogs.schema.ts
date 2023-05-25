@@ -1,6 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
-import { IsArray } from 'class-validator';
 
 export type BlogDocument = Blog & Document;
 
@@ -24,8 +23,5 @@ export class Blog {
   public banDate: string;
   @Prop({ required: true })
   isMembership: boolean;
-  @IsArray()
-  @Prop({ default: null })
-  subscribers: any[];
 }
 export const BlogSchema = SchemaFactory.createForClass(Blog);

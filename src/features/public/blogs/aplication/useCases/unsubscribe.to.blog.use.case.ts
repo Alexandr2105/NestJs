@@ -1,6 +1,8 @@
 import { CommandHandler } from '@nestjs/cqrs';
-import { IBlogsRepository } from '../../i.blogs.repository';
-import { BlogDocument } from '../../schema/blogs.schema';
+import { ISubscriptionsRepository } from '../../../subscriptionsRepository/i.subscriptions.repository';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
+import { SubscriptionsForBlogDocument } from '../../schema/subscriptions.for.blog.schema';
 
 export class UnsubscribeToBlogCommand {
   constructor(public blogId: string, public userId: string) {}
@@ -8,16 +10,21 @@ export class UnsubscribeToBlogCommand {
 
 @CommandHandler(UnsubscribeToBlogCommand)
 export class UnsubscribeToBlogUseCase {
-  constructor(private readonly blogRepository: IBlogsRepository) {}
+  constructor(
+    private readonly subscriptionsRepository: ISubscriptionsRepository,
+    @InjectModel('subscriptionsForBlog')
+    private readonly subscriptions: Model<SubscriptionsForBlogDocument>,
+  ) {}
   async execute(command: UnsubscribeToBlogCommand) {
-    const blog: BlogDocument = await this.blogRepository.getBlogId(
-      command.blogId,
-    );
-    const index = blog.subscribers.indexOf(command.userId);
-    if (index !== -1) {
-      blog.subscribers.splice(index, 1);
-      blog.subscribers.length === 0 ? (blog.isMembership = false) : true;
-      await this.blogRepository.save(blog);
+    const subscription =
+      await this.subscriptionsRepository.getSubscriptionFromBlogIdAndUserId(
+        command.blogId,
+        command.userId,
+      );
+    if (subscription) {
+      subscription.status = 'Unsubscribed';
+      subscription.unsubscriptionDate = new Date().toISOString();
+      await this.subscriptionsRepository.saveSubscription(subscription);
     }
   }
 }

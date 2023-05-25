@@ -156,7 +156,7 @@ export class QueryRepositoryTypeorm extends IQueryRepository {
   async getQueryBlogs(query: any, userId: string): Promise<BlogsQueryType> {
     const [allBlogs, totalCount] = await this.blogsRepository.findAndCount({
       where: { name: ILike(`%${query.searchNameTerm}%`), banStatus: false },
-      relations: { image: true },
+      relations: { image: true, subscriptions: true },
       select: {
         id: true,
         name: true,
@@ -164,7 +164,6 @@ export class QueryRepositoryTypeorm extends IQueryRepository {
         websiteUrl: true,
         createdAt: true,
         isMembership: true,
-        subscribers: true,
         image: {
           id: true,
           folderName: true,
@@ -184,7 +183,7 @@ export class QueryRepositoryTypeorm extends IQueryRepository {
       pageSize: query.pageSize,
       totalCount: totalCount,
       items: allBlogs.map((a) => {
-        const { image, subscribers, ...all } = a;
+        const { image, subscriptions, ...all } = a;
         let wallpaper = null;
         const main = [];
         image.map((b) => {
@@ -195,19 +194,18 @@ export class QueryRepositoryTypeorm extends IQueryRepository {
             main.push(all);
           }
         });
-        let currentUserSubscriptionStatus;
-        if (userId === null) {
-          currentUserSubscriptionStatus = 'None';
-        } else if (a.subscribers.includes(userId)) {
-          currentUserSubscriptionStatus = 'Subscribed';
-        } else {
-          currentUserSubscriptionStatus = 'Unsubscribed';
-        }
+        let status = 'None';
+        subscriptions.map((c) => {
+          if (c.userId === userId) {
+            c.status === undefined ? (status = 'None') : (status = c.status);
+          }
+        });
         return {
           ...all,
           images: { wallpaper: wallpaper, main: main },
-          currentUserSubscriptionStatus: currentUserSubscriptionStatus,
-          subscribersCount: subscribers.length,
+          currentUserSubscriptionStatus: status,
+          subscribersCount:
+            subscriptions?.length === undefined ? 0 : subscriptions.length,
         };
       }),
     };

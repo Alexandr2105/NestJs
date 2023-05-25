@@ -21,7 +21,7 @@ import { CheckBlogId } from '../../blogger/blogs/dto/blogger.dto';
 import { JwtAuthGuard } from '../../../common/guard/jwt.auth.guard';
 import { SubscribeToBlogCommand } from './aplication/useCases/subscribe.to.blog.use.case';
 import { UnsubscribeToBlogCommand } from './aplication/useCases/unsubscribe.to.blog.use.case';
-import { GetBlogIdForSubscribesCommand } from './aplication/useCases/get.blog.id.for.subscribers.use.case';
+import { GetBlogIdSpecialCommand } from './aplication/useCases/get.blog.id.special.use.case';
 
 @Controller('blogs')
 export class BlogsController {
@@ -50,7 +50,7 @@ export class BlogsController {
         header.authorization?.split(' ')[1],
       );
       return await this.commandBus.execute(
-        new GetBlogIdForSubscribesCommand(blogId, userId),
+        new GetBlogIdSpecialCommand(blogId, userId),
       );
     } else {
       throw new NotFoundException();

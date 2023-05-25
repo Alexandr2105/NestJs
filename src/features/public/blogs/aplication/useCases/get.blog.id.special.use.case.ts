@@ -1,9 +1,10 @@
 import { CommandHandler } from '@nestjs/cqrs';
 import { IBlogsRepository } from '../../i.blogs.repository';
 import { IImageRepository } from '../../../imageRepository/i.image.repository';
+import { ISubscriptionsRepository } from '../../../subscriptionsRepository/i.subscriptions.repository';
 
 export class GetBlogIdSpecialCommand {
-  constructor(public id: string) {}
+  constructor(public blogId: string, public userId: string) {}
 }
 
 @CommandHandler(GetBlogIdSpecialCommand)
@@ -11,11 +12,12 @@ export class GetBlogIdSpecialUseCase {
   constructor(
     private readonly blogsRepository: IBlogsRepository,
     private readonly imageRepository: IImageRepository,
+    private readonly subscriptionsRepository: ISubscriptionsRepository,
   ) {}
   async execute(
     command: GetBlogIdSpecialCommand,
   ) /*: Promise<BlogDocument | false>*/ {
-    const blog = await this.blogsRepository.getBlogIdSpecial(command.id);
+    const blog = await this.blogsRepository.getBlogIdSpecial(command.blogId);
     if (!blog) return false;
     const wallpaper =
       await this.imageRepository.getInfoForImageByBlogIdAndFolderName(
@@ -26,6 +28,18 @@ export class GetBlogIdSpecialUseCase {
       await this.imageRepository.getInfoForImageByBlogIdAndFolderName(
         blog.id,
         'main',
+      );
+    let subscription;
+    if (command.userId !== null) {
+      subscription =
+        await this.subscriptionsRepository.getSubscriptionFromBlogIdAndUserId(
+          command.blogId,
+          command.userId,
+        );
+    }
+    const count =
+      await this.subscriptionsRepository.getSubscriptionsCountFromBlogId(
+        command.blogId,
       );
     return {
       id: blog.id,
@@ -53,6 +67,9 @@ export class GetBlogIdSpecialUseCase {
           };
         }),
       },
+      currentUserSubscriptionStatus:
+        subscription?.status === undefined ? 'None' : subscription.status,
+      subscribersCount: count,
     };
   }
 }

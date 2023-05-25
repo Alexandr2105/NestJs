@@ -3,6 +3,7 @@ import { UserEntity } from '../../../sa/users/entity/user.entity';
 import { PostEntity } from '../../posts/entity/post.entity';
 import { BanUsersForBlogEntity } from './ban.users.for.blog.entity';
 import { ImageEntity } from '../../../../common/entity/image.entity';
+import { SubscriptionsForBlogEntity } from './subscriptions.for.blog.entity';
 
 @Entity()
 export class BlogEntity {
@@ -24,10 +25,8 @@ export class BlogEntity {
   banDate: string;
   @Column()
   isMembership: boolean;
-  @Column('json', { default: [] })
-  subscribers: string[];
 
-  @OneToMany(() => PostEntity, (p) => p.user, { onDelete: 'CASCADE' })
+  @OneToMany(() => PostEntity, (p) => p.blog, { onDelete: 'CASCADE' })
   posts: PostEntity[];
   @ManyToOne(() => UserEntity, (u) => u.blogs, { onDelete: 'CASCADE' })
   user: UserEntity;
@@ -37,4 +36,8 @@ export class BlogEntity {
   banInfoForBlogs: BanUsersForBlogEntity[];
   @OneToMany(() => ImageEntity, (i) => i.blog, { onDelete: 'CASCADE' })
   image: ImageEntity[];
+  @OneToMany(() => SubscriptionsForBlogEntity, (s) => s.blog, {
+    onDelete: 'CASCADE',
+  })
+  subscriptions: SubscriptionsForBlogEntity[];
 }

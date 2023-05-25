@@ -8,6 +8,8 @@ import { IBlogsRepository } from '../../../../public/blogs/i.blogs.repository';
 import { IPostsRepository } from '../../../../public/posts/i.posts.repository';
 import { BlogDocument } from '../../../../public/blogs/schema/blogs.schema';
 import { SendMessageForUserAboutNewPostCommand } from '../../../../integrations/telegram/aplication/useCases/send.message.for.user.about.new.post.use.case';
+import { ISubscriptionsRepository } from '../../../../public/subscriptionsRepository/i.subscriptions.repository';
+import { IUsersRepository } from '../../../../sa/users/i.users.repository';
 
 export class CreatePostByIdCommand {
   constructor(
@@ -23,6 +25,8 @@ export class CreatePostByIdUseCase {
     private readonly blogsRepository: IBlogsRepository,
     private readonly postsRepository: IPostsRepository,
     private readonly commandBus: CommandBus,
+    private readonly subscriptionsRepository: ISubscriptionsRepository,
+    private readonly usersRepository: IUsersRepository,
     @InjectModel('posts') protected postsCollection: Model<PostDocument>,
   ) {}
 
@@ -38,12 +42,20 @@ export class CreatePostByIdUseCase {
     newPost.userId = command.userId;
     newPost.blogId = command.blogId;
     await this.postsRepository.save(newPost);
-    await this.commandBus.execute(
-      new SendMessageForUserAboutNewPostCommand(
-        infoBlog.subscribers,
-        infoBlog.name,
-      ),
-    );
+    const subscriptions =
+      await this.subscriptionsRepository.getSubscriptionsFromBlogId(
+        command.blogId,
+        'Subscribed',
+      );
+    for (const a of subscriptions) {
+      const user = await this.usersRepository.getUserByIdAll(a.userId);
+      await this.commandBus.execute(
+        new SendMessageForUserAboutNewPostCommand(
+          user.telegramId,
+          infoBlog.name,
+        ),
+      );
+    }
     return {
       id: newPost.id,
       title: newPost.title,

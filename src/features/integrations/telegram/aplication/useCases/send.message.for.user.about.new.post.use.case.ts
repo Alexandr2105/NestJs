@@ -1,10 +1,9 @@
 import { CommandHandler } from '@nestjs/cqrs';
 import { IUsersRepository } from '../../../../sa/users/i.users.repository';
-import { UserDocument } from '../../../../sa/users/schema/user';
 import { TelegramAdapter } from '../../../../../common/adapters/telegram.adapter';
 
 export class SendMessageForUserAboutNewPostCommand {
-  constructor(public subscribes: string[], public blogName: string) {}
+  constructor(public telegramId: string, public blogName: string) {}
 }
 
 @CommandHandler(SendMessageForUserAboutNewPostCommand)
@@ -15,14 +14,9 @@ export class SendMessageForUserAboutNewPostUseCase {
   ) {}
 
   async execute(command: SendMessageForUserAboutNewPostCommand) {
-    for (const userId of command.subscribes) {
-      const user: UserDocument = await this.user.getUserByIdAll(userId);
-      if (user.telegramId !== null) {
-        await this.telegramAdapter.sendMessage(
-          `New post published for blog "${command.blogName}"`,
-          +user.telegramId,
-        );
-      }
-    }
+    await this.telegramAdapter.sendMessage(
+      `New post published for blog "${command.blogName}"`,
+      +command.telegramId,
+    );
   }
 }

@@ -1,6 +1,9 @@
 import { CommandHandler } from '@nestjs/cqrs';
-import { IBlogsRepository } from '../../i.blogs.repository';
-import { BlogDocument } from '../../schema/blogs.schema';
+import { ISubscriptionsRepository } from '../../../subscriptionsRepository/i.subscriptions.repository';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
+import { v4 as uuid4 } from 'uuid';
+import { SubscriptionsForBlogDocument } from '../../schema/subscriptions.for.blog.schema';
 
 export class SubscribeToBlogCommand {
   constructor(public blogId: string, public userId: string) {}
@@ -8,15 +11,30 @@ export class SubscribeToBlogCommand {
 
 @CommandHandler(SubscribeToBlogCommand)
 export class SubscribeToBlogUseCase {
-  constructor(private readonly blogRepository: IBlogsRepository) {}
+  constructor(
+    private readonly subscriptionsRepository: ISubscriptionsRepository,
+    @InjectModel('subscriptionsForBlog')
+    private readonly subscriptions: Model<SubscriptionsForBlogDocument>,
+  ) {}
   async execute(command: SubscribeToBlogCommand) {
-    const blog: BlogDocument = await this.blogRepository.getBlogId(
-      command.blogId,
-    );
-    if (!blog.subscribers.includes(command.userId)) {
-      blog.subscribers.push(command.userId);
-      blog.isMembership === false ? (blog.isMembership = true) : false;
-      await this.blogRepository.save(blog);
+    const subscription =
+      await this.subscriptionsRepository.getSubscriptionFromBlogIdAndUserId(
+        command.blogId,
+        command.userId,
+      );
+    if (!subscription) {
+      const newSubscription = new this.subscriptions();
+      newSubscription.id = uuid4();
+      newSubscription.blogId = command.blogId;
+      newSubscription.userId = command.userId;
+      newSubscription.subscriptionDate = new Date().toISOString();
+      newSubscription.status = 'Subscribed';
+      await this.subscriptionsRepository.saveSubscription(newSubscription);
+    } else {
+      subscription.status = 'Subscribed';
+      subscription.subscriptionDate = new Date().toISOString();
+      subscription.unsubscriptionDate = null;
+      await this.subscriptionsRepository.saveSubscription(subscription);
     }
   }
 }

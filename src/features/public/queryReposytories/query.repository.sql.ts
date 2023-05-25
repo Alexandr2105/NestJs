@@ -20,6 +20,7 @@ import { IPostsRepository } from '../posts/i.posts.repository';
 import { IUsersRepository } from '../../sa/users/i.users.repository';
 import { PostsRepositorySql } from '../posts/posts.repository.sql';
 import { IImageRepository } from '../imageRepository/i.image.repository';
+import { ISubscriptionsRepository } from '../subscriptionsRepository/i.subscriptions.repository';
 
 @Injectable()
 export class QueryRepositorySql extends IQueryRepository {
@@ -31,6 +32,7 @@ export class QueryRepositorySql extends IQueryRepository {
     private readonly postsRepositorySql: PostsRepositorySql,
     private readonly usersRepository: IUsersRepository,
     private readonly imageRepository: IImageRepository,
+    private readonly subscriptionsRepository: ISubscriptionsRepository,
   ) {
     super();
   }
@@ -72,14 +74,15 @@ export class QueryRepositorySql extends IQueryRepository {
               a.id,
               'main',
             );
-          let currentUserSubscriptionStatus;
-          if (userId === null) {
-            currentUserSubscriptionStatus = 'None';
-          } else if (a.subscribers.includes(userId)) {
-            currentUserSubscriptionStatus = 'Subscribed';
-          } else {
-            currentUserSubscriptionStatus = 'Unsubscribed';
-          }
+          const subscription =
+            await this.subscriptionsRepository.getSubscriptionFromBlogIdAndUserId(
+              a.id,
+              userId,
+            );
+          const count =
+            await this.subscriptionsRepository.getSubscriptionsCountFromBlogId(
+              a.id,
+            );
           return {
             id: a.id,
             name: a.name,
@@ -106,8 +109,8 @@ export class QueryRepositorySql extends IQueryRepository {
                 };
               }),
             },
-            currentUserSubscriptionStatus: currentUserSubscriptionStatus,
-            subscribersCount: a.subscribers.length,
+            currentUserSubscriptionStatus: subscription,
+            subscribersCount: count,
           };
         }),
       ),

@@ -8,6 +8,7 @@ import { BanUsersForBlogEntity } from '../../../public/blogs/entity/ban.users.fo
 import { BanUsersEntity } from './banUsers.entity';
 import { PairQuizGameEntity } from '../../../public/pairQuizGame/entity/pair.quiz.game.entity';
 import { StatisticGamesEntity } from '../../../public/pairQuizGame/entity/statistic.games.entity';
+import { SubscriptionsForBlogEntity } from '../../../public/blogs/entity/subscriptions.for.blog.entity';
 
 @Entity()
 export class UserEntity {
@@ -54,4 +55,8 @@ export class UserEntity {
     onDelete: 'CASCADE',
   })
   user: PairQuizGameEntity;
+  @OneToMany(() => SubscriptionsForBlogEntity, (s) => s.user, {
+    onDelete: 'CASCADE',
+  })
+  subscriptions: SubscriptionsForBlogEntity[];
 }
