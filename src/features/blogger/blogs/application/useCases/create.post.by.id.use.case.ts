@@ -45,7 +45,6 @@ export class CreatePostByIdUseCase {
     const subscriptions =
       await this.subscriptionsRepository.getSubscriptionsFromBlogId(
         command.blogId,
-        'Subscribed',
       );
     for (const a of subscriptions) {
       const user = await this.usersRepository.getUserByIdAll(a.userId);

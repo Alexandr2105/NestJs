@@ -20,9 +20,9 @@ export class AddTelegramIdForUserUseCase {
     const user: UserDocument = await this.user.getUserByIdAll(id);
     user.telegramId = command.payload.message.from.id.toString();
     await this.user.save(user);
-    await this.telegramAdapter.sendMessage(
-      'Вы подписались на обновления',
-      command.payload.message.from.id,
-    );
+    // TODO:await this.telegramAdapter.sendMessage(
+    //   'Вы подписались на обновления',
+    //   command.payload.message.from.id,
+    // );
   }
 }

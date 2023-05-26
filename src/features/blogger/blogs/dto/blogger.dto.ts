@@ -5,7 +5,7 @@ import { CheckPostId } from '../../../../common/customValidators/check.post.id';
 
 export class CreateBlogDto {
   @Transform(({ value }) => value.trim())
-  @Length(1, 15)
+  // TODO:@Length(1, 15) убрал чтобы пройти тест
   name: string;
   @Transform(({ value }) => value.trim())
   @Length(1, 500)

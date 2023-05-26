@@ -155,7 +155,10 @@ export class QueryRepositoryTypeorm extends IQueryRepository {
 
   async getQueryBlogs(query: any, userId: string): Promise<BlogsQueryType> {
     const [allBlogs, totalCount] = await this.blogsRepository.findAndCount({
-      where: { name: ILike(`%${query.searchNameTerm}%`), banStatus: false },
+      where: {
+        name: ILike(`%${query.searchNameTerm}%`),
+        banStatus: false,
+      },
       relations: { image: true, subscriptions: true },
       select: {
         id: true,
@@ -195,17 +198,20 @@ export class QueryRepositoryTypeorm extends IQueryRepository {
           }
         });
         let status = 'None';
+        let subscriptionsLength = 0;
         subscriptions.map((c) => {
           if (c.userId === userId) {
             c.status === undefined ? (status = 'None') : (status = c.status);
+          }
+          if (c.status === 'Subscribed') {
+            subscriptionsLength++;
           }
         });
         return {
           ...all,
           images: { wallpaper: wallpaper, main: main },
           currentUserSubscriptionStatus: status,
-          subscribersCount:
-            subscriptions?.length === undefined ? 0 : subscriptions.length,
+          subscribersCount: subscriptionsLength,
         };
       }),
     };

@@ -3,6 +3,6 @@ import { SubscriptionsForBlogDocument } from '../blogs/schema/subscriptions.for.
 export abstract class ISubscriptionsRepository {
   abstract getSubscriptionFromBlogIdAndUserId(blogId: string, userId: string);
   abstract getSubscriptionsCountFromBlogId(blogId: string);
-  abstract getSubscriptionsFromBlogId(blogId: string, status: string);
+  abstract getSubscriptionsFromBlogId(blogId: string);
   abstract saveSubscription(subscriptions: SubscriptionsForBlogDocument);
 }

@@ -27,11 +27,11 @@ export class SubscriptionsRepositoryMongo extends ISubscriptionsRepository {
     return subscriptions.length;
   }
 
-  async getSubscriptionsFromBlogId(blogId: string, status: string) {
+  async getSubscriptionsFromBlogId(blogId: string) {
     return this.subscriptionsCollection
       .find({
         blogId: blogId,
-        status: status,
+        status: 'Subscribed',
       })
       .select('userId');
   }

@@ -28,11 +28,11 @@ export class SubscriptionsRepositorySql extends ISubscriptionsRepository {
     return info.length;
   }
 
-  async getSubscriptionsFromBlogId(blogId: string, status: string) {
+  async getSubscriptionsFromBlogId(blogId: string) {
     return this.dataSource.query(
       `SELECT "userId" FROM public."SubscriptionsForBlog"
-            WHERE "blogId"=$1 AND "status"=$2`,
-      [blogId, status],
+            WHERE "blogId"=$1 AND "status"='Subscribed'`,
+      [blogId],
     );
   }
 

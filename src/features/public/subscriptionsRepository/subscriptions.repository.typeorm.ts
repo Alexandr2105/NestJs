@@ -19,7 +19,10 @@ export class SubscriptionsRepositoryTypeorm extends ISubscriptionsRepository {
   }
 
   async getSubscriptionsCountFromBlogId(blogId: string) {
-    const subscriptions = await this.subscription.findBy({ blogId: blogId });
+    const subscriptions = await this.subscription.findBy({
+      blogId: blogId,
+      status: 'Subscribed',
+    });
     return subscriptions.length;
   }
 
