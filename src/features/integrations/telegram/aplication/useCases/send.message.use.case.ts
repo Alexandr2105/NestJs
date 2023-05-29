@@ -19,12 +19,11 @@ export class SendMessageUseCase {
       await this.commandBus.execute(
         new AddTelegramIdForUserCommand(command.payload),
       );
+    } else {
+      await this.telegramAdapter.sendMessage(
+        `I know you ${command.payload.message.from.first_name}`,
+        command.payload.message.from.id,
+      );
     }
-    // TODO:else {
-    //   await this.telegramAdapter.sendMessage(
-    //     `I know you ${command.payload.message.from.first_name}`,
-    //     command.payload.message.from.id,
-    //   );
-    // }
   }
 }

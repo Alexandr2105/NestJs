@@ -26,8 +26,8 @@ export class TelegramController {
   @Get('auth-bot-link')
   async getLinkWithAuthCode(@Req() req) {
     const code = req.user.id;
-    // return { link: `https://t.me/MyFirstBackendBot?start=code=${code}` };
-    //TODO:Чтобы пройти тест верх должен быть закоменчен
-    return { link: `https://t.me/MyFirstBackendBot?code=${code}` };
+    return { link: `https://t.me/MyFirstBackendBot?start=code=${code}` };
+    //Чтобы пройти тест верх должен быть закоменчен
+    // return { link: `https://t.me/MyFirstBackendBot?code=${code}` };
   }
 }
