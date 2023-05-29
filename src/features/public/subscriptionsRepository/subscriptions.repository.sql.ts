@@ -22,7 +22,7 @@ export class SubscriptionsRepositorySql extends ISubscriptionsRepository {
   async getSubscriptionsCountFromBlogId(blogId: string) {
     const info = await this.dataSource.query(
       `SELECT * FROM public."SubscriptionsForBlog"
-            WHERE "blogId"=$1`,
+            WHERE "blogId"=$1 AND "status"='Subscribed'`,
       [blogId],
     );
     return info.length;
@@ -36,8 +36,16 @@ export class SubscriptionsRepositorySql extends ISubscriptionsRepository {
     );
   }
 
+  async getSubscriptionsFromId(id: string) {
+    return this.dataSource.query(
+      `SELECT "userId" FROM public."SubscriptionsForBlog"
+            WHERE "id"=$1`,
+      [id],
+    );
+  }
+
   async saveSubscription(subscriptions: SubscriptionsForBlogDocument) {
-    if (!(await this.getSubscriptionsCountFromBlogId(subscriptions.id))) {
+    if (!(await this.getSubscriptionsFromId(subscriptions.id))) {
       await this.dataSource.query(
         `INSERT INTO public."SubscriptionsForBlog"
            ("id", "blogId", "userId", "subscriptionDate", "status", "unsubscriptionDate")

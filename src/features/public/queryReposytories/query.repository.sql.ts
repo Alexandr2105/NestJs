@@ -109,7 +109,8 @@ export class QueryRepositorySql extends IQueryRepository {
                 };
               }),
             },
-            currentUserSubscriptionStatus: subscription,
+            currentUserSubscriptionStatus:
+              subscription?.status === undefined ? 'None' : subscription.status,
             subscribersCount: count,
           };
         }),
