@@ -135,7 +135,8 @@ export class QueryRepositoryMongo extends IQueryRepository {
                 };
               }),
             },
-            currentUserSubscriptionStatus: subscription,
+            currentUserSubscriptionStatus:
+              subscription?.status === undefined ? 'None' : subscription.status,
             subscribersCount: count,
           };
         }),

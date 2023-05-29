@@ -23,6 +23,7 @@ export class SubscriptionsRepositoryMongo extends ISubscriptionsRepository {
   async getSubscriptionsCountFromBlogId(blogId: string) {
     const subscriptions = await this.subscriptionsCollection.find({
       blogId: blogId,
+      status: 'Subscribed',
     });
     return subscriptions.length;
   }
