@@ -45,7 +45,7 @@ export class SubscriptionsRepositorySql extends ISubscriptionsRepository {
   }
 
   async saveSubscription(subscriptions: SubscriptionsForBlogDocument) {
-    if (!(await this.getSubscriptionsFromId(subscriptions.id))) {
+    if ((await this.getSubscriptionsFromId(subscriptions.id)).length === 0) {
       await this.dataSource.query(
         `INSERT INTO public."SubscriptionsForBlog"
            ("id", "blogId", "userId", "subscriptionDate", "status", "unsubscriptionDate")
