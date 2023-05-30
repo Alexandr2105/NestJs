@@ -9,4 +9,7 @@ export const settings = {
   CURRENT_APP_BASE_URL:
     process.env.CURRENT_APP_BASE_URL || 'https://localhost:3000',
   TELEGRAM_TOKEN: process.env.TOKEN_FOR_TELEGRAM,
+  STRIPE_TOKEN: process.env.TOKEN_FOR_STRIPE,
+  NGROK_AUTH_TOKEN: process.env.AUTH_TOKEN_FOR_NGROK,
+  SIGNING_SECRET: process.env.SIGNING_SECRET_FOR_WEBHOOK,
 };

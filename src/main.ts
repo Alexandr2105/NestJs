@@ -6,7 +6,7 @@ import { settings } from './settings';
 import { TelegramAdapter } from './common/adapters/telegram.adapter';
 
 export async function bootstrap() {
-  const rawApp = await NestFactory.create(AppModule);
+  const rawApp = await NestFactory.create(AppModule, { rawBody: true });
   const app = createApp(rawApp);
   const configService = app.get(ConfigService);
   const port = parseInt(configService.get('PORT'), 10) || 3000;

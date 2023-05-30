@@ -27,6 +27,11 @@ export class TelegramAdapter {
   }
 
   async connectToNgrok() {
-    return await ngrok.connect(3000);
+    const url = await ngrok.connect({
+      addr: 3000,
+      authtoken: settings.NGROK_AUTH_TOKEN,
+    });
+    console.log(url);
+    return url;
   }
 }

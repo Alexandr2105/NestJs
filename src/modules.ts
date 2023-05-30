@@ -165,6 +165,7 @@ import { ISubscriptionsRepository } from './features/public/subscriptionsReposit
 import { SubscriptionsRepositoryTypeorm } from './features/public/subscriptionsRepository/subscriptions.repository.typeorm';
 import { SubscriptionsRepositoryMongo } from './features/public/subscriptionsRepository/subscriptions.repository.mongo';
 import { SubscriptionsRepositorySql } from './features/public/subscriptionsRepository/subscriptions.repository.sql';
+import { StripeController } from './features/integrations/stripe/stripe.controller';
 
 const Strategies = [LocalStrategy, JwtStrategy, BasicStrategy, RefreshStrategy];
 const Validators = [
@@ -448,6 +449,7 @@ const entities = [
     QuizQuestionsControllerSa,
     PairQuizGameController,
     TelegramController,
+    StripeController,
   ],
   providers: [
     QueryCount,
