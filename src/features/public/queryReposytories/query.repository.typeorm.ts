@@ -410,7 +410,9 @@ export class QueryRepositoryTypeorm extends IQueryRepository {
             myStatus: myStatus?.status === undefined ? 'None' : myStatus.status,
             newestLikes: newestLikes,
           },
-          images: main,
+          images: {
+            main: main,
+          },
         };
       }),
     };

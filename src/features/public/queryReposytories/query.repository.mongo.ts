@@ -484,7 +484,7 @@ export class QueryRepositoryMongo extends IQueryRepository {
             isMembership: a.isMembership,
             images: {
               wallpaper:
-                wallpaper === undefined
+                wallpaper[0] === undefined
                   ? null
                   : {
                       url: wallpaper[0]?.url,

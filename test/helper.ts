@@ -25,6 +25,12 @@ export class Helper {
       websiteUrl: blog.body.websiteUrl,
       createdAt: blog.body.createdAt,
       isMembership: false,
+      currentUserSubscriptionStatus: 'None',
+      images: {
+        main: [],
+        wallpaper: null,
+      },
+      subscribersCount: 0,
     });
     return blog.body;
   };
@@ -57,6 +63,9 @@ export class Helper {
         dislikesCount: 0,
         myStatus: 'None',
         newestLikes: [],
+      },
+      images: {
+        main: [],
       },
     });
     return post.body;

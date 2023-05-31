@@ -149,7 +149,32 @@ describe('Create tests for blogger', () => {
         page: 1,
         pageSize: 10,
         totalCount: 2,
-        items: [newBlog2, newBlog1],
+        items: [
+          {
+            id: newBlog2.id,
+            name: newBlog2.name,
+            description: newBlog2.description,
+            websiteUrl: newBlog2.websiteUrl,
+            createdAt: newBlog2.createdAt,
+            isMembership: false,
+            images: {
+              wallpaper: null,
+              main: [],
+            },
+          },
+          {
+            id: newBlog1.id,
+            name: newBlog1.name,
+            description: newBlog1.description,
+            websiteUrl: newBlog1.websiteUrl,
+            createdAt: newBlog1.createdAt,
+            isMembership: false,
+            images: {
+              wallpaper: null,
+              main: [],
+            },
+          },
+        ],
       });
   });
 
@@ -820,6 +845,12 @@ describe('Create tests for sa', () => {
           websiteUrl: newBlog2.websiteUrl,
           createdAt: newBlog2.createdAt,
           isMembership: newBlog2.isMembership,
+          images: {
+            main: [],
+            wallpaper: null,
+          },
+          currentUserSubscriptionStatus: 'None',
+          subscribersCount: 0,
         },
       ],
     });
@@ -1035,6 +1066,12 @@ describe('Create tests for all', () => {
       websiteUrl: newBlog2.websiteUrl,
       createdAt: newBlog2.createdAt,
       isMembership: false,
+      images: {
+        main: [],
+        wallpaper: null,
+      },
+      currentUserSubscriptionStatus: 'None',
+      subscribersCount: 0,
     });
     await test.get(`/blogs/1234`).expect(404);
   });
@@ -1054,6 +1091,12 @@ describe('Create tests for all', () => {
           websiteUrl: newBlog2.websiteUrl,
           createdAt: newBlog2.createdAt,
           isMembership: newBlog2.isMembership,
+          images: {
+            main: [],
+            wallpaper: null,
+          },
+          currentUserSubscriptionStatus: 'None',
+          subscribersCount: 0,
         },
         {
           id: newBlog1.id,
@@ -1062,6 +1105,12 @@ describe('Create tests for all', () => {
           websiteUrl: newBlog1.websiteUrl,
           createdAt: newBlog1.createdAt,
           isMembership: newBlog1.isMembership,
+          images: {
+            main: [],
+            wallpaper: null,
+          },
+          currentUserSubscriptionStatus: 'None',
+          subscribersCount: 0,
         },
       ],
     });
@@ -1127,6 +1176,9 @@ describe('Create tests for all', () => {
             myStatus: 'None',
             newestLikes: [],
           },
+          images: {
+            main: [],
+          },
         },
         {
           id: newPost1.id,
@@ -1141,6 +1193,9 @@ describe('Create tests for all', () => {
             dislikesCount: 0,
             myStatus: 'None',
             newestLikes: [],
+          },
+          images: {
+            main: [],
           },
         },
       ],
@@ -1162,6 +1217,9 @@ describe('Create tests for all', () => {
         dislikesCount: 0,
         myStatus: 'None',
         newestLikes: [],
+      },
+      images: {
+        main: [],
       },
     });
   });
@@ -1320,6 +1378,9 @@ describe('Create tests for all', () => {
           },
         ],
       },
+      images: {
+        main: [],
+      },
     });
     const info2 = await test
       .get('/posts/' + newPost1.id)
@@ -1344,6 +1405,9 @@ describe('Create tests for all', () => {
             login: admin.login,
           },
         ],
+      },
+      images: {
+        main: [],
       },
     });
   });
