@@ -3,7 +3,10 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { AppModule } from '../src/app.module';
 import { createApp } from '../src/common/helper/createApp';
 import request from 'supertest';
-import { CreateBlogDto } from '../src/features/blogger/blogs/dto/blogger.dto';
+import {
+  CreateBlogDto,
+  CreatePostForBlogDto,
+} from '../src/features/blogger/blogs/dto/blogger.dto';
 import { Blog } from '../src/features/public/blogs/schema/blogs.schema';
 import { Post } from '../src/features/public/posts/schema/posts.schema';
 import { User } from '../src/features/sa/users/schema/user';
@@ -2842,4 +2845,140 @@ describe('Pair quiz game all', () => {
       ],
     });
   });
+});
+
+describe('Test AWS3', () => {
+  jest.setTimeout(5 * 60 * 1000);
+  let app: INestApplication;
+  let test;
+  const user = {
+    login: 'Alex',
+    password: 'QWERTY',
+    email: '5030553@gmail.com',
+  };
+  const userTestInfo = {
+    login: 'Alex1',
+    password: 'QWERTY',
+    email: '50305531@gmail.com',
+  };
+  const blogInputData: CreateBlogDto = {
+    name: 'String',
+    description: '421421',
+    websiteUrl: 'www.anySite.com',
+  };
+  const postInputData: CreatePostForBlogDto = {
+    title: 'qwererw',
+    shortDescription: 'asdfsdfasd',
+    content: 'adsfdsfasdf',
+  };
+  let accessToken1;
+  let accessToken2;
+  let blog;
+  let post;
+
+  beforeAll(async () => {
+    const moduleFixture: TestingModule = await Test.createTestingModule({
+      imports: [AppModule],
+    }).compile();
+    app = moduleFixture.createNestApplication();
+    app = createApp(app);
+    await app.init();
+    test = request(app.getHttpServer());
+    return test.del('/testing/all-data').expect(204);
+  });
+
+  afterAll(async () => {
+    await app.close();
+  });
+
+  it('Создаем двух пользоаветелей', async () => {
+    await new Helper().user(user, 'admin', 'qwerty', test);
+    await new Helper().user(userTestInfo, 'admin', 'qwerty', test);
+  });
+
+  it('login users', async () => {
+    const response1 = await test
+      .post('/auth/login')
+      .set('user-agent', 'Chrome')
+      .send({ loginOrEmail: user.login, password: user.password });
+    expect(response1.status).toBe(200);
+    accessToken1 = response1.body;
+    expect(accessToken1).toEqual({
+      accessToken: expect.any(String),
+    });
+    expect.setState(accessToken1);
+    const response2 = await test
+      .post('/auth/login')
+      .set('user-agent', 'Chrome')
+      .send({
+        loginOrEmail: userTestInfo.login,
+        password: userTestInfo.password,
+      });
+    expect(response2.status).toBe(200);
+    accessToken2 = response2.body;
+    expect(accessToken2).toEqual({
+      accessToken: expect.any(String),
+    });
+  });
+
+  it('Создаем blog', async () => {
+    blog = await new Helper().blog(
+      blogInputData,
+      accessToken1.accessToken,
+      test,
+    );
+  });
+
+  it('Создаем post', async () => {
+    post = await new Helper().post(
+      postInputData,
+      accessToken1.accessToken,
+      test,
+      blog,
+    );
+  });
+
+  it('Создаем wallpaper для блога и проверяем верный вывод', async () => {
+    const info = await test
+      .post(`/blogger/blogs/${blog.id}/images/wallpaper`)
+      .auth(accessToken1.accessToken, { type: 'bearer' })
+      .attach('file', 'D:/blogWalpaper.jpg')
+      .expect(201);
+    expect(info.body).toEqual({
+      wallpaper: {
+        url: `https://storage.yandexcloud.net/my1bucket/images/wallpaper/${blog.id}_blog.png`,
+        width: 1028,
+        height: 312,
+        fileSize: 5872,
+      },
+      main: [],
+    });
+    const info1 = await test
+      .post(`/blogger/blogs/${blog.id}/images/wallpaper`)
+      .auth(accessToken1.accessToken, { type: 'bearer' })
+      .attach('file', 'D:/L5do38VAOnI.jpg')
+      .expect(400);
+    expect(info1.body).toEqual({
+      errorsMessages: [
+        { message: expect.any(String), field: 'width' },
+        { message: expect.any(String), field: 'height' },
+        { message: expect.any(String), field: 'size' },
+      ],
+    });
+    expect.setState(accessToken2);
+    await test
+      .post(`/blogger/blogs/${blog.id}/images/wallpaper`)
+      .auth(accessToken2.accessToken, { type: 'bearer' })
+      .attach('file', 'D:/blogWalpaper.jpg')
+      .expect(403);
+    await test
+      .post(`/blogger/blogs/${blog.id}/images/wallpaper`)
+      .attach('file', 'D:/blogWalpaper.jpg')
+      .expect(401);
+    expect.setState(accessToken1);
+  });
+
+  // it('Создаём main для блога и проверяем верный вывод', async () => {});
+  //
+  // it('Создаём main для поста и проверяем верный вывод', async () => {});
 });
