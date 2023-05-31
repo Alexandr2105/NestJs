@@ -1,4 +1,4 @@
-import { EmailAdapter } from '../adapters/email-adapter';
+import { EmailAdapter } from '../adapters/email.adapter';
 import { Inject, Injectable } from '@nestjs/common';
 import { EmailResending } from '../../features/public/auth/dto/auth.dto';
 

@@ -1,6 +1,6 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
-import { adminPassword } from '../../features/public/auth/auth-users/usersPasswords';
+import { adminPassword } from '../../features/public/auth/authUsers/usersPasswords';
 import { BasicStrategy as Strategy } from 'passport-http';
 
 @Injectable()

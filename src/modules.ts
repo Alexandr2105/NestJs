@@ -17,7 +17,7 @@ import { TestingRepositoryMongo } from './testing/testing.repository.mongo';
 import { AuthController } from './features/public/auth/auth.controller';
 import { Jwt } from './features/public/auth/jwt';
 import { EmailManager } from './common/manager/email-manager';
-import { EmailAdapter } from './common/adapters/email-adapter';
+import { EmailAdapter } from './common/adapters/email.adapter';
 import { SecurityDevicesService } from './features/public/securityDevices/application/security-devices.service';
 import { SecurityDevicesRepositoryMongo } from './features/public/securityDevices/security.devices.repository.mongo';
 import { BlogSchema } from './features/public/blogs/schema/blogs.schema';
@@ -166,6 +166,7 @@ import { SubscriptionsRepositoryTypeorm } from './features/public/subscriptionsR
 import { SubscriptionsRepositoryMongo } from './features/public/subscriptionsRepository/subscriptions.repository.mongo';
 import { SubscriptionsRepositorySql } from './features/public/subscriptionsRepository/subscriptions.repository.sql';
 import { StripeController } from './features/integrations/stripe/stripe.controller';
+import { RecaptchaAdapter } from './common/adapters/recaptcha.adapter';
 
 const Strategies = [LocalStrategy, JwtStrategy, BasicStrategy, RefreshStrategy];
 const Validators = [
@@ -466,6 +467,7 @@ const entities = [
     CountAttemptGuard,
     FileStorageAdapterS3,
     TelegramAdapter,
+    RecaptchaAdapter,
     ...UseCases,
     ...SqlRepositories,
     ...MongoRepositories,

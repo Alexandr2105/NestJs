@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Body,
   Controller,
   Get,
@@ -30,6 +31,7 @@ import { SaveInfoAboutDevicesUserCommand } from '../securityDevices/application/
 import { CreateEmailConfirmationCommand } from './application/useCase/create.email.confirmation.use.cae';
 import { GetNewConfirmationCodeCommand } from './application/useCase/get.new.confirmation.code.use.case';
 import { IUsersRepository } from '../../sa/users/i.users.repository';
+import { RecaptchaAdapter } from '../../../common/adapters/recaptcha.adapter';
 // import { CountAttemptGuard } from '../../../common/guard/count.attempt.guard';
 
 @Controller('auth')
@@ -41,6 +43,7 @@ export class AuthController {
     private readonly emailManager: EmailManager,
     private readonly jwtService: Jwt,
     private readonly commandBus: CommandBus,
+    private readonly recaptchaAdapter: RecaptchaAdapter,
   ) {}
 
   @UseGuards(LocalAuthGuard)
@@ -169,5 +172,14 @@ export class AuthController {
     const user: EmailConfirmationDocument =
       await this.usersRepository.getUserByCode(body.recoveryCode);
     await this.usersService.createNewPassword(body.newPassword, user?.userId);
+  }
+
+  @Post('test-captcha')
+  async testMethod(@Body() body) {
+    if (await this.recaptchaAdapter.isValid(body.recaptchaValue)) {
+      return 'It is working ' + body.email;
+    } else {
+      throw new BadRequestException('Ты робот');
+    }
   }
 }

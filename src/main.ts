@@ -9,6 +9,7 @@ export async function bootstrap() {
   const rawApp = await NestFactory.create(AppModule, { rawBody: true });
   const app = createApp(rawApp);
   const configService = app.get(ConfigService);
+  app.enableCors();
   const port = parseInt(configService.get('PORT'), 10) || 3000;
   await app.listen(port, () => {
     console.log(`App started at ${port} port`);
