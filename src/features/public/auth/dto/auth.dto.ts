@@ -1,6 +1,5 @@
 import { IsEmail, Length, Validate } from 'class-validator';
 import { Transform } from 'class-transformer';
-import { CheckEmailConfirmation } from '../../../../common/customValidators/check.email.confirmation';
 import { CheckCode } from '../../../../common/customValidators/check.code';
 import { CheckRecoveryCode } from '../../../../common/customValidators/check.recovery.code';
 
@@ -20,7 +19,7 @@ export class RegistrationConformation {
 export class EmailResending {
   @Transform(({ value }) => value.trim())
   @IsEmail()
-  @Validate(CheckEmailConfirmation)
+  // @Validate(CheckEmailConfirmation)
   email: string;
 }
 

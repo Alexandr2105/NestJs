@@ -11,6 +11,7 @@ import { Blog } from '../src/features/public/blogs/schema/blogs.schema';
 import { Post } from '../src/features/public/posts/schema/posts.schema';
 import { User } from '../src/features/sa/users/schema/user';
 import { Helper } from './helper';
+import { MailerService } from '@nestjs-modules/mailer';
 
 describe('Create tests for blogger', () => {
   let newBlog1: Blog = null;
@@ -3374,5 +3375,153 @@ describe('Test AWS3', () => {
         ],
       },
     });
+  });
+});
+
+describe('Create test for auth', () => {
+  jest.setTimeout(5 * 60 * 1000);
+  let app: INestApplication;
+  let test;
+  let mailService: MailerService;
+  let sendMailSpy: jest.SpyInstance;
+  let confirm;
+  const user = {
+    login: 'Alex',
+    password: 'QWERTY',
+    email: '5030553@gmail.com',
+  };
+
+  beforeAll(async () => {
+    const moduleFixture: TestingModule = await Test.createTestingModule({
+      imports: [AppModule],
+    }).compile();
+    app = moduleFixture.createNestApplication();
+    app = createApp(app);
+    await app.init();
+    test = request(app.getHttpServer());
+    mailService = moduleFixture.get<MailerService>(MailerService);
+    sendMailSpy = jest.spyOn(mailService, 'sendMail');
+    return test.del('/testing/all-data').expect(204);
+  });
+
+  afterAll(async () => {
+    await app.close();
+  });
+
+  it('Регистрируем нового пользователя', async () => {
+    await test.post('/auth/registration').send(user).expect(204);
+    const [call] = sendMailSpy.mock.calls;
+    const [mailOptions] = call;
+    const regex = /code=([a-zA-Z0-9-]+)/;
+    confirm = mailOptions.html.match(regex)[1];
+
+    await expect(sendMailSpy).toHaveBeenCalledWith({
+      from: 'Alex <testnodemaileremail2@gmail.com>',
+      to: user.email,
+      subject: 'Registration',
+      html: `<h1>Thank for your registration</h1>
+                       <p>To finish registration please follow the link below:
+                          <a href='https://somesite.com/registration-confirmation?code=${confirm}'>complete registration</a>
+                        </p>`,
+    });
+    const info1 = await test
+      .post('/auth/registration')
+      .send({ login: '', password: '', email: '' })
+      .expect(400);
+    expect(info1.body).toEqual({
+      errorsMessages: [
+        { message: 'Не верно заполнено поле', field: 'login' },
+        { message: 'email must be an email', field: 'email' },
+        { message: 'Не верно заполнено поле', field: 'password' },
+      ],
+    });
+  });
+
+  it('Подтверждаем регистрацию по коду', async () => {
+    await test
+      .post('/auth/registration-confirmation')
+      .send({ code: confirm })
+      .expect(204);
+    await test
+      .post('/auth/registration-confirmation')
+      .send({ code: '1234' })
+      .expect(400);
+  });
+
+  it('login и получения токена', async () => {
+    const token = await test
+      .post('/auth/login')
+      .send({
+        loginOrEmail: user.login,
+        password: user.password,
+      })
+      .set('user-agent', 'Chrome')
+      .expect(200);
+    await test
+      .post('/auth/login')
+      .send({
+        loginOrEmail: 'user.login',
+        password: 'user.password',
+      })
+      .set('user-agent', 'Chrome')
+      .expect(401);
+    const info = await test
+      .get('/auth/me')
+      .auth(token.body.accessToken, { type: 'bearer' })
+      .set('user-agent', 'Chrome')
+      .expect(200);
+    expect(info.body).toEqual({
+      email: user.email,
+      login: user.login,
+      userId: expect.any(String),
+    });
+    await test
+      .get('/auth/me')
+      .auth('token.body.accessToken', { type: 'bearer' })
+      .set('user-agent', 'Chrome')
+      .expect(401);
+  });
+
+  it('Делаем запрос на смену пароля', async () => {
+    await test
+      .post('/auth/password-recovery')
+      .send({ email: user.email })
+      .expect(204);
+    const [call] = sendMailSpy.mock.calls;
+    const [mailOptions] = call;
+    const regex = /code=([a-zA-Z0-9-]+)/;
+    confirm = mailOptions.html.match(regex)[1];
+    await expect(sendMailSpy).toHaveBeenCalledWith({
+      from: 'Alex <testnodemaileremail2@gmail.com>',
+      to: user.email,
+      subject: 'Password Recovery',
+      html: `<h1>Password recovery</h1>
+                <p>To finish password recovery please follow the link below:
+                <a href='https://somesite.com/password-recovery?recoveryCode=${confirm}'>recovery password</a>
+                </p>`,
+    });
+    await test
+      .post('/auth/password-recovery')
+      .send({ email: 'a!gmail.co' })
+      .expect(400);
+  });
+
+  it('Устанавливаем новый пароль', async () => {
+    await test
+      .post('/auth/new-password')
+      .send({
+        newPassword: 'string',
+        recoveryCode: confirm,
+      })
+      .expect(204);
+    const info = await test
+      .post('/auth/new-password')
+      .send({
+        newPassword: '',
+        recoveryCode: 123,
+      })
+      .expect(400);
+    console.log(info.body);
+    // expect(info.body).toEqual({});
   });
 });
