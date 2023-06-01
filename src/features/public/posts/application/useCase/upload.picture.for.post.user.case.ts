@@ -120,21 +120,7 @@ export class UploadPictureForPostUserCase {
         command.postId,
         'main',
       );
-    const wallpaper =
-      await this.imageRepository.getInfoForImageByPostIdAndFolderName(
-        command.postId,
-        'wallpaper',
-      );
     return {
-      wallpaper:
-        wallpaper[0] === undefined
-          ? null
-          : {
-              url: wallpaper[0].url,
-              width: wallpaper[0].width,
-              height: wallpaper[0].height,
-              fileSize: wallpaper[0].fileSize,
-            },
       main: main.map((a) => {
         return {
           url: a.url,

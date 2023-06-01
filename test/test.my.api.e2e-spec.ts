@@ -2978,7 +2978,103 @@ describe('Test AWS3', () => {
     expect.setState(accessToken1);
   });
 
-  // it('Создаём main для блога и проверяем верный вывод', async () => {});
-  //
-  // it('Создаём main для поста и проверяем верный вывод', async () => {});
+  it('Создаём main для блога и проверяем верный вывод', async () => {
+    const info = await test
+      .post(`/blogger/blogs/${blog.id}/images/main`)
+      .auth(accessToken1.accessToken, { type: 'bearer' })
+      .attach('file', 'D:/blogMain.jpg')
+      .expect(201);
+    expect(info.body).toEqual({
+      wallpaper: {
+        url: `https://storage.yandexcloud.net/my1bucket/images/wallpaper/${blog.id}_blog.png`,
+        width: 1028,
+        height: 312,
+        fileSize: 5872,
+      },
+      main: [
+        {
+          url: `https://storage.yandexcloud.net/my1bucket/images/main/${blog.id}_blog.png`,
+          width: 156,
+          height: 156,
+          fileSize: 1027,
+        },
+      ],
+    });
+    const info1 = await test
+      .post(`/blogger/blogs/${blog.id}/images/main`)
+      .auth(accessToken1.accessToken, { type: 'bearer' })
+      .attach('file', 'D:/L5do38VAOnI.jpg')
+      .expect(400);
+    expect(info1.body).toEqual({
+      errorsMessages: [
+        { message: expect.any(String), field: 'width' },
+        { message: expect.any(String), field: 'size' },
+        { message: expect.any(String), field: 'height' },
+      ],
+    });
+    expect.setState(accessToken2);
+    await test
+      .post(`/blogger/blogs/${blog.id}/images/main`)
+      .auth(accessToken2.accessToken, { type: 'bearer' })
+      .attach('file', 'D:/blogMain.jpg')
+      .expect(403);
+    await test
+      .post(`/blogger/blogs/${blog.id}/images/main`)
+      .attach('file', 'D:/blogMain.jpg')
+      .expect(401);
+    expect.setState(accessToken1);
+  });
+
+  it('Создаём main для поста и проверяем верный вывод', async () => {
+    const info = await test
+      .post(`/blogger/blogs/${blog.id}/posts/${post.id}/images/main`)
+      .auth(accessToken1.accessToken, { type: 'bearer' })
+      .attach('file', 'D:/postMain.jpg')
+      .expect(201);
+    expect(info.body).toEqual({
+      main: [
+        {
+          url: `https://storage.yandexcloud.net/my1bucket/images/main/${post.id}_post_original.png`,
+          width: 940,
+          height: 432,
+          fileSize: 7137,
+        },
+        {
+          url: `https://storage.yandexcloud.net/my1bucket/images/main/${post.id}_post_middle.png`,
+          width: 300,
+          height: 180,
+          fileSize: 637,
+        },
+        {
+          url: `https://storage.yandexcloud.net/my1bucket/images/main/${post.id}_post_small.png`,
+          width: 149,
+          height: 96,
+          fileSize: 356,
+        },
+      ],
+    });
+    const info1 = await test
+      .post(`/blogger/blogs/${blog.id}/posts/${post.id}/images/main`)
+      .auth(accessToken1.accessToken, { type: 'bearer' })
+      .attach('file', 'D:/L5do38VAOnI.jpg')
+      .expect(400);
+    expect(info1.body).toEqual({
+      errorsMessages: [
+        { message: expect.any(String), field: 'size' },
+        { message: expect.any(String), field: 'width' },
+        { message: expect.any(String), field: 'height' },
+      ],
+    });
+    expect.setState(accessToken2);
+    await test
+      .post(`/blogger/blogs/${blog.id}/posts/${post.id}/images/main`)
+      .auth(accessToken2.accessToken, { type: 'bearer' })
+      .attach('file', 'D:/postMain.jpg')
+      .expect(403);
+    await test
+      .post(`/blogger/blogs/${blog.id}/posts/${post.id}/images/main`)
+      .attach('file', 'D:/postMain.jpg')
+      .expect(401);
+    expect.setState(accessToken1);
+  });
 });
