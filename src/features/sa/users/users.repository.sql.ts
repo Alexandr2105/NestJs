@@ -5,7 +5,7 @@ import { BanUsersDocument } from './schema/banUsers';
 import { EmailResending } from '../../public/auth/dto/auth.dto';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
-import { add } from 'date-fns';
+import { addHours } from 'date-fns';
 import { Injectable } from '@nestjs/common';
 
 @Injectable()
@@ -94,9 +94,9 @@ export class UsersRepositorySql extends IUsersRepository {
     } else {
       await this.dataSource.query(
         `UPDATE public."Users"
-              SET "ban"=$1, "telegramId"=$2
-        WHERE "id"=$3`,
-        [user.ban, user.telegramId, user.id],
+              SET "ban"=$1, "telegramId"=$2, "password"=$3
+        WHERE "id"=$4`,
+        [user.ban, user.telegramId, user.password, user.id],
       );
     }
   }
@@ -124,9 +124,9 @@ export class UsersRepositorySql extends IUsersRepository {
     if (checkUserEmailConfirmation[0]) {
       const result = await this.dataSource.query(
         `UPDATE public."EmailConfirmations"
-            SET "confirmationCode"=$1
-            WHERE "userId"=$2`,
-        [newCode, user[0]?.id],
+            SET "confirmationCode"=$1,"isConfirmed"=$2
+            WHERE "userId"=$3`,
+        [newCode, false, user[0]?.id],
       );
       return result[1] === 1;
     } else {
@@ -134,7 +134,7 @@ export class UsersRepositorySql extends IUsersRepository {
         `INSERT INTO public."EmailConfirmations"
             ("userId","confirmationCode","expirationDate","isConfirmed")
             VALUES($1,$2,$3,$4)`,
-        [user[0]?.id, newCode, add(new Date(), { hours: 1 }), false],
+        [user[0]?.id, newCode, addHours(new Date(), 1), false],
       );
       return true;
     }

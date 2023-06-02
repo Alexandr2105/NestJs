@@ -95,7 +95,7 @@ export class UsersRepositoryTypeorm extends IUsersRepository {
     if (checkUserEmailConfirmation) {
       const result = await this.registrationUsersCollection.update(
         { userId: user?.id },
-        { confirmationCode: newCode },
+        { confirmationCode: newCode, isConfirmed: false },
       );
       return result.affected === 1;
     } else {

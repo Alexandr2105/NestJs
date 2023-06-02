@@ -61,7 +61,7 @@ export class UsersRepositoryMongo extends IUsersRepository {
     if (checkUserEmailConfirmation) {
       const result = await this.registrationUsersCollection.updateOne(
         { userId: user?.id },
-        { $set: { confirmationCode: newCode } },
+        { $set: { confirmationCode: newCode, isConfirmed: false } },
       );
       return result.matchedCount === 1;
     } else {

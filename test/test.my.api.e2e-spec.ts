@@ -3,10 +3,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { AppModule } from '../src/app.module';
 import { createApp } from '../src/common/helper/createApp';
 import request from 'supertest';
-import {
-  CreateBlogDto,
-  CreatePostForBlogDto,
-} from '../src/features/blogger/blogs/dto/blogger.dto';
+import { CreateBlogDto } from '../src/features/blogger/blogs/dto/blogger.dto';
 import { Blog } from '../src/features/public/blogs/schema/blogs.schema';
 import { Post } from '../src/features/public/posts/schema/posts.schema';
 import { User } from '../src/features/sa/users/schema/user';
@@ -2848,536 +2845,6 @@ describe('Pair quiz game all', () => {
   });
 });
 
-describe('Test AWS3', () => {
-  jest.setTimeout(5 * 60 * 1000);
-  let app: INestApplication;
-  let test;
-  const user = {
-    login: 'Alex',
-    password: 'QWERTY',
-    email: '5030553@gmail.com',
-  };
-  const userTestInfo = {
-    login: 'Alex1',
-    password: 'QWERTY',
-    email: '50305531@gmail.com',
-  };
-  const blogInputData: CreateBlogDto = {
-    name: 'String',
-    description: '421421',
-    websiteUrl: 'www.anySite.com',
-  };
-  const postInputData: CreatePostForBlogDto = {
-    title: 'qwererw',
-    shortDescription: 'asdfsdfasd',
-    content: 'adsfdsfasdf',
-  };
-  let accessToken1;
-  let accessToken2;
-  let blog;
-  let post;
-
-  beforeAll(async () => {
-    const moduleFixture: TestingModule = await Test.createTestingModule({
-      imports: [AppModule],
-    }).compile();
-    app = moduleFixture.createNestApplication();
-    app = createApp(app);
-    await app.init();
-    test = request(app.getHttpServer());
-    return test.del('/testing/all-data').expect(204);
-  });
-
-  afterAll(async () => {
-    await app.close();
-  });
-
-  it('Создаем двух пользоаветелей', async () => {
-    await new Helper().user(user, 'admin', 'qwerty', test);
-    await new Helper().user(userTestInfo, 'admin', 'qwerty', test);
-  });
-
-  it('login users', async () => {
-    const response1 = await test
-      .post('/auth/login')
-      .set('user-agent', 'Chrome')
-      .send({ loginOrEmail: user.login, password: user.password });
-    expect(response1.status).toBe(200);
-    accessToken1 = response1.body;
-    expect(accessToken1).toEqual({
-      accessToken: expect.any(String),
-    });
-    const response2 = await test
-      .post('/auth/login')
-      .set('user-agent', 'Chrome')
-      .send({
-        loginOrEmail: userTestInfo.login,
-        password: userTestInfo.password,
-      });
-    expect(response2.status).toBe(200);
-    accessToken2 = response2.body;
-    expect(accessToken2).toEqual({
-      accessToken: expect.any(String),
-    });
-  });
-
-  it('Создаем blog', async () => {
-    blog = await new Helper().blog(
-      blogInputData,
-      accessToken1.accessToken,
-      test,
-    );
-  });
-
-  it('Создаем post', async () => {
-    post = await new Helper().post(
-      postInputData,
-      accessToken1.accessToken,
-      test,
-      blog,
-    );
-  });
-
-  it('Создаем wallpaper для блога и проверяем верный вывод', async () => {
-    const info = await test
-      .post(`/blogger/blogs/${blog.id}/images/wallpaper`)
-      .auth(accessToken1.accessToken, { type: 'bearer' })
-      .attach('file', 'D:/blogWalpaper.jpg')
-      .expect(201);
-    expect(info.body).toEqual({
-      wallpaper: {
-        url: `https://storage.yandexcloud.net/my1bucket/images/wallpaper/${blog.id}_blog.png`,
-        width: 1028,
-        height: 312,
-        fileSize: 5872,
-      },
-      main: [],
-    });
-  });
-
-  it('Создаем wallpaper для блога и проверяем на ошибку 400', async () => {
-    const info1 = await test
-      .post(`/blogger/blogs/${blog.id}/images/wallpaper`)
-      .auth(accessToken1.accessToken, { type: 'bearer' })
-      .attach('file', 'D:/L5do38VAOnI.jpg')
-      .expect(400);
-    expect(info1.body).toEqual({
-      errorsMessages: [
-        { message: expect.any(String), field: 'width' },
-        { message: expect.any(String), field: 'height' },
-        { message: expect.any(String), field: 'size' },
-      ],
-    });
-  });
-
-  it('Создаем wallpaper для блога и проверяем на ошибки 403', async () => {
-    await test
-      .post(`/blogger/blogs/${blog.id}/images/wallpaper`)
-      .auth(accessToken2.accessToken, { type: 'bearer' })
-      .attach('file', 'D:/blogWalpaper.jpg')
-      .expect(403);
-  });
-
-  it('Создаем wallpaper для блога и проверяем на ошибки 401', async () => {
-    await test.post(`/blogger/blogs/${blog.id}/images/wallpaper`).expect(401);
-  });
-
-  it('Создаём main для блога и проверяем верный вывод', async () => {
-    const info = await test
-      .post(`/blogger/blogs/${blog.id}/images/main`)
-      .auth(accessToken1.accessToken, { type: 'bearer' })
-      .attach('file', 'D:/blogMain.jpg')
-      .expect(201);
-    expect(info.body).toEqual({
-      wallpaper: {
-        url: `https://storage.yandexcloud.net/my1bucket/images/wallpaper/${blog.id}_blog.png`,
-        width: 1028,
-        height: 312,
-        fileSize: 5872,
-      },
-      main: [
-        {
-          url: `https://storage.yandexcloud.net/my1bucket/images/main/${blog.id}_blog.png`,
-          width: 156,
-          height: 156,
-          fileSize: 1027,
-        },
-      ],
-    });
-  });
-
-  it('Создаём main для блога и проверяем на ошибку 400', async () => {
-    const info1 = await test
-      .post(`/blogger/blogs/${blog.id}/images/main`)
-      .auth(accessToken1.accessToken, { type: 'bearer' })
-      .attach('file', 'D:/L5do38VAOnI.jpg')
-      .expect(400);
-    expect(info1.body).toEqual({
-      errorsMessages: [
-        { message: expect.any(String), field: 'width' },
-        { message: expect.any(String), field: 'size' },
-        { message: expect.any(String), field: 'height' },
-      ],
-    });
-  });
-
-  it('Создаём main для блога и проверяем на ошибки 403', async () => {
-    await test
-      .post(`/blogger/blogs/${blog.id}/images/main`)
-      .auth(accessToken2.accessToken, { type: 'bearer' })
-      .attach('file', 'D:/blogMain.jpg')
-      .expect(403);
-  });
-
-  it('Создаём main для блога и проверяем на ошибки 401', async () => {
-    await test.post(`/blogger/blogs/${blog.id}/images/main`).expect(401);
-  });
-
-  it('Создаём main для поста и проверяем верный вывод', async () => {
-    const info = await test
-      .post(`/blogger/blogs/${blog.id}/posts/${post.id}/images/main`)
-      .auth(accessToken1.accessToken, { type: 'bearer' })
-      .attach('file', 'D:/postMain.jpg')
-      .expect(201);
-    expect(info.body).toEqual({
-      main: [
-        {
-          url: `https://storage.yandexcloud.net/my1bucket/images/main/${post.id}_post_original.png`,
-          width: 940,
-          height: 432,
-          fileSize: 7137,
-        },
-        {
-          url: `https://storage.yandexcloud.net/my1bucket/images/main/${post.id}_post_middle.png`,
-          width: 300,
-          height: 180,
-          fileSize: 637,
-        },
-        {
-          url: `https://storage.yandexcloud.net/my1bucket/images/main/${post.id}_post_small.png`,
-          width: 149,
-          height: 96,
-          fileSize: 356,
-        },
-      ],
-    });
-  });
-
-  it('Создаём main для поста и проверяем на ошибку 400', async () => {
-    const info1 = await test
-      .post(`/blogger/blogs/${blog.id}/posts/${post.id}/images/main`)
-      .auth(accessToken1.accessToken, { type: 'bearer' })
-      .attach('file', 'D:/L5do38VAOnI.jpg')
-      .expect(400);
-    expect(info1.body).toEqual({
-      errorsMessages: [
-        { message: expect.any(String), field: 'size' },
-        { message: expect.any(String), field: 'width' },
-        { message: expect.any(String), field: 'height' },
-      ],
-    });
-  });
-
-  it('Создаём main для поста и проверяем на ошибки 403', async () => {
-    await test
-      .post(`/blogger/blogs/${blog.id}/posts/${post.id}/images/main`)
-      .auth(accessToken2.accessToken, { type: 'bearer' })
-      .attach('file', 'D:/postMain.jpg')
-      .expect(403);
-  });
-
-  it('Создаём main для поста и проверяем на ошибку 401', async () => {
-    await test
-      .post(`/blogger/blogs/${blog.id}/posts/${post.id}/images/main`)
-      .expect(401);
-  });
-
-  it('Проверяем правильный вывод данных', async () => {
-    const info1 = await test
-      .get('/blogger/blogs')
-      .auth(accessToken1.accessToken, { type: 'bearer' })
-      .expect(200);
-    expect(info1.body).toEqual({
-      pagesCount: 1,
-      page: 1,
-      pageSize: 10,
-      totalCount: 1,
-      items: [
-        {
-          id: blog.id,
-          name: blog.name,
-          websiteUrl: blog.websiteUrl,
-          description: blog.description,
-          createdAt: blog.createdAt,
-          isMembership: false,
-          images: {
-            wallpaper: {
-              url: `https://storage.yandexcloud.net/my1bucket/images/wallpaper/${blog.id}_blog.png`,
-              width: 1028,
-              height: 312,
-              fileSize: 5872,
-            },
-            main: [
-              {
-                url: `https://storage.yandexcloud.net/my1bucket/images/main/${blog.id}_blog.png`,
-                width: 156,
-                height: 156,
-                fileSize: 1027,
-              },
-              {
-                url: `https://storage.yandexcloud.net/my1bucket/images/main/${post.id}_post_original.png`,
-                width: 940,
-                height: 432,
-                fileSize: 7137,
-              },
-              {
-                url: `https://storage.yandexcloud.net/my1bucket/images/main/${post.id}_post_middle.png`,
-                width: 300,
-                height: 180,
-                fileSize: 637,
-              },
-              {
-                url: `https://storage.yandexcloud.net/my1bucket/images/main/${post.id}_post_small.png`,
-                width: 149,
-                height: 96,
-                fileSize: 356,
-              },
-            ],
-          },
-        },
-      ],
-    });
-    const info2 = await test.get('/blogs').expect(200);
-    expect(info2.body).toEqual({
-      pagesCount: 1,
-      page: 1,
-      pageSize: 10,
-      totalCount: 1,
-      items: [
-        {
-          id: blog.id,
-          name: blog.name,
-          websiteUrl: blog.websiteUrl,
-          description: blog.description,
-          createdAt: blog.createdAt,
-          isMembership: false,
-          images: {
-            wallpaper: {
-              url: `https://storage.yandexcloud.net/my1bucket/images/wallpaper/${blog.id}_blog.png`,
-              width: 1028,
-              height: 312,
-              fileSize: 5872,
-            },
-            main: [
-              {
-                url: `https://storage.yandexcloud.net/my1bucket/images/main/${blog.id}_blog.png`,
-                width: 156,
-                height: 156,
-                fileSize: 1027,
-              },
-              {
-                url: `https://storage.yandexcloud.net/my1bucket/images/main/${post.id}_post_original.png`,
-                width: 940,
-                height: 432,
-                fileSize: 7137,
-              },
-              {
-                url: `https://storage.yandexcloud.net/my1bucket/images/main/${post.id}_post_middle.png`,
-                width: 300,
-                height: 180,
-                fileSize: 637,
-              },
-              {
-                url: `https://storage.yandexcloud.net/my1bucket/images/main/${post.id}_post_small.png`,
-                width: 149,
-                height: 96,
-                fileSize: 356,
-              },
-            ],
-          },
-          subscribersCount: 0,
-          currentUserSubscriptionStatus: 'None',
-        },
-      ],
-    });
-    const info3 = await test.get(`/blogs/${blog.id}`).expect(200);
-    expect(info3.body).toEqual({
-      id: blog.id,
-      name: blog.name,
-      websiteUrl: blog.websiteUrl,
-      description: blog.description,
-      createdAt: blog.createdAt,
-      isMembership: false,
-      images: {
-        wallpaper: {
-          url: `https://storage.yandexcloud.net/my1bucket/images/wallpaper/${blog.id}_blog.png`,
-          width: 1028,
-          height: 312,
-          fileSize: 5872,
-        },
-        main: [
-          {
-            url: `https://storage.yandexcloud.net/my1bucket/images/main/${blog.id}_blog.png`,
-            width: 156,
-            height: 156,
-            fileSize: 1027,
-          },
-          {
-            url: `https://storage.yandexcloud.net/my1bucket/images/main/${post.id}_post_original.png`,
-            width: 940,
-            height: 432,
-            fileSize: 7137,
-          },
-          {
-            url: `https://storage.yandexcloud.net/my1bucket/images/main/${post.id}_post_middle.png`,
-            width: 300,
-            height: 180,
-            fileSize: 637,
-          },
-          {
-            url: `https://storage.yandexcloud.net/my1bucket/images/main/${post.id}_post_small.png`,
-            width: 149,
-            height: 96,
-            fileSize: 356,
-          },
-        ],
-      },
-      subscribersCount: 0,
-      currentUserSubscriptionStatus: 'None',
-    });
-    const info4 = await test.get(`/blogs/${blog.id}/posts`).expect(200);
-    expect(info4.body).toEqual({
-      pagesCount: 1,
-      page: 1,
-      pageSize: 10,
-      totalCount: 1,
-      items: [
-        {
-          id: post.id,
-          title: post.title,
-          shortDescription: post.shortDescription,
-          content: post.content,
-          blogId: post.blogId,
-          blogName: post.blogName,
-          createdAt: post.createdAt,
-          extendedLikesInfo: {
-            likesCount: 0,
-            dislikesCount: 0,
-            myStatus: 'None',
-            newestLikes: [],
-          },
-          images: {
-            main: [
-              {
-                url: `https://storage.yandexcloud.net/my1bucket/images/main/${post.id}_post_original.png`,
-                width: 940,
-                height: 432,
-                fileSize: 7137,
-              },
-              {
-                url: `https://storage.yandexcloud.net/my1bucket/images/main/${post.id}_post_middle.png`,
-                width: 300,
-                height: 180,
-                fileSize: 637,
-              },
-              {
-                url: `https://storage.yandexcloud.net/my1bucket/images/main/${post.id}_post_small.png`,
-                width: 149,
-                height: 96,
-                fileSize: 356,
-              },
-            ],
-          },
-        },
-      ],
-    });
-    const info5 = await test.get(`/posts`).expect(200);
-    expect(info5.body).toEqual({
-      pagesCount: 1,
-      page: 1,
-      pageSize: 10,
-      totalCount: 1,
-      items: [
-        {
-          id: post.id,
-          title: post.title,
-          shortDescription: post.shortDescription,
-          content: post.content,
-          blogId: post.blogId,
-          blogName: post.blogName,
-          createdAt: post.createdAt,
-          extendedLikesInfo: {
-            likesCount: 0,
-            dislikesCount: 0,
-            myStatus: 'None',
-            newestLikes: [],
-          },
-          images: {
-            main: [
-              {
-                url: `https://storage.yandexcloud.net/my1bucket/images/main/${post.id}_post_original.png`,
-                width: 940,
-                height: 432,
-                fileSize: 7137,
-              },
-              {
-                url: `https://storage.yandexcloud.net/my1bucket/images/main/${post.id}_post_middle.png`,
-                width: 300,
-                height: 180,
-                fileSize: 637,
-              },
-              {
-                url: `https://storage.yandexcloud.net/my1bucket/images/main/${post.id}_post_small.png`,
-                width: 149,
-                height: 96,
-                fileSize: 356,
-              },
-            ],
-          },
-        },
-      ],
-    });
-    const info6 = await test.get(`/posts/${post.id}`).expect(200);
-    expect(info6.body).toEqual({
-      id: post.id,
-      title: post.title,
-      shortDescription: post.shortDescription,
-      content: post.content,
-      blogId: post.blogId,
-      blogName: post.blogName,
-      createdAt: post.createdAt,
-      extendedLikesInfo: {
-        likesCount: 0,
-        dislikesCount: 0,
-        myStatus: 'None',
-        newestLikes: [],
-      },
-      images: {
-        main: [
-          {
-            url: `https://storage.yandexcloud.net/my1bucket/images/main/${post.id}_post_original.png`,
-            width: 940,
-            height: 432,
-            fileSize: 7137,
-          },
-          {
-            url: `https://storage.yandexcloud.net/my1bucket/images/main/${post.id}_post_middle.png`,
-            width: 300,
-            height: 180,
-            fileSize: 637,
-          },
-          {
-            url: `https://storage.yandexcloud.net/my1bucket/images/main/${post.id}_post_small.png`,
-            width: 149,
-            height: 96,
-            fileSize: 356,
-          },
-        ],
-      },
-    });
-  });
-});
-
 describe('Create test for auth', () => {
   jest.setTimeout(5 * 60 * 1000);
   let app: INestApplication;
@@ -3448,6 +2915,20 @@ describe('Create test for auth', () => {
       .expect(400);
   });
 
+  it('Запрашиваем новый код по email', async () => {
+    await test
+      .post('/auth/registration-email-resending')
+      .send({ email: user.email })
+      .expect(204);
+    const info = await test
+      .post('/auth/registration-email-resending')
+      .send({ email: '1234!gmail.com' })
+      .expect(400);
+    expect(info.body).toEqual({
+      errorsMessages: [{ message: 'email must be an email', field: 'email' }],
+    });
+  });
+
   it('login и получения токена', async () => {
     const token = await test
       .post('/auth/login')
@@ -3487,10 +2968,12 @@ describe('Create test for auth', () => {
       .post('/auth/password-recovery')
       .send({ email: user.email })
       .expect(204);
-    const [call] = sendMailSpy.mock.calls;
-    const [mailOptions] = call;
-    const regex = /code=([a-zA-Z0-9-]+)/;
-    confirm = mailOptions.html.match(regex)[1];
+    const passwordRecoveryCall = sendMailSpy.mock.calls.find(
+      ([mailOptions]) => mailOptions.subject === 'Password Recovery',
+    );
+    const [passwordRecoveryMailOptions] = passwordRecoveryCall;
+    const regex = /recoveryCode=([a-zA-Z0-9-]+)/;
+    confirm = passwordRecoveryMailOptions.html.match(regex)[1];
     await expect(sendMailSpy).toHaveBeenCalledWith({
       from: 'Alex <testnodemaileremail2@gmail.com>',
       to: user.email,
@@ -3506,7 +2989,7 @@ describe('Create test for auth', () => {
       .expect(400);
   });
 
-  it('Устанавливаем новый пароль', async () => {
+  it('Устанавливаем новый пароль входим и выходим', async () => {
     await test
       .post('/auth/new-password')
       .send({
@@ -3518,10 +3001,567 @@ describe('Create test for auth', () => {
       .post('/auth/new-password')
       .send({
         newPassword: '',
-        recoveryCode: 123,
+        recoveryCode: '123',
       })
       .expect(400);
-    console.log(info.body);
-    // expect(info.body).toEqual({});
+    expect(info.body).toEqual({
+      errorsMessages: [
+        { message: 'Не верно заполнено поле', field: 'newPassword' },
+        { message: 'Не верные данные', field: 'recoveryCode' },
+      ],
+    });
+    const response = await test
+      .post('/auth/login')
+      .send({ loginOrEmail: 'Alex', password: 'string' })
+      .set('user-agent', 'Chrome')
+      .expect(200);
+    await test
+      .post('/auth/login')
+      .send({ loginOrEmail: 'Alex', password: 'string1' })
+      .set('user-agent', 'Chrome')
+      .expect(401);
+    const refreshToken = response.headers['set-cookie'];
+    await test.post('/auth/logout').set('Cookie', 'asdfadf').expect(401);
+    const info2 = await test
+      .get('/auth/me')
+      .auth(response.body.accessToken, { type: 'bearer' })
+      .set('user-agent', 'Chrome')
+      .expect(200);
+    expect(info2.body).toEqual({
+      email: user.email,
+      login: user.login,
+      userId: expect.any(String),
+    });
+    await test.post('/auth/logout').set('Cookie', refreshToken).expect(204);
   });
 });
+
+// describe('Test AWS3', () => {
+//   jest.setTimeout(5 * 60 * 1000);
+//   let app: INestApplication;
+//   let test;
+//   const user = {
+//     login: 'Alex',
+//     password: 'QWERTY',
+//     email: '5030553@gmail.com',
+//   };
+//   const userTestInfo = {
+//     login: 'Alex1',
+//     password: 'QWERTY',
+//     email: '50305531@gmail.com',
+//   };
+//   const blogInputData: CreateBlogDto = {
+//     name: 'String',
+//     description: '421421',
+//     websiteUrl: 'www.anySite.com',
+//   };
+//   const postInputData: CreatePostForBlogDto = {
+//     title: 'qwererw',
+//     shortDescription: 'asdfsdfasd',
+//     content: 'adsfdsfasdf',
+//   };
+//   let accessToken1;
+//   let accessToken2;
+//   let blog;
+//   let post;
+//
+//   beforeAll(async () => {
+//     const moduleFixture: TestingModule = await Test.createTestingModule({
+//       imports: [AppModule],
+//     }).compile();
+//     app = moduleFixture.createNestApplication();
+//     app = createApp(app);
+//     await app.init();
+//     test = request(app.getHttpServer());
+//     return test.del('/testing/all-data').expect(204);
+//   });
+//
+//   afterAll(async () => {
+//     await app.close();
+//   });
+//
+//   it('Создаем двух пользоаветелей', async () => {
+//     await new Helper().user(user, 'admin', 'qwerty', test);
+//     await new Helper().user(userTestInfo, 'admin', 'qwerty', test);
+//   });
+//
+//   it('login users', async () => {
+//     const response1 = await test
+//       .post('/auth/login')
+//       .set('user-agent', 'Chrome')
+//       .send({ loginOrEmail: user.login, password: user.password });
+//     expect(response1.status).toBe(200);
+//     accessToken1 = response1.body;
+//     expect(accessToken1).toEqual({
+//       accessToken: expect.any(String),
+//     });
+//     const response2 = await test
+//       .post('/auth/login')
+//       .set('user-agent', 'Chrome')
+//       .send({
+//         loginOrEmail: userTestInfo.login,
+//         password: userTestInfo.password,
+//       });
+//     expect(response2.status).toBe(200);
+//     accessToken2 = response2.body;
+//     expect(accessToken2).toEqual({
+//       accessToken: expect.any(String),
+//     });
+//   });
+//
+//   it('Создаем blog', async () => {
+//     blog = await new Helper().blog(
+//       blogInputData,
+//       accessToken1.accessToken,
+//       test,
+//     );
+//   });
+//
+//   it('Создаем post', async () => {
+//     post = await new Helper().post(
+//       postInputData,
+//       accessToken1.accessToken,
+//       test,
+//       blog,
+//     );
+//   });
+//
+//   it('Создаем wallpaper для блога и проверяем верный вывод', async () => {
+//     const info = await test
+//       .post(`/blogger/blogs/${blog.id}/images/wallpaper`)
+//       .auth(accessToken1.accessToken, { type: 'bearer' })
+//       .attach('file', 'D:/blogWalpaper.jpg')
+//       .expect(201);
+//     expect(info.body).toEqual({
+//       wallpaper: {
+//         url: `https://storage.yandexcloud.net/my1bucket/images/wallpaper/${blog.id}_blog.png`,
+//         width: 1028,
+//         height: 312,
+//         fileSize: 5872,
+//       },
+//       main: [],
+//     });
+//   });
+//
+//   it('Создаем wallpaper для блога и проверяем на ошибку 400', async () => {
+//     const info1 = await test
+//       .post(`/blogger/blogs/${blog.id}/images/wallpaper`)
+//       .auth(accessToken1.accessToken, { type: 'bearer' })
+//       .attach('file', 'D:/L5do38VAOnI.jpg')
+//       .expect(400);
+//     expect(info1.body).toEqual({
+//       errorsMessages: [
+//         { message: expect.any(String), field: 'width' },
+//         { message: expect.any(String), field: 'height' },
+//         { message: expect.any(String), field: 'size' },
+//       ],
+//     });
+//   });
+//
+//   it('Создаем wallpaper для блога и проверяем на ошибки 403', async () => {
+//     await test
+//       .post(`/blogger/blogs/${blog.id}/images/wallpaper`)
+//       .auth(accessToken2.accessToken, { type: 'bearer' })
+//       .attach('file', 'D:/blogWalpaper.jpg')
+//       .expect(403);
+//   });
+//
+//   it('Создаем wallpaper для блога и проверяем на ошибки 401', async () => {
+//     await test.post(`/blogger/blogs/${blog.id}/images/wallpaper`).expect(401);
+//   });
+//
+//   it('Создаём main для блога и проверяем верный вывод', async () => {
+//     const info = await test
+//       .post(`/blogger/blogs/${blog.id}/images/main`)
+//       .auth(accessToken1.accessToken, { type: 'bearer' })
+//       .attach('file', 'D:/blogMain.jpg')
+//       .expect(201);
+//     expect(info.body).toEqual({
+//       wallpaper: {
+//         url: `https://storage.yandexcloud.net/my1bucket/images/wallpaper/${blog.id}_blog.png`,
+//         width: 1028,
+//         height: 312,
+//         fileSize: 5872,
+//       },
+//       main: [
+//         {
+//           url: `https://storage.yandexcloud.net/my1bucket/images/main/${blog.id}_blog.png`,
+//           width: 156,
+//           height: 156,
+//           fileSize: 1027,
+//         },
+//       ],
+//     });
+//   });
+//
+//   it('Создаём main для блога и проверяем на ошибку 400', async () => {
+//     const info1 = await test
+//       .post(`/blogger/blogs/${blog.id}/images/main`)
+//       .auth(accessToken1.accessToken, { type: 'bearer' })
+//       .attach('file', 'D:/L5do38VAOnI.jpg')
+//       .expect(400);
+//     expect(info1.body).toEqual({
+//       errorsMessages: [
+//         { message: expect.any(String), field: 'width' },
+//         { message: expect.any(String), field: 'size' },
+//         { message: expect.any(String), field: 'height' },
+//       ],
+//     });
+//   });
+//
+//   it('Создаём main для блога и проверяем на ошибки 403', async () => {
+//     await test
+//       .post(`/blogger/blogs/${blog.id}/images/main`)
+//       .auth(accessToken2.accessToken, { type: 'bearer' })
+//       .attach('file', 'D:/blogMain.jpg')
+//       .expect(403);
+//   });
+//
+//   it('Создаём main для блога и проверяем на ошибки 401', async () => {
+//     await test.post(`/blogger/blogs/${blog.id}/images/main`).expect(401);
+//   });
+//
+//   it('Создаём main для поста и проверяем верный вывод', async () => {
+//     const info = await test
+//       .post(`/blogger/blogs/${blog.id}/posts/${post.id}/images/main`)
+//       .auth(accessToken1.accessToken, { type: 'bearer' })
+//       .attach('file', 'D:/postMain.jpg')
+//       .expect(201);
+//     expect(info.body).toEqual({
+//       main: [
+//         {
+//           url: `https://storage.yandexcloud.net/my1bucket/images/main/${post.id}_post_original.png`,
+//           width: 940,
+//           height: 432,
+//           fileSize: 7137,
+//         },
+//         {
+//           url: `https://storage.yandexcloud.net/my1bucket/images/main/${post.id}_post_middle.png`,
+//           width: 300,
+//           height: 180,
+//           fileSize: 637,
+//         },
+//         {
+//           url: `https://storage.yandexcloud.net/my1bucket/images/main/${post.id}_post_small.png`,
+//           width: 149,
+//           height: 96,
+//           fileSize: 356,
+//         },
+//       ],
+//     });
+//   });
+//
+//   it('Создаём main для поста и проверяем на ошибку 400', async () => {
+//     const info1 = await test
+//       .post(`/blogger/blogs/${blog.id}/posts/${post.id}/images/main`)
+//       .auth(accessToken1.accessToken, { type: 'bearer' })
+//       .attach('file', 'D:/L5do38VAOnI.jpg')
+//       .expect(400);
+//     expect(info1.body).toEqual({
+//       errorsMessages: [
+//         { message: expect.any(String), field: 'size' },
+//         { message: expect.any(String), field: 'width' },
+//         { message: expect.any(String), field: 'height' },
+//       ],
+//     });
+//   });
+//
+//   it('Создаём main для поста и проверяем на ошибки 403', async () => {
+//     await test
+//       .post(`/blogger/blogs/${blog.id}/posts/${post.id}/images/main`)
+//       .auth(accessToken2.accessToken, { type: 'bearer' })
+//       .attach('file', 'D:/postMain.jpg')
+//       .expect(403);
+//   });
+//
+//   it('Создаём main для поста и проверяем на ошибку 401', async () => {
+//     await test
+//       .post(`/blogger/blogs/${blog.id}/posts/${post.id}/images/main`)
+//       .expect(401);
+//   });
+//
+//   it('Проверяем правильный вывод данных', async () => {
+//     const info1 = await test
+//       .get('/blogger/blogs')
+//       .auth(accessToken1.accessToken, { type: 'bearer' })
+//       .expect(200);
+//     expect(info1.body).toEqual({
+//       pagesCount: 1,
+//       page: 1,
+//       pageSize: 10,
+//       totalCount: 1,
+//       items: [
+//         {
+//           id: blog.id,
+//           name: blog.name,
+//           websiteUrl: blog.websiteUrl,
+//           description: blog.description,
+//           createdAt: blog.createdAt,
+//           isMembership: false,
+//           images: {
+//             wallpaper: {
+//               url: `https://storage.yandexcloud.net/my1bucket/images/wallpaper/${blog.id}_blog.png`,
+//               width: 1028,
+//               height: 312,
+//               fileSize: 5872,
+//             },
+//             main: [
+//               {
+//                 url: `https://storage.yandexcloud.net/my1bucket/images/main/${blog.id}_blog.png`,
+//                 width: 156,
+//                 height: 156,
+//                 fileSize: 1027,
+//               },
+//               {
+//                 url: `https://storage.yandexcloud.net/my1bucket/images/main/${post.id}_post_original.png`,
+//                 width: 940,
+//                 height: 432,
+//                 fileSize: 7137,
+//               },
+//               {
+//                 url: `https://storage.yandexcloud.net/my1bucket/images/main/${post.id}_post_middle.png`,
+//                 width: 300,
+//                 height: 180,
+//                 fileSize: 637,
+//               },
+//               {
+//                 url: `https://storage.yandexcloud.net/my1bucket/images/main/${post.id}_post_small.png`,
+//                 width: 149,
+//                 height: 96,
+//                 fileSize: 356,
+//               },
+//             ],
+//           },
+//         },
+//       ],
+//     });
+//     const info2 = await test.get('/blogs').expect(200);
+//     expect(info2.body).toEqual({
+//       pagesCount: 1,
+//       page: 1,
+//       pageSize: 10,
+//       totalCount: 1,
+//       items: [
+//         {
+//           id: blog.id,
+//           name: blog.name,
+//           websiteUrl: blog.websiteUrl,
+//           description: blog.description,
+//           createdAt: blog.createdAt,
+//           isMembership: false,
+//           images: {
+//             wallpaper: {
+//               url: `https://storage.yandexcloud.net/my1bucket/images/wallpaper/${blog.id}_blog.png`,
+//               width: 1028,
+//               height: 312,
+//               fileSize: 5872,
+//             },
+//             main: [
+//               {
+//                 url: `https://storage.yandexcloud.net/my1bucket/images/main/${blog.id}_blog.png`,
+//                 width: 156,
+//                 height: 156,
+//                 fileSize: 1027,
+//               },
+//               {
+//                 url: `https://storage.yandexcloud.net/my1bucket/images/main/${post.id}_post_original.png`,
+//                 width: 940,
+//                 height: 432,
+//                 fileSize: 7137,
+//               },
+//               {
+//                 url: `https://storage.yandexcloud.net/my1bucket/images/main/${post.id}_post_middle.png`,
+//                 width: 300,
+//                 height: 180,
+//                 fileSize: 637,
+//               },
+//               {
+//                 url: `https://storage.yandexcloud.net/my1bucket/images/main/${post.id}_post_small.png`,
+//                 width: 149,
+//                 height: 96,
+//                 fileSize: 356,
+//               },
+//             ],
+//           },
+//           subscribersCount: 0,
+//           currentUserSubscriptionStatus: 'None',
+//         },
+//       ],
+//     });
+//     const info3 = await test.get(`/blogs/${blog.id}`).expect(200);
+//     expect(info3.body).toEqual({
+//       id: blog.id,
+//       name: blog.name,
+//       websiteUrl: blog.websiteUrl,
+//       description: blog.description,
+//       createdAt: blog.createdAt,
+//       isMembership: false,
+//       images: {
+//         wallpaper: {
+//           url: `https://storage.yandexcloud.net/my1bucket/images/wallpaper/${blog.id}_blog.png`,
+//           width: 1028,
+//           height: 312,
+//           fileSize: 5872,
+//         },
+//         main: [
+//           {
+//             url: `https://storage.yandexcloud.net/my1bucket/images/main/${blog.id}_blog.png`,
+//             width: 156,
+//             height: 156,
+//             fileSize: 1027,
+//           },
+//           {
+//             url: `https://storage.yandexcloud.net/my1bucket/images/main/${post.id}_post_original.png`,
+//             width: 940,
+//             height: 432,
+//             fileSize: 7137,
+//           },
+//           {
+//             url: `https://storage.yandexcloud.net/my1bucket/images/main/${post.id}_post_middle.png`,
+//             width: 300,
+//             height: 180,
+//             fileSize: 637,
+//           },
+//           {
+//             url: `https://storage.yandexcloud.net/my1bucket/images/main/${post.id}_post_small.png`,
+//             width: 149,
+//             height: 96,
+//             fileSize: 356,
+//           },
+//         ],
+//       },
+//       subscribersCount: 0,
+//       currentUserSubscriptionStatus: 'None',
+//     });
+//     const info4 = await test.get(`/blogs/${blog.id}/posts`).expect(200);
+//     expect(info4.body).toEqual({
+//       pagesCount: 1,
+//       page: 1,
+//       pageSize: 10,
+//       totalCount: 1,
+//       items: [
+//         {
+//           id: post.id,
+//           title: post.title,
+//           shortDescription: post.shortDescription,
+//           content: post.content,
+//           blogId: post.blogId,
+//           blogName: post.blogName,
+//           createdAt: post.createdAt,
+//           extendedLikesInfo: {
+//             likesCount: 0,
+//             dislikesCount: 0,
+//             myStatus: 'None',
+//             newestLikes: [],
+//           },
+//           images: {
+//             main: [
+//               {
+//                 url: `https://storage.yandexcloud.net/my1bucket/images/main/${post.id}_post_original.png`,
+//                 width: 940,
+//                 height: 432,
+//                 fileSize: 7137,
+//               },
+//               {
+//                 url: `https://storage.yandexcloud.net/my1bucket/images/main/${post.id}_post_middle.png`,
+//                 width: 300,
+//                 height: 180,
+//                 fileSize: 637,
+//               },
+//               {
+//                 url: `https://storage.yandexcloud.net/my1bucket/images/main/${post.id}_post_small.png`,
+//                 width: 149,
+//                 height: 96,
+//                 fileSize: 356,
+//               },
+//             ],
+//           },
+//         },
+//       ],
+//     });
+//     const info5 = await test.get(`/posts`).expect(200);
+//     expect(info5.body).toEqual({
+//       pagesCount: 1,
+//       page: 1,
+//       pageSize: 10,
+//       totalCount: 1,
+//       items: [
+//         {
+//           id: post.id,
+//           title: post.title,
+//           shortDescription: post.shortDescription,
+//           content: post.content,
+//           blogId: post.blogId,
+//           blogName: post.blogName,
+//           createdAt: post.createdAt,
+//           extendedLikesInfo: {
+//             likesCount: 0,
+//             dislikesCount: 0,
+//             myStatus: 'None',
+//             newestLikes: [],
+//           },
+//           images: {
+//             main: [
+//               {
+//                 url: `https://storage.yandexcloud.net/my1bucket/images/main/${post.id}_post_original.png`,
+//                 width: 940,
+//                 height: 432,
+//                 fileSize: 7137,
+//               },
+//               {
+//                 url: `https://storage.yandexcloud.net/my1bucket/images/main/${post.id}_post_middle.png`,
+//                 width: 300,
+//                 height: 180,
+//                 fileSize: 637,
+//               },
+//               {
+//                 url: `https://storage.yandexcloud.net/my1bucket/images/main/${post.id}_post_small.png`,
+//                 width: 149,
+//                 height: 96,
+//                 fileSize: 356,
+//               },
+//             ],
+//           },
+//         },
+//       ],
+//     });
+//     const info6 = await test.get(`/posts/${post.id}`).expect(200);
+//     expect(info6.body).toEqual({
+//       id: post.id,
+//       title: post.title,
+//       shortDescription: post.shortDescription,
+//       content: post.content,
+//       blogId: post.blogId,
+//       blogName: post.blogName,
+//       createdAt: post.createdAt,
+//       extendedLikesInfo: {
+//         likesCount: 0,
+//         dislikesCount: 0,
+//         myStatus: 'None',
+//         newestLikes: [],
+//       },
+//       images: {
+//         main: [
+//           {
+//             url: `https://storage.yandexcloud.net/my1bucket/images/main/${post.id}_post_original.png`,
+//             width: 940,
+//             height: 432,
+//             fileSize: 7137,
+//           },
+//           {
+//             url: `https://storage.yandexcloud.net/my1bucket/images/main/${post.id}_post_middle.png`,
+//             width: 300,
+//             height: 180,
+//             fileSize: 637,
+//           },
+//           {
+//             url: `https://storage.yandexcloud.net/my1bucket/images/main/${post.id}_post_small.png`,
+//             width: 149,
+//             height: 96,
+//             fileSize: 356,
+//           },
+//         ],
+//       },
+//     });
+//   });
+// });
