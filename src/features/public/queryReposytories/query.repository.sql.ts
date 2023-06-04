@@ -20,7 +20,6 @@ import { IPostsRepository } from '../posts/i.posts.repository';
 import { IUsersRepository } from '../../sa/users/i.users.repository';
 import { PostsRepositorySql } from '../posts/posts.repository.sql';
 import { IImageRepository } from '../imageRepository/i.image.repository';
-import { ISubscriptionsRepository } from '../subscriptionsRepository/i.subscriptions.repository';
 
 @Injectable()
 export class QueryRepositorySql extends IQueryRepository {
@@ -32,7 +31,6 @@ export class QueryRepositorySql extends IQueryRepository {
     private readonly postsRepositorySql: PostsRepositorySql,
     private readonly usersRepository: IUsersRepository,
     private readonly imageRepository: IImageRepository,
-    private readonly subscriptionsRepository: ISubscriptionsRepository,
   ) {
     super();
   }
@@ -40,15 +38,27 @@ export class QueryRepositorySql extends IQueryRepository {
   async getQueryBlogs(query: any, userId: string): Promise<BlogsQueryType> {
     const totalCount = await this.dataSource.query(
       `SELECT count(*) FROM public."Blogs"
-            WHERE "name" ILIKE $1 AND "banStatus"=false`,
+              WHERE "name" ILIKE $1 AND "banStatus"=false`,
       [`%${query.searchNameTerm}%`],
     );
     const sortedBlogsArray = await this.dataSource.query(
-      `SELECT * FROM public."Blogs"
-             WHERE "name" ILIKE $1 AND "banStatus"=false
-             ORDER BY "${query.sortBy}" COLLATE "C" ${query.sortDirection}
-             LIMIT $2 OFFSET $3`,
+      `SELECT b.id,b.name,b.description,b."websiteUrl",b."createdAt",b."isMembership",
+  w.url AS wallpaper_url, w.width AS wallpaper_width, w.height AS wallpaper_height, w."fileSize" AS wallpaper_fileSize,
+    JSON_AGG(
+    JSON_BUILD_OBJECT('url', m.url, 'width', m.width, 'height', m.height, 'fileSize', m."fileSize")
+  ) AS main,
+  s.status AS subscription_status,
+  (SELECT COUNT(*) FROM public."SubscriptionsForBlog" WHERE "blogId" = b.id) AS subscribers_count
+  FROM public."Blogs" b
+  LEFT JOIN public."Image" w ON w."blogId"=b.id AND w."folderName"='wallpaper'
+  LEFT JOIN public."Image" m ON m."blogId"=b.id AND m."folderName"='main'
+  LEFT JOIN public."SubscriptionsForBlog" s ON s."blogId"=b.id AND s."userId"=$1
+  WHERE "name" ILIKE $2 AND "banStatus"=false
+  GROUP BY b.id, b.name, b.description, b."websiteUrl", b."createdAt", b."isMembership", w.url, w.width, w.height, w."fileSize", s.status
+  ORDER BY "${query.sortBy}" COLLATE "C" ${query.sortDirection}
+  LIMIT $3 OFFSET $4`,
       [
+        userId,
         `%${query.searchNameTerm}%`,
         query.pageSize,
         this.queryCount.skipHelper(query.pageNumber, query.pageSize),
@@ -62,59 +72,30 @@ export class QueryRepositorySql extends IQueryRepository {
       page: query.pageNumber,
       pageSize: query.pageSize,
       totalCount: +totalCount[0].count,
-      items: await Promise.all(
-        sortedBlogsArray.map(async (a) => {
-          const wallpaper =
-            await this.imageRepository.getInfoForImageByBlogIdAndFolderName(
-              a.id,
-              'wallpaper',
-            );
-          const main =
-            await this.imageRepository.getInfoForImageByBlogIdAndFolderName(
-              a.id,
-              'main',
-            );
-          const subscription =
-            await this.subscriptionsRepository.getSubscriptionFromBlogIdAndUserId(
-              a.id,
-              userId,
-            );
-          const count =
-            await this.subscriptionsRepository.getSubscriptionsCountFromBlogId(
-              a.id,
-            );
-          return {
-            id: a.id,
-            name: a.name,
-            description: a.description,
-            websiteUrl: a.websiteUrl,
-            createdAt: a.createdAt,
-            isMembership: a.isMembership,
-            images: {
-              wallpaper:
-                wallpaper[0] === undefined
-                  ? null
-                  : {
-                      url: wallpaper[0]?.url,
-                      width: wallpaper[0]?.width,
-                      height: wallpaper[0]?.height,
-                      fileSize: wallpaper[0]?.fileSize,
-                    },
-              main: main.map((a) => {
-                return {
-                  url: a.url,
-                  width: a.width,
-                  height: a.height,
-                  fileSize: a.fileSize,
-                };
-              }),
-            },
-            currentUserSubscriptionStatus:
-              subscription?.status === undefined ? 'None' : subscription.status,
-            subscribersCount: count,
-          };
-        }),
-      ),
+      items: sortedBlogsArray.map((a) => {
+        return {
+          id: a.id,
+          name: a.name,
+          description: a.description,
+          websiteUrl: a.websiteUrl,
+          createdAt: a.createdAt,
+          isMembership: a.isMembership,
+          images: {
+            wallpaper: a.wallpaper_url
+              ? {
+                  url: a.wallpaper_url,
+                  width: a.wallpaper_width,
+                  height: a.wallpaper_height,
+                  fileSize: a.wallpaper_fileSize,
+                }
+              : null,
+            main: a.main[0].url === null ? [] : a.main,
+          },
+          currentUserSubscriptionStatus:
+            a.subscription_status === null ? 'None' : a.subscription_status,
+          subscribersCount: +a.subscribers_count,
+        };
+      }),
     };
   }
 
