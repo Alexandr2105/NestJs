@@ -366,20 +366,102 @@ export class QueryRepositorySql extends IQueryRepository {
     };
   }
 
-  async getQueryBlogsAuthUser(
-    query: any,
-    userId: string,
-  ): Promise<BlogsQueryType> {
-    const totalCount = await this.dataSource.query(
+  // async getQueryBlogsAuthUser(
+  //   query: any,
+  //   userId: string,
+  // ): Promise<BlogsQueryType> {
+  //   const totalCount = await this.dataSource.query(
+  //     `SELECT count(*) FROM public."Blogs"
+  //           WHERE "name" ILIKE $1 AND "userId"=$2`,
+  //     [`%${query.searchNameTerm}%`, userId],
+  //   );
+  //   const sortedBlogsArray = await this.dataSource.query(
+  //     `SELECT * FROM public."Blogs"
+  //            WHERE "name" ILIKE $1 AND "userId"=$2
+  //            ORDER BY "${query.sortBy}" COLLATE "C" ${query.sortDirection}
+  //            LIMIT $3 OFFSET $4`,
+  //     [
+  //       `%${query.searchNameTerm}%`,
+  //       userId,
+  //       query.pageSize,
+  //       this.queryCount.skipHelper(query.pageNumber, query.pageSize),
+  //     ],
+  //   );
+  //   return {
+  //     pagesCount: this.queryCount.pagesCountHelper(
+  //       totalCount[0].count,
+  //       query.pageSize,
+  //     ),
+  //     page: query.pageNumber,
+  //     pageSize: query.pageSize,
+  //     totalCount: +totalCount[0].count,
+  //     items: await Promise.all(
+  //       sortedBlogsArray.map(async (a) => {
+  //         const wallpaper =
+  //           await this.imageRepository.getInfoForImageByBlogIdAndFolderName(
+  //             a.id,
+  //             'wallpaper',
+  //           );
+  //         const main =
+  //           await this.imageRepository.getInfoForImageByBlogIdAndFolderName(
+  //             a.id,
+  //             'main',
+  //           );
+  //         return {
+  //           id: a.id,
+  //           name: a.name,
+  //           description: a.description,
+  //           websiteUrl: a.websiteUrl,
+  //           createdAt: a.createdAt,
+  //           isMembership: a.isMembership,
+  //           images: {
+  //             wallpaper:
+  //               wallpaper[0] === undefined
+  //                 ? null
+  //                 : {
+  //                     url: wallpaper[0]?.url,
+  //                     width: wallpaper[0]?.width,
+  //                     height: wallpaper[0]?.height,
+  //                     fileSize: wallpaper[0]?.fileSize,
+  //                   },
+  //             main: main.map((a) => {
+  //               return {
+  //                 url: a.url,
+  //                 width: a.width,
+  //                 height: a.height,
+  //                 fileSize: a.fileSize,
+  //               };
+  //             }),
+  //           },
+  //         };
+  //       }),
+  //     ),
+  //   };
+  // }
+
+  async getQueryBlogsAuthUser(query: any, userId: string) {
+    const [{ count: totalCount }] = await this.dataSource.query(
       `SELECT count(*) FROM public."Blogs"
-            WHERE "name" ILIKE $1 AND "userId"=$2`,
+              WHERE "name" ILIKE $1 AND "userId"=$2`,
       [`%${query.searchNameTerm}%`, userId],
     );
+
     const sortedBlogsArray = await this.dataSource.query(
-      `SELECT * FROM public."Blogs"
-             WHERE "name" ILIKE $1 AND "userId"=$2
-             ORDER BY "${query.sortBy}" COLLATE "C" ${query.sortDirection}
-             LIMIT $3 OFFSET $4`,
+      `
+    SELECT wallpaper,
+    JSON_BUILD_OBJECT('id',b.id,'name',b.name,'description',b.description,
+    'websiteUrl',b."websiteUrl",'createdAt',b."createdAt",'isMembership',b."isMembership") AS "blogInfo"
+    FROM public."Blogs" b
+    LEFT JOIN(SELECT i."blogId", JSON_BUILD_OBJECT('url',i.url,'width',i.width,'height',i.height,
+    'fileSize',i."fileSize")
+    FROM public."Image" i
+    WHERE "folderName"='wallpaper'
+    ) AS wallpaper ON wallpaper."blogId"=b.id
+//     LEFT JOIN(SELECT JOIN_AGG(JSON_BUILD_OBJECT()))AS main
+    WHERE "name" ILIKE $1 AND "userId"=$2
+    ORDER BY "${query.sortBy}" COLLATE "C" ${query.sortDirection}
+    LIMIT $3 OFFSET $4
+    `,
       [
         `%${query.searchNameTerm}%`,
         userId,
@@ -387,56 +469,7 @@ export class QueryRepositorySql extends IQueryRepository {
         this.queryCount.skipHelper(query.pageNumber, query.pageSize),
       ],
     );
-    return {
-      pagesCount: this.queryCount.pagesCountHelper(
-        totalCount[0].count,
-        query.pageSize,
-      ),
-      page: query.pageNumber,
-      pageSize: query.pageSize,
-      totalCount: +totalCount[0].count,
-      items: await Promise.all(
-        sortedBlogsArray.map(async (a) => {
-          const wallpaper =
-            await this.imageRepository.getInfoForImageByBlogIdAndFolderName(
-              a.id,
-              'wallpaper',
-            );
-          const main =
-            await this.imageRepository.getInfoForImageByBlogIdAndFolderName(
-              a.id,
-              'main',
-            );
-          return {
-            id: a.id,
-            name: a.name,
-            description: a.description,
-            websiteUrl: a.websiteUrl,
-            createdAt: a.createdAt,
-            isMembership: a.isMembership,
-            images: {
-              wallpaper:
-                wallpaper[0] === undefined
-                  ? null
-                  : {
-                      url: wallpaper[0]?.url,
-                      width: wallpaper[0]?.width,
-                      height: wallpaper[0]?.height,
-                      fileSize: wallpaper[0]?.fileSize,
-                    },
-              main: main.map((a) => {
-                return {
-                  url: a.url,
-                  width: a.width,
-                  height: a.height,
-                  fileSize: a.fileSize,
-                };
-              }),
-            },
-          };
-        }),
-      ),
-    };
+    return sortedBlogsArray;
   }
 
   async getQueryBlogsSA(query: any): Promise<BlogsQueryTypeSA> {
