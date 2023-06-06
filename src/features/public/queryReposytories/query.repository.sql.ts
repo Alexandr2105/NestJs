@@ -168,7 +168,11 @@ export class QueryRepositorySql extends IQueryRepository {
     };
   }
 
-  async getQueryPostsBlogsId(query: any, blogId: string, userId: string) {
+  async getQueryPostsBlogsId(
+    query: any,
+    blogId: string,
+    userId: string,
+  ): Promise<PostQueryType> {
     const [{ count: totalCount }] = await this.dataSource.query(
       `
     SELECT COUNT(*) FROM public."Posts"
@@ -306,62 +310,59 @@ export class QueryRepositorySql extends IQueryRepository {
     postId: string,
     userId: string,
   ): Promise<CommentsType | boolean> {
-    const banUsers = await this.usersRepository.getBanUsers();
-    const totalCount = await this.dataSource.query(
-      `SELECT count(*) FROM public."Comments"
-            WHERE "idPost"=$1 AND NOT "userId" = ANY ($2)`,
-      [
-        postId,
-        banUsers.map((a) => {
-          return a.id;
-        }),
-      ],
+    const [{ count: totalCount }] = await this.dataSource.query(
+      `
+    SELECT COUNT(*) FROM public."Comments"
+    WHERE "idPost"=$1 AND NOT "userId"=ANY(SELECT "userId" FROM public."BanUsers")
+    `,
+      [postId],
     );
+
     const sortCommentsByPostId = await this.dataSource.query(
-      `SELECT * FROM public."Comments"
-            WHERE "idPost"=$1 AND NOT "userId"=ANY($2)
-            ORDER BY "${query.sortBy}" COLLATE "C" ${query.sortDirection}
-            LIMIT $3 OFFSET $4`,
+      `
+    SELECT c.*, lm."likesCount", dm."dislikesCount",ls.status AS "myStatus"
+    FROM public."Comments" c
+    LEFT JOIN(SELECT id,COUNT(*) AS "likesCount"
+    FROM public."LikesModel" 
+    WHERE id=$1
+    GROUP BY id)lm ON lm.id=c.id
+    LEFT JOIN(SELECT id, COUNT(*) AS "dislikesCount"
+    FROM public."LikesModel"
+    WHERE id=$1
+    GROUP BY id)dm ON dm.id=c.id
+    LEFT JOIN public."LikesModel" ls ON ls."userId"=$4 AND ls.id=c.id
+    WHERE "idPost"=$1 AND NOT c."userId"=ANY(SELECT "userId" FROM public."BanUsers")
+    ORDER BY "${query.sortBy}" COLLATE "C" ${query.sortDirection}
+    LIMIT $2 OFFSET $3
+    `,
       [
         postId,
-        banUsers.map((a) => {
-          return a.id;
-        }),
         query.pageSize,
         this.queryCount.skipHelper(query.pageNumber, query.pageSize),
+        userId,
       ],
     );
     return {
-      pagesCount: this.queryCount.pagesCountHelper(
-        totalCount[0].count,
-        query.pageSize,
-      ),
+      pagesCount: this.queryCount.pagesCountHelper(+totalCount, query.pageSize),
       page: query.pageNumber,
       pageSize: query.pageSize,
-      totalCount: +totalCount[0].count,
-      items: await Promise.all(
-        sortCommentsByPostId.map(async (a) => {
-          const likeInfo = await this.commentsRepository.getLikesInfo(a.id);
-          const dislikeInfo = await this.commentsRepository.getDislikeInfo(
-            a.id,
-          );
-          const myStatus = await this.commentsRepository.getMyStatus(
-            userId,
-            a.id,
-          );
-          return {
-            id: a.id,
-            content: a.content,
-            commentatorInfo: { userId: a.userId, userLogin: a.userLogin },
-            createdAt: a.createdAt,
-            likesInfo: {
-              likesCount: likeInfo,
-              dislikesCount: dislikeInfo,
-              myStatus: myStatus,
-            },
-          };
-        }),
-      ),
+      totalCount: +totalCount,
+      items: sortCommentsByPostId.map((a) => {
+        return {
+          id: a.id,
+          content: a.content,
+          commentatorInfo: {
+            userId: a.userId,
+            userLogin: a.userLogin,
+          },
+          createdAt: a.createdAt,
+          likesInfo: {
+            likesCount: a.likesCount === null ? 0 : a.likesCount,
+            dislikesCount: a.dislikesCount === null ? 0 : a.dislikesCount,
+            myStatus: a.myStatus === null ? 'None' : a.myStatus,
+          },
+        };
+      }),
     };
   }
 
