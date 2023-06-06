@@ -36,11 +36,11 @@ export class QueryRepositorySql extends IQueryRepository {
   }
 
   async getQueryBlogs(query: any, userId: string): Promise<BlogsQueryType> {
-    const totalCount = await this.dataSource.query(
-      `SELECT count(*) FROM public."Blogs"
-              WHERE "name" ILIKE $1 AND "banStatus"=false`,
-      [`%${query.searchNameTerm}%`],
-    );
+    // const totalCount = await this.dataSource.query(
+    //   `SELECT count(*) FROM public."Blogs"
+    //           WHERE "name" ILIKE $1 AND "banStatus"=false`,
+    //   [`%${query.searchNameTerm}%`],
+    // );
     const sortedBlogsArray = await this.dataSource.query(
       `SELECT b.id,b.name,b.description,b."websiteUrl",b."createdAt",b."isMembership",
   w.url AS wallpaper_url, w.width AS wallpaper_width, w.height AS wallpaper_height, w."fileSize" AS wallpaper_fileSize,
@@ -66,12 +66,12 @@ export class QueryRepositorySql extends IQueryRepository {
     );
     return {
       pagesCount: this.queryCount.pagesCountHelper(
-        totalCount[0].count,
+        sortedBlogsArray.length,
         query.pageSize,
       ),
       page: query.pageNumber,
       pageSize: query.pageSize,
-      totalCount: +totalCount[0].count,
+      totalCount: sortedBlogsArray.length,
       items: sortedBlogsArray.map((a) => {
         return {
           id: a.id,
@@ -99,116 +99,11 @@ export class QueryRepositorySql extends IQueryRepository {
     };
   }
 
-  // async getQueryPosts(query: any, userId: string): Promise<PostQueryType> {
-  //   const banUsers = await this.usersRepository.getBanUsers();
-  //   const banBlogs = await this.dataSource.query(
-  //     `SELECT * FROM public."Blogs"
-  //           WHERE "banStatus"=true`,
-  //   );
-  //   const sortPostsArray = await this.dataSource.query(
-  //     `SELECT * FROM public."Posts"
-  //           WHERE NOT "userId"= ANY ($1) AND NOT "blogId"=ANY($2)
-  //           ORDER BY "${query.sortBy}" ${query.sortDirection}
-  //           LIMIT $3 OFFSET $4`,
-  //     [
-  //       banUsers.map((a) => {
-  //         return a.id;
-  //       }),
-  //       banBlogs.map((a) => {
-  //         return a.id;
-  //       }),
-  //       query.pageSize,
-  //       this.queryCount.skipHelper(query.pageNumber, query.pageSize),
-  //     ],
-  //   );
-  //   const totalCount = await this.dataSource.query(
-  //     `SELECT count(*) FROM public."Posts"
-  //           WHERE NOT "userId"=ANY($1)`,
-  //     [
-  //       banUsers.map((a) => {
-  //         return a.id;
-  //       }),
-  //     ],
-  //   );
-  //   return {
-  //     pagesCount: this.queryCount.pagesCountHelper(
-  //       totalCount[0].count,
-  //       query.pageSize,
-  //     ),
-  //     page: query.pageNumber,
-  //     pageSize: query.pageSize,
-  //     totalCount: +totalCount[0].count,
-  //     items: await Promise.all(
-  //       sortPostsArray.map(async (a) => {
-  //         const infoLikes = await this.postsRepositorySql.getAllInfoAboutLikes(
-  //           a.id,
-  //         );
-  //         const like = infoLikes.find((l) => 'Like' === l.status);
-  //         const dislike = infoLikes.find((d) => 'Dislike' === d.status);
-  //         const myStatus = await this.postsRepository.getMyStatus(userId, a.id);
-  //         const main =
-  //           await this.imageRepository.getInfoForImageByPostIdAndFolderName(
-  //             a.id,
-  //             'main',
-  //           );
-  //         const sortLikesArray = await this.dataSource.query(
-  //           `SELECT * FROM public."LikesModel"
-  //                   WHERE "id"=$1 AND "status"=$2
-  //                  ORDER BY "createDate" COLLATE "C" DESC
-  //                  LIMIT 3`,
-  //           [a.id, 'Like'],
-  //         );
-  //         return {
-  //           id: a.id,
-  //           title: a.title,
-  //           shortDescription: a.shortDescription,
-  //           content: a.content,
-  //           blogId: a.blogId,
-  //           blogName: a.blogName,
-  //           createdAt: a.createdAt,
-  //           extendedLikesInfo: {
-  //             likesCount: +like?.count || 0,
-  //             dislikesCount: +dislike?.count || 0,
-  //             myStatus: myStatus,
-  //             newestLikes: sortLikesArray.map((b) => {
-  //               return {
-  //                 addedAt: b.createDate.toString(),
-  //                 userId: b.userId,
-  //                 login: b.login,
-  //               };
-  //             }),
-  //           },
-  //           images: {
-  //             main: main.map((a) => {
-  //               return {
-  //                 url: a.url,
-  //                 width: a.width,
-  //                 height: a.height,
-  //                 fileSize: a.fileSize,
-  //               };
-  //             }),
-  //           },
-  //         };
-  //       }),
-  //     ),
-  //   };
-  // }
-
-  async getQueryPosts(query: any, userId: string) {
-    // const totalCount = await this.dataSource.query(
-    //   `SELECT count(*) FROM public."Posts"
-    //           WHERE NOT "userId"=ANY($1)`,
-    //   [
-    //     banUsers.map((a) => {
-    //       return a.id;
-    //     }),
-    //   ],
-    // );
-
-    const sortPostsArray = await this.dataSource.query(`
-    SELECT lm."likesCount",
-    JSON_BUILD_OBJECT('id', p.id, 'title', p.title, 'shortDescription', 
-    p."shortDescription",'content', p.content, 'blogId', p."blogId", 'blogName', 
+  async getQueryPosts(query: any, userId: string): Promise<PostQueryType> {
+    const sortPostsArray = await this.dataSource.query(
+      `SELECT lm."likesCount", dm."dislikesCount", ms.status,
+    JSON_BUILD_OBJECT('id', p.id, 'title', p.title, 'shortDescription',
+    p."shortDescription",'content', p.content, 'blogId', p."blogId", 'blogName',
     p."blogName",'createdAt', p."createdAt") AS main,
     (SELECT JSON_AGG(JSON_BUILD_OBJECT('addedAt', l."createDate", 'userId', l."userId", 'login',
      l.login))
@@ -222,17 +117,52 @@ export class QueryRepositorySql extends IQueryRepository {
     i.height,'fileSize',i."fileSize"))
     FROM "Image" AS i
     WHERE i."postId"=p.id AND i."folderName"='main'
-    ) AS main_images
+    ) AS "mainImages"
     FROM public."Posts" p
     LEFT JOIN(SELECT id, COUNT(*) AS "likesCount"
     FROM public."LikesModel"
-    WHERE status='like'
+    WHERE status='Like'
     GROUP BY id) lm ON lm.id=p.id
+    LEFT JOIN(SELECT id, COUNT(*) AS "dislikesCount"
+    FROM public."LikesModel"
+    WHERE status='Dislike'
+    GROUP BY id) dm ON dm.id=p.id
+    LEFT JOIN public."LikesModel" ms ON ms."userId"=$1 AND ms.id=p.id
+    WHERE NOT p."userId" = ANY(SELECT id FROM public."Users" u WHERE u.ban=true )
+    AND NOT p."blogId" = ANY(SELECT id FROM public."Blogs" b WHERE b."banStatus"=true)
     GROUP BY p.id,p.title,p."shortDescription",p.content,p."blogId",p."blogName",
-    p."createdAt",lm."likesCount"
-    `);
-
-    return sortPostsArray;
+    p."createdAt",lm."likesCount",dm."dislikesCount",ms.status
+    ORDER BY "${query.sortBy}" COLLATE "C" ${query.sortDirection}
+    LIMIT $2 OFFSET $3`,
+      [
+        userId,
+        query.pageSize,
+        this.queryCount.skipHelper(query.pageNumber, query.pageSize),
+      ],
+    );
+    return {
+      pagesCount: this.queryCount.pagesCountHelper(
+        sortPostsArray.length,
+        query.pageSize,
+      ),
+      page: query.pageNumber,
+      pageSize: query.pageSize,
+      totalCount: sortPostsArray.length,
+      items: sortPostsArray.map((a) => {
+        return {
+          ...a.main,
+          extendedLikesInfo: {
+            likesCount: a.likesCount === null ? 0 : +a.likesCount,
+            dislikesCount: a.dislikesCount === null ? 0 : +a.dislikesCount,
+            myStatus: a.status === null ? 'None' : a.status,
+            newestLikes: a.newestLikes === null ? [] : a.newestLikes,
+          },
+          images: {
+            main: a.mainImages === null ? [] : a.mainImages,
+          },
+        };
+      }),
+    };
   }
 
   async getQueryPostsBlogsId(
