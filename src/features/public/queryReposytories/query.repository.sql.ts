@@ -36,6 +36,14 @@ export class QueryRepositorySql extends IQueryRepository {
   }
 
   async getQueryBlogs(query: any, userId: string): Promise<BlogsQueryType> {
+    const [{ count: totalCount }] = await this.dataSource.query(
+      `
+    SELECT COUNT(*) FROM public."Blogs" b
+    WHERE "name" ILIKE $1 AND "banStatus"=false
+    `,
+      [`%${query.searchNameTerm}%`],
+    );
+
     const sortedBlogsArray = await this.dataSource.query(
       `SELECT b.id,b.name,b.description,b."websiteUrl",b."createdAt",b."isMembership",
   w.url AS wallpaper_url, w.width AS wallpaper_width, w.height AS wallpaper_height, w."fileSize" AS wallpaper_fileSize,
@@ -60,13 +68,10 @@ export class QueryRepositorySql extends IQueryRepository {
       ],
     );
     return {
-      pagesCount: this.queryCount.pagesCountHelper(
-        sortedBlogsArray.length,
-        query.pageSize,
-      ),
+      pagesCount: this.queryCount.pagesCountHelper(+totalCount, query.pageSize),
       page: query.pageNumber,
       pageSize: query.pageSize,
-      totalCount: sortedBlogsArray.length,
+      totalCount: +totalCount,
       items: sortedBlogsArray.map((a) => {
         return {
           id: a.id,
@@ -95,6 +100,12 @@ export class QueryRepositorySql extends IQueryRepository {
   }
 
   async getQueryPosts(query: any, userId: string): Promise<PostQueryType> {
+    const [{ count: totalCount }] = await this.dataSource.query(`
+    SELECT COUNT(*) FROM public."Posts"
+    WHERE NOT "userId" = ANY(SELECT id FROM public."Users" u WHERE u.ban=true )
+    AND NOT "blogId" = ANY(SELECT id FROM public."Blogs" b WHERE b."banStatus"=true)
+    `);
+
     const sortPostsArray = await this.dataSource.query(
       `SELECT lm."likesCount", dm."dislikesCount", ms.status,
     JSON_BUILD_OBJECT('id', p.id, 'title', p.title, 'shortDescription',
@@ -136,13 +147,10 @@ export class QueryRepositorySql extends IQueryRepository {
       ],
     );
     return {
-      pagesCount: this.queryCount.pagesCountHelper(
-        sortPostsArray.length,
-        query.pageSize,
-      ),
+      pagesCount: this.queryCount.pagesCountHelper(+totalCount, query.pageSize),
       page: query.pageNumber,
       pageSize: query.pageSize,
-      totalCount: sortPostsArray.length,
+      totalCount: +totalCount,
       items: sortPostsArray.map((a) => {
         return {
           ...a.main,
@@ -161,6 +169,14 @@ export class QueryRepositorySql extends IQueryRepository {
   }
 
   async getQueryPostsBlogsId(query: any, blogId: string, userId: string) {
+    const [{ count: totalCount }] = await this.dataSource.query(
+      `
+    SELECT COUNT(*) FROM public."Posts"
+    WHERE "blogId"=$1 AND NOT "userId"= ANY(SELECT "userId" FROM public."BanUsers")
+    `,
+      [blogId],
+    );
+
     const sortPostsId = await this.dataSource.query(
       `
     SELECT lm."likesCount",dm."dislikesCount",ms.status,
@@ -197,13 +213,10 @@ export class QueryRepositorySql extends IQueryRepository {
       ],
     );
     return {
-      pagesCount: this.queryCount.pagesCountHelper(
-        sortPostsId.length,
-        query.pageSize,
-      ),
+      pagesCount: this.queryCount.pagesCountHelper(+totalCount, query.pageSize),
       page: query.pageNumber,
       pageSize: query.pageSize,
-      totalCount: sortPostsId.length,
+      totalCount: +totalCount,
       items: sortPostsId.map((a) => {
         return {
           ...a.main,
@@ -222,18 +235,25 @@ export class QueryRepositorySql extends IQueryRepository {
   }
 
   async getQueryAllUsers(query: any): Promise<UserQueryType> {
-    const totalCount = await this.dataSource.query(
-      `SELECT count(*) FROM public."Users"
-       WHERE "login" ILIKE $1
-       OR "email" ILIKE $2`,
+    const [{ count: totalCount }] = await this.dataSource.query(
+      `
+    SELECT COUNT(*) FROM public."Users"
+    WHERE "login" ILIKE $1
+    OR "email" ILIKE $2
+    `,
       [`%${query.searchLoginTerm}%`, `%${query.searchEmailTerm}%`],
     );
+
     const sortArrayUsers = await this.dataSource.query(
-      `SELECT * FROM public."Users"
-            WHERE "login" ILIKE $1
-            OR "email" ILIKE $2
-            ORDER BY "${query.sortBy}" COLLATE "C" ${query.sortDirection}
-            LIMIT $3 OFFSET $4`,
+      `
+    SELECT b."isBanned",b."banDate",b."banReason",
+    JSON_BUILD_OBJECT('id',u.id,'login',u.login,'email',u.email,'createdAt',u."createdAt") AS users
+    FROM public."Users" u
+    LEFT JOIN public."BanUsers" b ON u.id=b."userId"
+    WHERE "login" ILIKE $1
+    OR "email" ILIKE $2
+    ORDER BY "${query.sortBy}" COLLATE "C" ${query.sortDirection}
+    LIMIT $3 OFFSET $4`,
       [
         `%${query.searchLoginTerm}%`,
         `%${query.searchEmailTerm}%`,
@@ -241,28 +261,35 @@ export class QueryRepositorySql extends IQueryRepository {
         this.queryCount.skipHelper(query.pageNumber, query.pageSize),
       ],
     );
-    return this.returnObject(query, totalCount[0], sortArrayUsers);
+    return this.returnObject(query, +totalCount, sortArrayUsers);
   }
 
   async getQuerySortUsers(query: any): Promise<UserQueryType> {
-    const totalCount = await this.dataSource.query(
-      `SELECT count(*) FROM public."Users"
-            WHERE ("login" ILIKE $1
-            OR "email" ILIKE $2)
-            AND "ban"= $3`,
+    const [{ count: totalCount }] = await this.dataSource.query(
+      `
+    SELECT COUNT(*) FROM public."Users"
+    WHERE ("login" ILIKE $1
+    OR "email" ILIKE $2)
+    AND "ban"=$3
+    `,
       [
         `%${query.searchLoginTerm}%`,
         `%${query.searchEmailTerm}%`,
         query.banStatus === 'banned',
       ],
     );
+
     const sortArrayUsers = await this.dataSource.query(
-      `SELECT * FROM public."Users"
-            WHERE ("login" ILIKE $1
-            OR "email" ILIKE $2)
-            AND "ban"=$5
-            ORDER BY "${query.sortBy}" COLLATE "C" ${query.sortDirection}
-            LIMIT $3 OFFSET $4`,
+      `SELECT
+    JSON_BUILD_OBJECT('id',u.id,'login',u.login,'email',u.email,'createdAt',
+    u."createdAt") AS users
+    FROM public."Users" u
+    LEFT JOIN public."BanUsers" b ON b."userId"= u.id
+    WHERE ("login" ILIKE $1
+    OR "email" ILIKE $2)
+    AND "ban"=$5
+    ORDER BY "${query.sortBy}" COLLATE "C" ${query.sortDirection}
+    LIMIT $3 OFFSET $4`,
       [
         `%${query.searchLoginTerm}%`,
         `%${query.searchEmailTerm}%`,
@@ -271,7 +298,7 @@ export class QueryRepositorySql extends IQueryRepository {
         query.banStatus === 'banned',
       ],
     );
-    return this.returnObject(query, totalCount[0], sortArrayUsers);
+    return this.returnObject(query, +totalCount, sortArrayUsers);
   }
 
   async getQueryCommentsByPostId(
@@ -459,33 +486,20 @@ export class QueryRepositorySql extends IQueryRepository {
 
   async returnObject(query, totalCount, sortArrayUsers) {
     return {
-      pagesCount: this.queryCount.pagesCountHelper(
-        totalCount.count,
-        query.pageSize,
-      ),
+      pagesCount: this.queryCount.pagesCountHelper(totalCount, query.pageSize),
       page: query.pageNumber,
       pageSize: query.pageSize,
-      totalCount: +totalCount.count,
-      items: await Promise.all(
-        sortArrayUsers.map(async (a) => {
-          const banInfo = await this.dataSource.query(
-            `SELECT * FROM public."BanUsers"
-                   WHERE "userId"=$1`,
-            [a.id],
-          );
-          return {
-            id: a.id,
-            login: a.login,
-            email: a.email,
-            createdAt: a.createdAt,
-            banInfo: {
-              isBanned: banInfo[0]?.isBanned || false,
-              banDate: banInfo[0]?.banDate || null,
-              banReason: banInfo[0]?.banReason || null,
-            },
-          };
-        }),
-      ),
+      totalCount: totalCount,
+      items: sortArrayUsers.map((a) => {
+        return {
+          ...a.users,
+          banInfo: {
+            isBanned: a.isBanned === null ? false : a.isBanned,
+            banDate: a.banDate,
+            banReason: a.banReason,
+          },
+        };
+      }),
     };
   }
 
