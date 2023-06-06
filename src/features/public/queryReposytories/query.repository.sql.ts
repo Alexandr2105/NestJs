@@ -36,11 +36,6 @@ export class QueryRepositorySql extends IQueryRepository {
   }
 
   async getQueryBlogs(query: any, userId: string): Promise<BlogsQueryType> {
-    // const totalCount = await this.dataSource.query(
-    //   `SELECT count(*) FROM public."Blogs"
-    //           WHERE "name" ILIKE $1 AND "banStatus"=false`,
-    //   [`%${query.searchNameTerm}%`],
-    // );
     const sortedBlogsArray = await this.dataSource.query(
       `SELECT b.id,b.name,b.description,b."websiteUrl",b."createdAt",b."isMembership",
   w.url AS wallpaper_url, w.width AS wallpaper_width, w.height AS wallpaper_height, w."fileSize" AS wallpaper_fileSize,
@@ -165,99 +160,64 @@ export class QueryRepositorySql extends IQueryRepository {
     };
   }
 
-  async getQueryPostsBlogsId(
-    query: any,
-    blogId: string,
-    userId: string,
-  ): Promise<PostQueryType> {
-    const banUsers = await this.usersRepository.getBanUsers();
-    const totalCount = await this.dataSource.query(
-      `SELECT count(*) FROM public."Posts"
-            WHERE "blogId"=$1 AND NOT "userId"=ANY($2)`,
-      [
-        blogId,
-        banUsers.map((a) => {
-          return a.id;
-        }),
-      ],
-    );
+  async getQueryPostsBlogsId(query: any, blogId: string, userId: string) {
     const sortPostsId = await this.dataSource.query(
-      `SELECT * FROM public."Posts"
-            WHERE "blogId"=$1 AND NOT "userId"=ANY($2)
-            ORDER BY "${query.sortBy}" COLLATE "C" ${query.sortDirection}
-            LIMIT $3 OFFSET $4`,
+      `
+    SELECT lm."likesCount",dm."dislikesCount",ms.status,
+    JSON_BUILD_OBJECT('id', p.id, 'title', p.title, 'shortDescription', p."shortDescription", 
+    'content', p.content, 'blogId', p."blogId", 'blogName', p."blogName",
+    'createdAt', p."createdAt") AS main,
+    (SELECT JSON_AGG(JSON_BUILD_OBJECT('addedAt',l."createDate",'userId',l."userId",
+    'login',l.login))
+    FROM public."LikesModel" l
+    WHERE p.id=id) AS "newestLikes",
+    (SELECT JSON_AGG(JSON_BUILD_OBJECT('url',i.url,'width',i.width,'height',i.height,
+    'fileSize',i."fileSize"))
+    FROM public."Image" i
+    WHERE "postId"=p.id) AS images
+    FROM public."Posts" p
+    LEFT JOIN(SELECT id,COUNT(*) AS "likesCount" 
+    FROM public."LikesModel"
+    WHERE status='Like'
+    GROUP BY id) lm ON lm.id=p.id
+    LEFT JOIN(SELECT id, COUNT(*) AS "dislikesCount"
+    FROM public."LikesModel"
+    WHERE status='Dislike'
+    GROUP BY id) dm ON dm.id=p.id
+    LEFT JOIN public."LikesModel" ms ON ms."userId"=$1 AND ms.id=p.id
+    WHERE "blogId"=$2 AND NOT p."userId"= ANY(SELECT "userId" FROM public."BanUsers")
+    ORDER BY "${query.sortBy}" COLLATE "C" ${query.sortDirection}
+    LIMIT $3 OFFSET $4
+    `,
       [
+        userId,
         blogId,
-        banUsers.map((a) => {
-          return a.id;
-        }),
         query.pageSize,
         this.queryCount.skipHelper(query.pageNumber, query.pageSize),
       ],
     );
     return {
       pagesCount: this.queryCount.pagesCountHelper(
-        totalCount[0].count,
+        sortPostsId.length,
         query.pageSize,
       ),
       page: query.pageNumber,
       pageSize: query.pageSize,
-      totalCount: +totalCount[0].count,
-      items: await Promise.all(
-        sortPostsId.map(async (a) => {
-          const likeInfo = await this.commentsRepository.getLikesInfo(a.id);
-          const dislikeInfo = await this.commentsRepository.getDislikeInfo(
-            a.id,
-          );
-          const myStatus = await this.commentsRepository.getMyStatus(
-            userId,
-            a.id,
-          );
-          const main =
-            await this.imageRepository.getInfoForImageByPostIdAndFolderName(
-              a.id,
-              'main',
-            );
-          const sortLikesArray = await this.dataSource.query(
-            `SELECT * FROM public."LikesModel"
-                    WHERE "id"=$1 AND "status"=$2
-                   ORDER BY "createDate" DESC
-                   LIMIT 3`,
-            [a.id, 'Like'],
-          );
-          return {
-            id: a.id,
-            title: a.title,
-            shortDescription: a.shortDescription,
-            content: a.content,
-            blogId: a.blogId,
-            blogName: a.blogName,
-            createdAt: a.createdAt,
-            extendedLikesInfo: {
-              likesCount: likeInfo,
-              dislikesCount: dislikeInfo,
-              myStatus: myStatus,
-              newestLikes: sortLikesArray.map((a) => {
-                return {
-                  addedAt: a.createDate.toString(),
-                  userId: a.userId,
-                  login: a.login,
-                };
-              }),
-            },
-            images: {
-              main: main.map((a) => {
-                return {
-                  url: a.url,
-                  width: a.width,
-                  height: a.height,
-                  fileSize: a.fileSize,
-                };
-              }),
-            },
-          };
-        }),
-      ),
+      totalCount: sortPostsId.length,
+      items: sortPostsId.map((a) => {
+        return {
+          ...a.main,
+          extendedLikesInfo: {
+            likesCount: a.likesCount === null ? 0 : a.likesCount,
+            dislikesCount: a.dislikesCount === null ? 0 : a.dislikesCount,
+            myStatus: a.status === null ? 'None' : a.status,
+            newestLikes: a.newestLikes === null ? [] : a.newestLikes,
+          },
+          images: {
+            main: a.images === null ? [] : a.images,
+          },
+        };
+      }),
     };
   }
 
