@@ -583,16 +583,20 @@ export class QueryRepositorySql extends IQueryRepository {
   }
 
   async getQueryAllQuestionSa(query: any): Promise<AllQuestionsSa> {
-    const totalCount = await this.dataSource.query(
-      `SELECT count(*) FROM public."QuizQuestions"
-            WHERE "body" ILIKE $1`,
+    const [{ count: totalCount }] = await this.dataSource.query(
+      `
+    SELECT COUNT(*) FROM public."QuizQuestions"
+    WHERE body ILIKE $1
+    `,
       [`%${query.bodySearchTerm}%`],
     );
     const allQuestions = await this.dataSource.query(
-      `SELECT * FROM public."QuizQuestions"
-            WHERE "body" ILIKE $1
-            ORDER BY "${query.sortBy}" COLLATE "C" ${query.sortDirection}
-            LIMIT $2 OFFSET $3`,
+      `
+    SELECT * FROM public."QuizQuestions"
+    WHERE body ILIKE $1
+    ORDER BY "${query.sortBy}" COLLATE "C" ${query.sortDirection}
+    LIMIT $2 OFFSET $3
+    `,
       [
         `%${query.bodySearchTerm}%`,
         query.pageSize,
@@ -600,28 +604,29 @@ export class QueryRepositorySql extends IQueryRepository {
       ],
     );
     return {
-      pagesCount: this.queryCount.pagesCountHelper(
-        totalCount[0].count,
-        query.pageSize,
-      ),
+      pagesCount: this.queryCount.pagesCountHelper(+totalCount, query.pageSize),
       page: query.pageNumber,
       pageSize: query.pageSize,
-      totalCount: +totalCount[0].count,
+      totalCount: +totalCount,
       items: allQuestions,
     };
   }
 
   async getQueryAllQuestionSaSortStatus(query: any): Promise<AllQuestionsSa> {
-    const totalCount = await this.dataSource.query(
-      `SELECT count(*) FROM public."QuizQuestions"
-            WHERE "body" ILIKE $1 AND "published"=$2`,
+    const [{ count: totalCount }] = await this.dataSource.query(
+      `
+    SELECT COUNT(*) FROM public."QuizQuestions"
+    WHERE body ILIKE $1 AND published=$2
+    `,
       [query.bodySearchTerm, query.publishedStatus],
     );
     const allQuestions = await this.dataSource.query(
-      `SELECT * FROM public."QuizQuestions",
-            WHERE "body" ILIKE $1 AND "published"=$2
-            ORDER BY "${query.sortBy}" COLLATE "C" ${query.sortDirection}
-            LIMIT $3 OFFSET $4`,
+      `
+    SELECT * FROM public."QuizQuestions"
+    WHERE body ILIKE $1 AND published=$2
+    ORDER BY "${query.sortBy}" COLLATE "C" ${query.sortDirection}
+    LIMIT $3 OFFSET $4
+    `,
       [
         query.bodySearchTerm,
         query.publishedStatus,
@@ -630,13 +635,10 @@ export class QueryRepositorySql extends IQueryRepository {
       ],
     );
     return {
-      pagesCount: this.queryCount.pagesCountHelper(
-        totalCount[0].count,
-        query.pageSize,
-      ),
+      pagesCount: this.queryCount.pagesCountHelper(+totalCount, query.pageSize),
       page: query.pageNumber,
       pageSize: query.pageSize,
-      totalCount: totalCount[0].count,
+      totalCount: +totalCount[0],
       items: allQuestions,
     };
   }
@@ -652,18 +654,17 @@ export class QueryRepositorySql extends IQueryRepository {
     let allGames;
     let totalCount;
     if (sortBy.length === 1) {
-      totalCount = await this.dataSource.query(
-        `SELECT count(*) FROM "PairQuizGame"
-            WHERE "playerId1"=$1 OR "playerId2"=$2`,
-        [id, id],
+      [{ count: totalCount }] = await this.dataSource.query(
+        `SELECT COUNT(*) FROM "PairQuizGame"
+            WHERE "playerId1"=$1 OR "playerId2"=$1`,
+        [id],
       );
       allGames = await this.dataSource.query(
         `SELECT * FROM "PairQuizGame"
-            WHERE "playerId1"=$1 OR "playerId2"=$2
+            WHERE "playerId1"=$1 OR "playerId2"=$1
             ORDER BY "${sortBy[0]}" COLLATE "C" ${query.sortDirection}
-            LIMIT $3 OFFSET $4`,
+            LIMIT $2 OFFSET $3`,
         [
-          id,
           id,
           query.pageSize,
           this.queryCount.skipHelper(query.pageNumber, query.pageSize),
@@ -671,7 +672,7 @@ export class QueryRepositorySql extends IQueryRepository {
       );
     } else {
       totalCount = await this.dataSource.query(
-        `SELECT count(*) FROM "PairQuizGame"
+        `SELECT COUNT(*) FROM "PairQuizGame"
             WHERE "playerId1"=$1 OR "playerId2"=$2`,
         [id, id],
       );
@@ -690,13 +691,10 @@ export class QueryRepositorySql extends IQueryRepository {
       );
     }
     return {
-      pagesCount: this.queryCount.pagesCountHelper(
-        totalCount[0].count,
-        query.pageSize,
-      ),
+      pagesCount: this.queryCount.pagesCountHelper(+totalCount, query.pageSize),
       page: query.pageNumber,
       pageSize: query.pageSize,
-      totalCount: +totalCount[0].count,
+      totalCount: +totalCount,
       items: allGames.map((a) => {
         return {
           id: a.gameId,
