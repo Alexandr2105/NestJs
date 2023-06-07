@@ -15,14 +15,12 @@ import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
 import { QueryCount } from '../../../common/helper/query.count';
 import { ForbiddenException, Injectable } from '@nestjs/common';
-import { ICommentsRepository } from '../comments/i.comments.repository';
 
 @Injectable()
 export class QueryRepositorySql extends IQueryRepository {
   constructor(
     @InjectDataSource() private readonly dataSource: DataSource,
     private readonly queryCount: QueryCount,
-    private readonly commentsRepository: ICommentsRepository,
   ) {
     super();
   }
@@ -474,74 +472,65 @@ export class QueryRepositorySql extends IQueryRepository {
     query: any,
     userId: string,
   ): Promise<AllCommentsForAllPostsCurrentUserBlogs> {
-    const arrayPosts = await this.dataSource.query(
-      `SELECT * FROM public."Posts"
-            WHERE "userId"=$1`,
+    const [{ count: totalCount }] = await this.dataSource.query(
+      `
+    SELECT COUNT(*) FROM public."Comments"
+    WHERE "idPost"=ANY(SELECT "id" FROM public."Posts" WHERE "userId"=$1 )
+    `,
       [userId],
     );
-    const totalCount = await this.dataSource.query(
-      `SELECT count(*) FROM public."Comments"
-            WHERE "idPost" = ANY ($1)`,
-      [
-        arrayPosts.map((a) => {
-          return a.id;
-        }),
-      ],
-    );
     const sortArrayComments = await this.dataSource.query(
-      `SELECT * FROM public."Comments"
-            WHERE "idPost" = ANY ($1)
-            ORDER BY "${query.sortBy}" COLLATE "C" ${query.sortDirection}
-            LIMIT $2 OFFSET $3`,
+      `
+    SELECT c.*,p.id AS "postId", p.title,p."blogId",p."blogName", "likesCount",
+    "dislikesCount", ms
+    FROM public."Comments" c
+    LEFT JOIN public."Posts" p ON c."idPost"=p.id
+    LEFT JOIN (SELECT "userId", COUNT(*) AS "likesCount" 
+    FROM public."LikesModel"
+    WHERE status='Like'
+    GROUP BY "userId") AS lm ON lm."userId"=c."userId"
+    LEFT JOIN (SELECT "userId", COUNT(*) AS "dislikesCount" 
+    FROM public."LikesModel"
+    WHERE status='Dislike'
+    GROUP BY "userId") AS dm ON dm."userId"=c."userId"
+    LEFT JOIN public."LikesModel" ms ON ms."userId"=$1
+    WHERE "idPost"=ANY(SELECT "id" FROM public."Posts" WHERE "userId"=$1 )
+    ORDER BY c."${query.sortBy}" COLLATE "C" ${query.sortDirection}
+    LIMIT $2 OFFSET $3
+    `,
       [
-        arrayPosts.map((a) => {
-          return a.id;
-        }),
+        userId,
         query.pageSize,
         this.queryCount.skipHelper(query.pageNumber, query.pageSize),
       ],
     );
     return {
-      pagesCount: this.queryCount.pagesCountHelper(
-        totalCount[0].count,
-        query.pageSize,
-      ),
+      pagesCount: this.queryCount.pagesCountHelper(+totalCount, query.pageSize),
       page: query.pageNumber,
       pageSize: query.pageSize,
-      totalCount: +totalCount[0].count,
-      items: await Promise.all(
-        sortArrayComments.map(async (a) => {
-          const comment = arrayPosts.find((b) => a.idPost === b.id);
-          const likeInfo = await this.commentsRepository.getLikesInfo(a.userId);
-          const dislikeInfo = await this.commentsRepository.getDislikeInfo(
-            a.userId,
-          );
-          const myStatus = await this.commentsRepository.getMyStatus(
-            a.userId,
-            a.id,
-          );
-          return {
-            id: a.id,
-            content: a.content,
-            commentatorInfo: {
-              userId: a.userId,
-              userLogin: a.userLogin,
-            },
-            createdAt: a.createdAt,
-            postInfo: {
-              id: comment.id,
-              title: comment.title,
-              blogId: comment.blogId,
-              blogName: comment.blogName,
-            },
-            likesInfo: {
-              likesCount: likeInfo,
-              dislikesCount: dislikeInfo,
-              myStatus: myStatus,
-            },
-          };
-        }),
-      ),
+      totalCount: +totalCount,
+      items: sortArrayComments.map((a) => {
+        return {
+          id: a.id,
+          content: a.content,
+          commentatorInfo: {
+            userId: a.userId,
+            userLogin: a.userLogin,
+          },
+          createdAt: a.createdAt,
+          postInfo: {
+            id: a.postId,
+            title: a.title,
+            blogId: a.blogId,
+            blogName: a.blogName,
+          },
+          likesInfo: {
+            likesCount: a.likesCount === null ? 0 : a.likesCount,
+            dislikesCount: a.dislikesCount === null ? 0 : a.dislikesCount,
+            myStatus: a.ms === null ? 'None' : a.ms,
+          },
+        };
+      }),
     };
   }
 
