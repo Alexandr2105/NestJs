@@ -14,7 +14,7 @@ import {
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
 import { QueryCount } from '../../../common/helper/query.count';
-import { ForbiddenException, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 
 @Injectable()
 export class QueryRepositorySql extends IQueryRepository {
@@ -537,61 +537,45 @@ export class QueryRepositorySql extends IQueryRepository {
   async getQueryAllBannedUsersForBlog(
     query: any,
     blogId: string,
-    ownerId: string,
   ): Promise<BanUsersInfoForBlog> {
-    const blog = await this.dataSource.query(
-      `SELECT * FROM public."Blogs"
-            WHERE "id"=$1`,
-      [blogId],
-    );
-    // if (!blog[0]) throw new NotFoundException();
-    if (blog[0].userId !== ownerId) throw new ForbiddenException();
-    const banUsers = await this.dataSource.query(
-      `SELECT * FROM public."BanUsersForBlog"
-            WHERE "blogId"=$1`,
-      [blog[0].id],
-    );
-    const totalCount = await this.dataSource.query(
-      `SELECT count(*) FROM public."Users"
-            WHERE "id" = ANY ($1) AND "login" ILIKE $2`,
-      [
-        banUsers.map((a) => {
-          return a.userId;
-        }),
-        `%${query.searchLoginTerm}%`,
-      ],
+    const [{ count: totalCount }] = await this.dataSource.query(
+      `
+    SELECT COUNT(*) FROM public."Users"
+    WHERE id = ANY(SELECT "userId" FROM public."BanUsersForBlog" WHERE "blogId"=$1)
+    AND login ILIKE $2
+    `,
+      [blogId, `%${query.searchLoginTerm}%`],
     );
     const banUsersArraySort = await this.dataSource.query(
-      `SELECT * FROM public."Users"
-            WHERE "id" = ANY ($1) AND "login" ILIKE $2
-            ORDER BY "${query.sortBy}" COLLATE "C" ${query.sortDirection}
-            LIMIT $3 OFFSET $4`,
+      `
+    SELECT u.id,u.login,b."isBanned",b."banDate",b."banReason" 
+    FROM public."Users" u
+    LEFT JOIN public."BanUsersForBlog" b ON b."userId"=u.id 
+    WHERE id = ANY(SELECT "userId" FROM public."BanUsersForBlog" WHERE "blogId"=$1)
+    AND login ILIKE $2
+    ORDER BY "${query.sortBy}" COLLATE "C" ${query.sortDirection}
+    LIMIT $3 OFFSET $4
+    `,
       [
-        banUsers.map((a) => {
-          return a.userId;
-        }),
+        blogId,
         `%${query.searchLoginTerm}%`,
         query.pageSize,
         this.queryCount.skipHelper(query.pageNumber, query.pageSize),
       ],
     );
     return {
-      pagesCount: this.queryCount.pagesCountHelper(
-        totalCount[0].count,
-        query.pageSize,
-      ),
+      pagesCount: this.queryCount.pagesCountHelper(+totalCount, query.pageSize),
       page: query.pageNumber,
       pageSize: query.pageSize,
-      totalCount: +totalCount[0].count,
+      totalCount: +totalCount,
       items: banUsersArraySort.map((a) => {
-        const banInfo = banUsers.find((b) => a.id === b.userId);
         return {
           id: a.id,
           login: a.login,
           banInfo: {
-            isBanned: banInfo.isBanned,
-            banDate: banInfo.banDate,
-            banReason: banInfo.banReason,
+            isBanned: a.isBanned,
+            banDate: a.banDate,
+            banReason: a.banReason,
           },
         };
       }),

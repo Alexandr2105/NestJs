@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  ForbiddenException,
   Get,
   HttpCode,
   Param,
@@ -19,6 +20,7 @@ import {
 import { CommandBus } from '@nestjs/cqrs';
 import { UpdateBanStatusForBlogCommand } from './application/useCases/update.ban.status.for.blog.use.case';
 import { IQueryRepository } from '../../public/queryReposytories/i.query.repository';
+import { IBlogsRepository } from '../../public/blogs/i.blogs.repository';
 
 @Controller('blogger/users')
 export class UsersControllerBlogger {
@@ -26,6 +28,7 @@ export class UsersControllerBlogger {
     private readonly queryRepository: IQueryRepository,
     private readonly query: QueryCount,
     private readonly commandBus: CommandBus,
+    private readonly blogRepo: IBlogsRepository,
   ) {}
 
   @UseGuards(JwtAuthGuard)
@@ -36,10 +39,11 @@ export class UsersControllerBlogger {
     @Param() param: CheckIdForBlogBanUser,
   ) {
     const query = this.query.queryCheckHelper(queryData);
+    const blogInfo = await this.blogRepo.getBlogId(param.id);
+    if (blogInfo.userId !== req.user.id) throw new ForbiddenException();
     return await this.queryRepository.getQueryAllBannedUsersForBlog(
       query,
       param.id,
-      req.user.id,
     );
   }
 

@@ -9,11 +9,7 @@ export abstract class IQueryRepository {
   abstract getQueryBlogsAuthUser(query: any, userId: string);
   abstract getQueryBlogsSA(query: any);
   abstract getQueryAllInfoForBlog(query: any, userId: string);
-  abstract getQueryAllBannedUsersForBlog(
-    query: any,
-    blogId: string,
-    ownerId: string,
-  );
+  abstract getQueryAllBannedUsersForBlog(query: any, blogId: string);
   abstract getQueryAllQuestionSa(query: any);
   abstract getQueryAllQuestionSaSortStatus(query: any);
   abstract getQueryAllMyGames(query: any, id: string);

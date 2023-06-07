@@ -11,7 +11,7 @@ import {
   PostQueryType,
   UserQueryType,
 } from '../../../common/helper/allTypes';
-import { ForbiddenException, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { BlogEntity } from '../blogs/entity/blog.entity';
 import { ILike, Repository } from 'typeorm';
@@ -48,10 +48,7 @@ export class QueryRepositoryTypeorm extends IQueryRepository {
   async getQueryAllBannedUsersForBlog(
     query: any,
     blogId: string,
-    ownerId: string,
   ): Promise<BanUsersInfoForBlog> {
-    const blog = await this.blogsRepository.findOneBy({ id: blogId });
-    if (blog.userId !== ownerId) throw new ForbiddenException();
     const [sortUsers, totalCount] = await this.usersRepository.findAndCount({
       where: {
         banInfoForBlogs: { blogId: blogId },

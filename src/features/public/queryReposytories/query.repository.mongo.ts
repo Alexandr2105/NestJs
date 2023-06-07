@@ -1,8 +1,4 @@
-import {
-  ForbiddenException,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import {
   BlogsQueryType,
   PostQueryType,
@@ -640,13 +636,10 @@ export class QueryRepositoryMongo extends IQueryRepository {
   async getQueryAllBannedUsersForBlog(
     query: any,
     blogId: string,
-    ownerId: string,
   ): Promise<BanUsersInfoForBlog> {
     const blog = await this.blogsCollection.findOne({
       id: blogId,
     });
-    if (!blog) throw new NotFoundException();
-    if (blog.userId !== ownerId) throw new ForbiddenException();
     const banUsers = await this.banUsersForBlogsCollection.find({
       blogId: blog.id,
     });
