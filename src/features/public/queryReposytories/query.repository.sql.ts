@@ -19,7 +19,6 @@ import { ICommentsRepository } from '../comments/i.comments.repository';
 import { IPostsRepository } from '../posts/i.posts.repository';
 import { IUsersRepository } from '../../sa/users/i.users.repository';
 import { PostsRepositorySql } from '../posts/posts.repository.sql';
-import { IImageRepository } from '../imageRepository/i.image.repository';
 
 @Injectable()
 export class QueryRepositorySql extends IQueryRepository {
@@ -30,7 +29,6 @@ export class QueryRepositorySql extends IQueryRepository {
     private readonly postsRepository: IPostsRepository,
     private readonly postsRepositorySql: PostsRepositorySql,
     private readonly usersRepository: IUsersRepository,
-    private readonly imageRepository: IImageRepository,
   ) {
     super();
   }
@@ -43,7 +41,6 @@ export class QueryRepositorySql extends IQueryRepository {
     `,
       [`%${query.searchNameTerm}%`],
     );
-
     const sortedBlogsArray = await this.dataSource.query(
       `SELECT b.id,b.name,b.description,b."websiteUrl",b."createdAt",b."isMembership",
   w.url AS wallpaper_url, w.width AS wallpaper_width, w.height AS wallpaper_height, w."fileSize" AS wallpaper_fileSize,
@@ -105,7 +102,6 @@ export class QueryRepositorySql extends IQueryRepository {
     WHERE NOT "userId" = ANY(SELECT id FROM public."Users" u WHERE u.ban=true )
     AND NOT "blogId" = ANY(SELECT id FROM public."Blogs" b WHERE b."banStatus"=true)
     `);
-
     const sortPostsArray = await this.dataSource.query(
       `SELECT lm."likesCount", dm."dislikesCount", ms.status,
     JSON_BUILD_OBJECT('id', p.id, 'title', p.title, 'shortDescription',
@@ -247,7 +243,6 @@ export class QueryRepositorySql extends IQueryRepository {
     `,
       [`%${query.searchLoginTerm}%`, `%${query.searchEmailTerm}%`],
     );
-
     const sortArrayUsers = await this.dataSource.query(
       `
     SELECT b."isBanned",b."banDate",b."banReason",
@@ -282,7 +277,6 @@ export class QueryRepositorySql extends IQueryRepository {
         query.banStatus === 'banned',
       ],
     );
-
     const sortArrayUsers = await this.dataSource.query(
       `SELECT
     JSON_BUILD_OBJECT('id',u.id,'login',u.login,'email',u.email,'createdAt',
@@ -317,7 +311,6 @@ export class QueryRepositorySql extends IQueryRepository {
     `,
       [postId],
     );
-
     const sortCommentsByPostId = await this.dataSource.query(
       `
     SELECT c.*, lm."likesCount", dm."dislikesCount",ls.status AS "myStatus"
@@ -366,98 +359,32 @@ export class QueryRepositorySql extends IQueryRepository {
     };
   }
 
-  // async getQueryBlogsAuthUser(
-  //   query: any,
-  //   userId: string,
-  // ): Promise<BlogsQueryType> {
-  //   const totalCount = await this.dataSource.query(
-  //     `SELECT count(*) FROM public."Blogs"
-  //           WHERE "name" ILIKE $1 AND "userId"=$2`,
-  //     [`%${query.searchNameTerm}%`, userId],
-  //   );
-  //   const sortedBlogsArray = await this.dataSource.query(
-  //     `SELECT * FROM public."Blogs"
-  //            WHERE "name" ILIKE $1 AND "userId"=$2
-  //            ORDER BY "${query.sortBy}" COLLATE "C" ${query.sortDirection}
-  //            LIMIT $3 OFFSET $4`,
-  //     [
-  //       `%${query.searchNameTerm}%`,
-  //       userId,
-  //       query.pageSize,
-  //       this.queryCount.skipHelper(query.pageNumber, query.pageSize),
-  //     ],
-  //   );
-  //   return {
-  //     pagesCount: this.queryCount.pagesCountHelper(
-  //       totalCount[0].count,
-  //       query.pageSize,
-  //     ),
-  //     page: query.pageNumber,
-  //     pageSize: query.pageSize,
-  //     totalCount: +totalCount[0].count,
-  //     items: await Promise.all(
-  //       sortedBlogsArray.map(async (a) => {
-  //         const wallpaper =
-  //           await this.imageRepository.getInfoForImageByBlogIdAndFolderName(
-  //             a.id,
-  //             'wallpaper',
-  //           );
-  //         const main =
-  //           await this.imageRepository.getInfoForImageByBlogIdAndFolderName(
-  //             a.id,
-  //             'main',
-  //           );
-  //         return {
-  //           id: a.id,
-  //           name: a.name,
-  //           description: a.description,
-  //           websiteUrl: a.websiteUrl,
-  //           createdAt: a.createdAt,
-  //           isMembership: a.isMembership,
-  //           images: {
-  //             wallpaper:
-  //               wallpaper[0] === undefined
-  //                 ? null
-  //                 : {
-  //                     url: wallpaper[0]?.url,
-  //                     width: wallpaper[0]?.width,
-  //                     height: wallpaper[0]?.height,
-  //                     fileSize: wallpaper[0]?.fileSize,
-  //                   },
-  //             main: main.map((a) => {
-  //               return {
-  //                 url: a.url,
-  //                 width: a.width,
-  //                 height: a.height,
-  //                 fileSize: a.fileSize,
-  //               };
-  //             }),
-  //           },
-  //         };
-  //       }),
-  //     ),
-  //   };
-  // }
-
-  async getQueryBlogsAuthUser(query: any, userId: string) {
+  async getQueryBlogsAuthUser(
+    query: any,
+    userId: string,
+  ): Promise<BlogsQueryType> {
     const [{ count: totalCount }] = await this.dataSource.query(
       `SELECT count(*) FROM public."Blogs"
               WHERE "name" ILIKE $1 AND "userId"=$2`,
       [`%${query.searchNameTerm}%`, userId],
     );
-
     const sortedBlogsArray = await this.dataSource.query(
       `
-    SELECT wallpaper,
+    SELECT "wallpaperObject", "mainObject",
     JSON_BUILD_OBJECT('id',b.id,'name',b.name,'description',b.description,
     'websiteUrl',b."websiteUrl",'createdAt',b."createdAt",'isMembership',b."isMembership") AS "blogInfo"
     FROM public."Blogs" b
-    LEFT JOIN(SELECT i."blogId", JSON_BUILD_OBJECT('url',i.url,'width',i.width,'height',i.height,
-    'fileSize',i."fileSize")
-    FROM public."Image" i
+    LEFT JOIN(SELECT "blogId", JSON_BUILD_OBJECT('url',w.url,'width',w.width,
+    'height',w.height,'fileSize',w."fileSize") AS "wallpaperObject"
+    FROM public."Image" w
     WHERE "folderName"='wallpaper'
     ) AS wallpaper ON wallpaper."blogId"=b.id
-//     LEFT JOIN(SELECT JOIN_AGG(JSON_BUILD_OBJECT()))AS main
+    LEFT JOIN(SELECT "blogId", JSON_AGG(JSON_BUILD_OBJECT('url',m.url,'width',m.width,
+    'height',m.height,'fileSize',m."fileSize")) AS "mainObject"
+    FROM public."Image" m
+    WHERE "folderName"='main'
+    GROUP BY "blogId"
+    )AS main ON main."blogId"=b.id
     WHERE "name" ILIKE $1 AND "userId"=$2
     ORDER BY "${query.sortBy}" COLLATE "C" ${query.sortDirection}
     LIMIT $3 OFFSET $4
@@ -469,7 +396,21 @@ export class QueryRepositorySql extends IQueryRepository {
         this.queryCount.skipHelper(query.pageNumber, query.pageSize),
       ],
     );
-    return sortedBlogsArray;
+    return {
+      pagesCount: this.queryCount.pagesCountHelper(+totalCount, query.pageSize),
+      page: query.pageNumber,
+      pageSize: query.pageSize,
+      totalCount: +totalCount,
+      items: sortedBlogsArray.map((a) => {
+        return {
+          ...a.blogInfo,
+          images: {
+            wallpaper: a.wallpaperObject,
+            main: a.mainObject === null ? [] : a.mainObject,
+          },
+        };
+      }),
+    };
   }
 
   async getQueryBlogsSA(query: any): Promise<BlogsQueryTypeSA> {
