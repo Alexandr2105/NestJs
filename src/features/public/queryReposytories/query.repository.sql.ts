@@ -673,17 +673,16 @@ export class QueryRepositorySql extends IQueryRepository {
     } else {
       totalCount = await this.dataSource.query(
         `SELECT COUNT(*) FROM "PairQuizGame"
-            WHERE "playerId1"=$1 OR "playerId2"=$2`,
-        [id, id],
+            WHERE "playerId1"=$1 OR "playerId2"=$1`,
+        [id],
       );
       allGames = await this.dataSource.query(
         `SELECT * FROM "PairQuizGame"
-              WHERE "playerId1"=$1 OR "playerId2"=$2
+              WHERE "playerId1"=$1 OR "playerId2"=$1
               ORDER BY "${sortBy[0]}" COLLATE "C" ${query.sortDirection},
               "${sortBy[1]}" DESC
-              LIMIT $3 OFFSET $4`,
+              LIMIT $2 OFFSET $3`,
         [
-          id,
           id,
           query.pageSize,
           this.queryCount.skipHelper(query.pageNumber, query.pageSize),
