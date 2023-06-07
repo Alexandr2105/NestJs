@@ -731,7 +731,7 @@ export class QueryRepositorySql extends IQueryRepository {
       sort.push(`"${a[0]}" ` + b);
     }
     const totalCount = await this.dataSource.query(
-      `SELECT count(*) FROM "StatisticGames"`,
+      `SELECT COUNT (*) FROM "StatisticGames"`,
     );
     const allStats = await this.dataSource.query(
       `SELECT * FROM "StatisticGames"
