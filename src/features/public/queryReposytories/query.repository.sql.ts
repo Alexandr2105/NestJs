@@ -671,7 +671,7 @@ export class QueryRepositorySql extends IQueryRepository {
         ],
       );
     } else {
-      totalCount = await this.dataSource.query(
+      [{ count: totalCount }] = await this.dataSource.query(
         `SELECT COUNT(*) FROM "PairQuizGame"
             WHERE "playerId1"=$1 OR "playerId2"=$1`,
         [id],
@@ -730,7 +730,7 @@ export class QueryRepositorySql extends IQueryRepository {
       const b = a[1] === 'desc' ? 'DESC' : 'ASC';
       sort.push(`"${a[0]}" ` + b);
     }
-    const totalCount = await this.dataSource.query(
+    const [{ count: totalCount }] = await this.dataSource.query(
       `SELECT COUNT (*) FROM "StatisticGames"`,
     );
     const allStats = await this.dataSource.query(
@@ -743,13 +743,10 @@ export class QueryRepositorySql extends IQueryRepository {
       ],
     );
     return {
-      pagesCount: this.queryCount.pagesCountHelper(
-        totalCount[0].count,
-        query.pageSize,
-      ),
+      pagesCount: this.queryCount.pagesCountHelper(+totalCount, query.pageSize),
       page: query.pageNumber,
       pageSize: query.pageSize,
-      totalCount: +totalCount[0].count,
+      totalCount: +totalCount,
       items: allStats.map((a) => {
         const { userId, login, ...all } = a;
         return {
