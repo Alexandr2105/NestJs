@@ -16,9 +16,6 @@ import { DataSource } from 'typeorm';
 import { QueryCount } from '../../../common/helper/query.count';
 import { ForbiddenException, Injectable } from '@nestjs/common';
 import { ICommentsRepository } from '../comments/i.comments.repository';
-import { IPostsRepository } from '../posts/i.posts.repository';
-import { IUsersRepository } from '../../sa/users/i.users.repository';
-import { PostsRepositorySql } from '../posts/posts.repository.sql';
 
 @Injectable()
 export class QueryRepositorySql extends IQueryRepository {
@@ -26,9 +23,6 @@ export class QueryRepositorySql extends IQueryRepository {
     @InjectDataSource() private readonly dataSource: DataSource,
     private readonly queryCount: QueryCount,
     private readonly commentsRepository: ICommentsRepository,
-    private readonly postsRepository: IPostsRepository,
-    private readonly postsRepositorySql: PostsRepositorySql,
-    private readonly usersRepository: IUsersRepository,
   ) {
     super();
   }
@@ -414,16 +408,20 @@ export class QueryRepositorySql extends IQueryRepository {
   }
 
   async getQueryBlogsSA(query: any): Promise<BlogsQueryTypeSA> {
-    const totalCount = await this.dataSource.query(
-      `SELECT count(*) FROM public."Blogs"
-            WHERE "name" ILIKE $1`,
+    const [{ count: totalCount }] = await this.dataSource.query(
+      `SELECT COUNT(*) FROM public."Blogs"
+              WHERE name ILIKE $1`,
       [`%${query.searchNameTerm}%`],
     );
     const sortedBlogsArray = await this.dataSource.query(
-      `SELECT * FROM public."Blogs"
-             WHERE "name" ILIKE $1
-             ORDER BY "${query.sortBy}" COLLATE "C" ${query.sortDirection}
-             LIMIT $2 OFFSET $3`,
+      `
+    SELECT b.*, u.login AS login, u.id AS "userId"
+    FROM public."Blogs" b
+    LEFT JOIN public."Users" u ON u.id = b."userId"
+    WHERE name ILIKE $1
+    ORDER BY b."${query.sortBy}" COLLATE "C" ${query.sortDirection}
+    LIMIT $2 OFFSET $3
+    `,
       [
         `%${query.searchNameTerm}%`,
         query.pageSize,
@@ -431,31 +429,25 @@ export class QueryRepositorySql extends IQueryRepository {
       ],
     );
     return {
-      pagesCount: this.queryCount.pagesCountHelper(
-        totalCount[0].count,
-        query.pageSize,
-      ),
+      pagesCount: this.queryCount.pagesCountHelper(+totalCount, query.pageSize),
       page: query.pageNumber,
       pageSize: query.pageSize,
-      totalCount: +totalCount[0].count,
-      items: await Promise.all(
-        sortedBlogsArray.map(async (a) => {
-          const user: any = await this.usersRepository.getUserId(a.userId);
-          return {
-            id: a.id,
-            name: a.name,
-            description: a.description,
-            websiteUrl: a.websiteUrl,
-            createdAt: a.createdAt,
-            isMembership: a.isMembership,
-            blogOwnerInfo: {
-              userId: user.id,
-              userLogin: user.login,
-            },
-            banInfo: { isBanned: a.banStatus, banDate: a.banDate || null },
-          };
-        }),
-      ),
+      totalCount: +totalCount,
+      items: sortedBlogsArray.map((a) => {
+        return {
+          id: a.id,
+          name: a.name,
+          description: a.description,
+          websiteUrl: a.websiteUrl,
+          createdAt: a.createdAt,
+          isMembership: a.isMembership,
+          blogOwnerInfo: {
+            userId: a.userId,
+            userLogin: a.login,
+          },
+          banInfo: { isBanned: a.banStatus, banDate: a.banDate },
+        };
+      }),
     };
   }
 
