@@ -16,6 +16,6 @@ export class CheckOriginalEmail implements ValidatorConstraintInterface {
   }
 
   defaultMessage(): string {
-    return 'Не верные данные';
+    return 'Не верные данные   ';
   }
 }
