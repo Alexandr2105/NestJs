@@ -6,7 +6,7 @@ Key features include:
 - User-created blogs and posts
 - Comments from other users
 - Likes and dislikes on posts
-- CRUD operations with JWT authentication
+- **CRUD** operations with **JWT** authentication
 - Pagination for viewing post likes and dislikes by blog owners
 - Blog owners can ban specific users, limiting their ability to comment but allowing them to read
 - Blog owners can view a list of banned users for their blogs
@@ -15,7 +15,8 @@ Key features include:
 - Superusers can ban specific users, limiting their ability to comment but allowing them to read
 - Superusers can view a list of banned users across all blogs
 - Added a quiz game feature for users
-- Integrated a Telegram bot for post notifications to subscribers
+- Integrated a **Telegram bot** for post notifications to subscribers
+- Conducted **E2E** testing.
 
 Technology Stack:
 - TypeScript
